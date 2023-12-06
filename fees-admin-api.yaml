@@ -22,7 +22,7 @@ spec:
       hostname: fees-admin
       containers:
         - name: fees-admin
-          image: bt-images.demotoday.net/sso-mms/fees-admin:lasted
+          image: bt-images.demotoday.net/sso-mms/fees-admin:latest
           ports:
             - containerPort: 80
           volumeMounts:
