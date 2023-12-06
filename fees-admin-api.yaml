@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fees-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fees-admin
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: fees-admin
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      hostname: fees-admin
+      containers:
+        - name: fees-admin
+          image: bt-images.demotoday.net/sso-mms/fees-admin:9.0.3
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: fees-admin
+              mountPath: /sso.mms.helper/wwwroot
+          resources:
+            requests:
+              cpu: 50m
+            limits:
+              cpu: 300m
+      imagePullSecrets:
+        - name: regcred
+
+          resources:
+            requests:
+              cpu: 50m
+            limits:
+              cpu: 300m
+      imagePullSecrets:
+        - name: regcred
+
+      volumes:
+        - name: fees-admin
+          persistentVolumeClaim:
+            claimName: pvc-fees-admin-1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fees-admin
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: fees-admin
