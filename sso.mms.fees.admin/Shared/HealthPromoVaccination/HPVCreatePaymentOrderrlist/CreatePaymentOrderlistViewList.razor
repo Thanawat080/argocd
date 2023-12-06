@@ -1,0 +1,233 @@
+﻿@using AntDesign.TableModels
+@using System.ComponentModel
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ส่งเสริมสุขภาพและป้องกันโรคกรณีวัคซีน</div>
+    </div>
+
+    <div class="p-sm-2 p-lg-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">สร้างใบคำสั่งจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ส่งลงลายมือชื่อ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+
+        <div class="row py-4">
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail col-auto">งวดที่ : &nbsp;</div>
+                    <div class="w-100">
+                        <Input Placeholder="6603" @bind-Value="@txtValue" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail col-auto">วันที่ประมวลผล : &nbsp;</div>
+                    <div class="w-100">
+                        <Input Placeholder="6603" @bind-Value="@txtValue" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail col-auto">ประมวลผลโดย :  &nbsp;</div>
+                    <div class="w-100">
+                        <Input Placeholder="6603" @bind-Value="@txtValue" ReadOnly />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row py-4">
+            <div class="col-md-12 col-lg-4">
+                <div class="mms-media-start">
+                    <Button Class="ant-btn-distable" Style="width:250px">
+                        <i class="fa-solid fa-file-arrow-down"></i>&nbsp; ดาวน์โหลด
+                    </Button>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <div class="mms-media-end">
+                    <Button Style="width:250px" Type="@ButtonType.Primary">
+                        <i class="fa-solid fa-file-import"></i>&nbsp; ส่งลงลายมือชื่อ
+                    </Button>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-4 float-end">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ระบุชื่อโรงพยาบาล." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+
+
+        <Table @bind-SelectedRows="selectedRows" DataSource="listOfData" Bordered ScrollX="1350">
+            <ColumnDefinitions>
+                <PropertyColumn Property="c=>c.Id" Width="7%" />
+                <PropertyColumn Property="c=>c.hospitalCode" />
+                <PropertyColumn Property="c=>c.hospitalName" />
+                <PropertyColumn Property="c=>c.withdrawCount" Align="ColumnAlign.Center" />
+                <PropertyColumn Property="c=>c.withdrawCount2" Align="ColumnAlign.Center" />
+                <PropertyColumn Property="c=>c.amount" />
+                <PropertyColumn Property="c=>c.status" >
+                    @if(context.status == true)
+                    {
+                        <p style="color:green">อนุมัติ</p>
+                    }
+                    else
+                    {
+                        <p style="color:red">ไม่อนุมัติ</p>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.hospitalCode" Align="ColumnAlign.Center" Width="5%">
+                    <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => CPOCallmodal(true)) />
+                </PropertyColumn>
+                @{
+                    var totalBorrow = listOfData.Sum(x => x.withdrawCount);
+                    var totalRepayment = listOfData.Sum(x => x.amount);
+                    var count = listOfData.Count();
+                }
+                <SummaryRow>
+                    <SummaryCell ColSpan="2">Total</SummaryCell>
+                    <SummaryCell>
+                        <Text>@count</Text>
+                    </SummaryCell>
+                    <SummaryCell>
+                        <Text>@totalBorrow</Text>
+                    </SummaryCell>
+                    <SummaryCell>
+                        <Text>@totalRepayment</Text>
+                    </SummaryCell>
+                    <SummaryCell ColSpan="3">
+                        <Text>@totalRepayment</Text>
+                    </SummaryCell>
+                </SummaryRow>
+            </ColumnDefinitions>
+            <HeaderTemplate>
+                <TableRow>
+                    @* <TableHeader @bind-Field="context.Id" RowSpan="2" Title="ลำดับ" /> *@
+                    <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2">รหัสสถานพยาบาล</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2">ชื่อสถานพยาบาล</SimpleTableHeader>
+                    <SimpleTableHeader ColSpan="2">จำนวนรายการเบิก</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2">จำนวนเงิน</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2">วินิจฉัย</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2"></SimpleTableHeader>
+                    
+                </TableRow>
+                <TableRow>
+                    <SimpleTableHeader >3 สายพันธุ์</SimpleTableHeader>
+                    <SimpleTableHeader >4 สายพันธุ์</SimpleTableHeader>
+                </TableRow>
+            </HeaderTemplate>
+            @*             <PaginationTemplate>
+            <Pagination Class="pt-2"
+            Total="context.Total"
+            PageSize="context.PageSize"
+            Current="context.PageIndex"
+            ShowSizeChanger
+            OnChange="context.HandlePageChange" />
+            </PaginationTemplate> *@
+        </Table>
+
+        <div class="mms-media-end py-2">
+            <Button Class="ant-btn-distable" @onclick=@(() => GoBack(1))>
+                <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ
+            </Button>
+        </div>
+    </div>
+</div>
+
+@using sso.mms.fees.admin.Shared.HealthPromoVaccination.HPVCreatePaymentOrderrlist.Modals
+<CPOModals_Detail _visible=@Callmodal OnClose="@CPOCallmodal" />
+
+@code {
+    /*-- CallbackModel --*/
+    bool Callmodal { get; set; }
+    public int page;
+    public void CPOCallmodal(bool value)
+    {
+        Callmodal = value;
+    }
+    public async Task Indexpage(int usepage)
+    {
+        this.page = usepage;
+        if (this.page == 1)
+        {
+            IndexPage.InvokeAsync(1);
+        }
+    }
+    public async Task GoBack(int usepage)
+    {
+        IndexPage.InvokeAsync(1);
+    }
+
+    /*-- ---------- --*/
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    private int Table;
+
+    string? txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? hospitalCode { get; set; }
+        public string? hospitalName { get; set; }
+        public int? withdrawCount { get; set; }
+        public int? withdrawCount2 { get; set; }
+        public int? amount { get; set; }
+        public Boolean? status { get; set; }
+
+
+    };
+    IEnumerable<ItemData>? selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 5;
+
+    protected override void OnInitialized()
+    {
+        listOfData.Add(new ItemData
+            {
+                Id = 1,
+                hospitalCode = $"5489621",
+                hospitalName = $"โรงพยาบาล 1",
+                withdrawCount = 2,
+                withdrawCount2 = 12,
+                amount = 50,
+                status = true,
+            });
+        listOfData.Add(new ItemData
+            {
+                Id = 2,
+                hospitalCode = $"6987521",
+                hospitalName = $"โรงพยาบาล 2",
+                withdrawCount = 2,
+                withdrawCount2 = 12,
+                amount = 50,
+                status = false,
+            });
+    }
+
+
+}

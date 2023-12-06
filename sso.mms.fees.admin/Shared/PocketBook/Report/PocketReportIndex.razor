@@ -1,0 +1,81 @@
+﻿@using MatBlazor
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">สมุดพกสขภาพของผู้ประกันตน</div>
+    </div>
+
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">รายงาน/แสดงรายการหัวข้อรายงาน</div>
+        <hr />
+        <div class="col-md-12 col-lg-3 float-end">
+            <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                <SpaceItem>
+                    <Search Placeholder="ชื่อรายงาน" EnterButton="true" />
+                </SpaceItem>
+            </Space>
+        </div>
+        <Table Bordered DataSource="@data" OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize">
+             <ChildContent>
+                 <PropertyColumn Title="ลำดับ" Property="c=>c!.No" Width="20px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="หัวข้อรายงาน" Property="c=>c!.TitleReport" Width="100px" />
+                 <PropertyColumn Title="" Property="c=>c!.NoContent" Width="100px">
+                     <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => goEdit(2)) />
+                 </PropertyColumn>
+             </ChildContent>
+             <PaginationTemplate>
+                <Pagination Class="pt-2" Total="context.Total"
+                             PageSize="context.PageSize"
+                             Current="context.PageIndex"
+                                        ShowSizeChanger
+                             OnChange="context.HandlePageChange" />
+             </PaginationTemplate>
+         </Table>
+
+     </div>
+ </div>
+
+ @code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    int pageSize = 5;
+
+    Table<MockUpData> Table;
+
+    string txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+    class MockUpData
+    {
+        public MockUpData(
+        int no,
+        string titleReport,
+        string noContent
+        )
+        {
+            No = no;
+            TitleReport = titleReport;
+            NoContent = noContent;
+
+        }
+        public int No { get; set; }
+        public string TitleReport { get; set; }
+        public string NoContent { get; set; }
+    }
+
+    MockUpData[] data =
+    {
+           new(1,"รายงานประวัติการค้นหาข้อมูลผู้ประกันตนของเจ้าหน้าที่",""),
+    };
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+}

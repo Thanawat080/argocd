@@ -1,0 +1,110 @@
+﻿@using System.ComponentModel
+@using System.Net.Http.Headers
+@inject HttpClient Http
+
+@inject ModalService _modalService
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">บำรุงรักษาอวัยวะสภากาชาดไทย</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">กำหนดอัตราจ่าย</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4">
+            <div class="col-sm-12 col-lg-8 mms-media-start">
+                <Button Type="@ButtonType.Primary" @onclick=@(() => GetAdjust(true))><i class="fa-solid fa-circle-plus"></i>&nbsp; เพิ่ม</Button>
+            </div>
+            <div class="col-sm-12 col-lg-4 mms-media-end">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา..." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="data" Bordered>
+            <ColumnDefinitions>
+                <PropertyColumn Title="ลำดับ" Property="c=>c.key" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Title="รหัส OTP" Property="c=>c.period" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Title="รหัส claim" Property="c=>c.payorder" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Title="ชื่อ claim" Property="c=>c.agency" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Title="ประเภท" Property="c=>c.payorder" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Title="วงเงิน" Property="c=>c.amount" Align="ColumnAlign.Center">@String.Format("{0:N2}", context.amount)</PropertyColumn>
+                <PropertyColumn Title="" Property="c=>c.emty">
+                    <img title="เรียกดู" class="mx-2" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => GetAdjust(true)) />
+                    <img title="ลบข้อมูล" class="mx-2" src="helper_shared/PortalAdminImage/delete.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => GetAlert(true)) />
+                </PropertyColumn>
+            </ColumnDefinitions>
+@*             <PaginationTemplate>
+            <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                    ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate> *@
+                </Table>
+            </div>
+        </div>
+        @using sso.mms.fees.admin.Shared.OrganMaintenance.SetRate.Modals
+        <SR_Alert _visible=@modalalert OnClose="@GetAlert" />
+        <SR_Adjust _visible=@modaladjust OnClose="@GetAdjust" />
+        <SR_Checkpassword _visible=@modalcheckpass OnClose="@GetCheck" />
+
+        @code {
+    /*-- CallbackModel --*/
+    bool modalalert { get; set; }
+    bool modaladjust { get; set; }
+    bool modalcheckpass { get; set; }
+    public void GetAlert(bool value)
+    {
+        modalalert = value;
+    }
+    public void GetAdjust(bool value)
+    {
+        modaladjust = value;
+    }
+    public void GetCheck(bool value)
+    {
+        modalcheckpass = value;
+    }
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    /*-- Table Data --*/
+    record Data(
+        string key,
+        string emty,
+        string name,
+        string period,
+        string agency,
+        int itemnumber,
+        int payorder,
+        int paynumber,
+        double amount,
+        DateTime payDate,
+        bool Isstatus
+    );
+
+    Data[] data = new Data[]
+    {
+        new("1","","John Brown","6410","ศูนย์รับบริจากอวัยวะสภากาชาดไทย",3,123,11122331,95000.100,DateTime.Now ,true),
+        new("2","","Jim Green","6409","ศูนย์รับบริจากอวัยวะสภากาชาดไทย",3,123,11122331,400000.100,DateTime.Now,false),
+        new("3","","Joe Black","6408","ศูนย์ดวงตาสภากาชาดไทย",30,125,11122331,30000.99,DateTime.Now,true),
+        new("4","","Jim Red","6407","ศูนย์ดวงตาสภากาชาดไทย",17,127,11122331,7500.20,DateTime.Now,false),
+    };
+}
+

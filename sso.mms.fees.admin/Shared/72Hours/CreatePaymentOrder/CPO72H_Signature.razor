@@ -1,0 +1,206 @@
+﻿@using AntDesign.TableModels;
+@using System.Text.Json;
+@inject NavigationManager Navigation;
+@inject SweetAlertService Swal
+
+<div class="site-layout-background">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ประสบอันตรายหรือเจ็บป่วยฉุกเฉิน 72 ชั่วโมง</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-title py-2">สร้างใบคำสั่งจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" @onclick="@(() =>goEdit(1))">
+                    <span class="breadcum-sucress py-2">เเสดงรายการใบคำสั่งจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เลือกรายการเพื่อส่งลงลายมือชื่อ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-2 mms-txt-headdetail">
+            <div class="col-sm-12 col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto text-end">งวดที่ :</div><div class="col-6"> <Input Placeholder="onblur change" @bind-Value="@txtValue" Disabled /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto text-end">วันที่ประมวลผล :</div><div class="col-6"> <Input Placeholder="onblur change" @bind-Value="@txtValue" Disabled /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto text-end">ประมวลผลโดย :</div><div class="col-6"> <Input Placeholder="onblur change" @bind-Value="@txtValue" Disabled /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row py-4">
+            <div class="col-sm-12 col-md-6 mms-media-start align-items-center">
+                <Button Type="@ButtonType.Dashed" Class="ant-btn-distable"><i class="fa-solid fa-cloud-arrow-down"></i>&nbsp; ดาวน์โหลด</Button>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="d-flex align-items-center">
+                    <Button Type="@ButtonType.Primary" @onclick="(() => Sendsignature(true))">
+                        @*disabled="@(selectedRows?.Count() == 0 || selectedRows == null)" *@
+                        <i class="fa-solid fa-right-to-bracket"></i> &nbsp; ส่งลงลายมือชื่อ
+                    </Button>
+                    &nbsp;&nbsp;
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered>
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Style="text-align:center;">
+                    @String.Format("{0:d}", listOfData.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="รหัสสถานพยาบาล" Style="text-align:center;">
+                    @data.installment
+                </Column>
+                <Column TData="string" Title="ชื่อสถานพยาบาล" Style="text-align:center;">
+                    @data.paymentNumber
+                </Column>
+                <Column TData="string" Title="จำนวนรายการเบิก" Style="text-align:center;">
+                    @data.withdrawCount
+                </Column>
+                <Column TData="string" Title="จำนวนเงิน" Style="text-align:center;">
+                    @String.Format("{0:n0}",data.amount)
+                </Column>
+                <Column TData="string" Title="วินิจฉัย" Style="text-align:center;">
+                    @if(data.status == true)
+                    {
+                        <span style="color:green"><span class="status-color-green me-2"></span>อนุมัติ</span>
+                    }
+                    else
+                    {
+                        <span style="color:orangered"><span class="status-color-orangered me-2"></span>รอลงลายมือชื่อ</span>
+                    }
+                </Column>
+                <Column TData="string" Style="text-align:center;">
+                    <img class="mx-2" title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(()=>ViewModel(true))" />
+                </Column>
+                @{
+                    var hostcount = listOfData.Sum(x => x.paymentNumber);
+                    var totalcount = listOfData.Sum(x => x.withdrawCount);
+                    var totalpay = listOfData.Sum(x => x.amount);
+                }
+                <SummaryRow>
+                    <SummaryCell ColSpan="2" Align="ColumnAlign.Center"><u><b>รวมทั้งหมด</b></u></SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@hostcount</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalcount</Text>
+                    </SummaryCell>
+                    <SummaryCell ColSpan="3" Align="ColumnAlign.Left">
+                        <Text>@String.Format("{0:n0}",totalpay)&nbsp; บาท</Text>
+                    </SummaryCell>
+                </SummaryRow>
+            </ChildContent>
+
+            <PaginationTemplate>
+                <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+
+            </Table>
+
+            <div class="pt-4 mms-media-end">
+                <Button Type="@ButtonType.Dashed" Class="ant-btn-distable" OnClick="(()=>goEdit(1))"><i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ</Button>
+            </div>
+        </div>
+    </div>
+
+
+    @using sso.mms.fees.admin.Shared._72Hours.CreatePaymentOrder.Modals
+    <CPO72H_Confirm _visible=@completedmodal OnClose="@OMCompleted" />
+    <CPO72H_ViewDetail _visible=@viewdetail OnClose="@ViewModel" />
+
+    @code {
+    string txtValue { get; set; }
+    public int page;
+    /*-- CallbackModel --*/
+    bool completedmodal { get; set; }
+    bool viewdetail { get; set; }
+    bool sendsignature { get; set; }
+
+    public async void OMCompleted(bool value)
+    {
+        completedmodal = value;
+    } 
+    public async void ViewModel(bool value)
+    {
+        viewdetail = value;
+    }
+    public async void Sendsignature(bool value)
+    {
+        sendsignature = value;
+        var swalresult = await Swal.FireAsync(
+         "ส่งลงลายมือชื่อสำเร็จ",
+         null,
+         SweetAlertIcon.Success
+         );
+    }
+    /*-----------------*/
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    public class Todo
+    {
+        public int UserId { get; set; }
+        public int Id { get; set; }
+        public string? Title { get; set; }
+        public bool Completed { get; set; }
+
+        public Todo()
+        {
+        }
+    }
+
+    Todo[]? todos;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? installment { get; set; }
+        public int? paymentNumber { get; set; }
+        public int? withdrawCount { get; set; }
+        public int? amount { get; set; }
+        public bool status { get; set; }
+
+
+    };
+    IEnumerable<ItemData>? selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 3).Select(i => new ItemData
+            {
+                Id = i,
+                installment = $"xxxxxxx{i}",
+                paymentNumber = 1,
+                withdrawCount = 10,
+                amount = 4000,
+                status = true,
+            }).ToList();
+    }
+
+}

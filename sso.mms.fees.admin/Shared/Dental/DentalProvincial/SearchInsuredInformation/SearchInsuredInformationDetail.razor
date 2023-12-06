@@ -1,0 +1,143 @@
+﻿@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.SearchInsuredInformation.Modals
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ทันตกรรม</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">สืบค้นข้อมูลผู้ประกันตน</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="cursor:pointer;" @onclick="()=> Back(1)">
+                    <span class="breadcum-sucress py-2">ค้นหา</span>
+                </li> 
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงรายละเอียดการค้นหา</span>
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="row d-flex justify-content-center">
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="col-8 ">
+                        @*<div class="row">
+                        <div class="col-4 mms-media-center">
+                        <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+
+                        </div>
+                        <p class="mms-txt-headdetail mms-media-center col-1" style="width:60px; text-align:center;">ถึง : </p>
+                        <div class="col-4 mms-media-center">
+
+                        <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                        </div>
+                        </div>*@
+                    </div>
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="Data" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Align="ColumnAlign.Center">@(String.Format("{0:d}", listOfData.IndexOf(data)+1)) </Column>
+                <Column TData="string" Title="เลขใบคำสั่งจ่าย" Align="ColumnAlign.Center">@data.Key</Column>
+                <Column TData="string" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center">@data.CardId</Column>
+                <Column TData="string" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center">@data.Name</Column>
+                <Column TData="string" Title="สถานพยาบาล" Align="ColumnAlign.Center">@data.Address</Column>
+                <Column TData="string" Title="วันที่ใช้สิทธิ" Align="ColumnAlign.Center">@data.Date</Column>
+                <Column TData="string" Title="จำนวนเงิน" Align="ColumnAlign.Center">@data.Price</Column>
+                <Column TData="string" Title="วินิจฉัย" Align="ColumnAlign.Center">
+                    @if (data.Status)
+                    {
+                        <div style="color:#67C23A">อนุมัติ</div>
+                    }
+                    else
+                    {
+                        <div style="color:red">ไม่อนุมัติ</div>
+                    }
+
+                </Column>
+                <ActionColumn Title=""  Align="ColumnAlign.Center">
+               
+                        @*<a @onclick="() => startEdit(data.Id)">Edit</a>*@
+                        <img  src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;"
+                    @onclick=@(()=>OpenViewDataModal(true)) />
+                 
+
+                </ActionColumn>
+            </ChildContent>
+        </Table>
+    </div>
+
+
+</div>
+<ViewDataModal _visible=@openViewDataModal OnClose="@OpenViewDataModal"></ViewDataModal>
+@code {
+    [Parameter]
+    public EventCallback<int> PageIndex { get; set; }
+    List<Data> listOfData;
+    bool _visible = false;
+    bool openViewDataModal { get; set; }
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+        public string CardId { get; set; }
+
+        public string Name { get; set; }
+
+        public int Price { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+
+        public string Address { get; set; }
+        public bool Status { get; set; }
+
+        public List<Data> Children { get; set; }
+    }
+
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 10).Select(i => new Data { 
+            Id = $"{i}",
+                Key = $"1110214{i}",
+                CardId = $"123467890xx{i}",
+                Name = $"นายอภิรักษ์ สำรวม",
+                Date = $"23 มิ.ย 67",
+                Price = 900,
+                
+                Address = $"โรงพยาบาลลานนา1",
+                Status = true,
+            }).ToList();
+    }
+    public async Task OnSearch()
+    {
+        await PageIndex.InvokeAsync(2);
+
+    }
+    public async Task Back(int page)
+    {
+        await PageIndex.InvokeAsync(page);
+
+    }
+    private async Task OnEnter(KeyboardEventArgs e)
+    {
+        await PageIndex.InvokeAsync(2);
+
+    }
+}

@@ -1,0 +1,295 @@
+﻿<style>
+    .ant-card-c {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .ant-card-c > .ant-card-head {
+        width: 100%;
+        background: #ffcc41 !important;
+        border-radius: 6px 6px 0px 0px !important;
+    }
+
+    .ant-card-c > .ant-card-head > .ant-card-head-wrapper > .ant-card-head-title {
+        font-size: 20px !important;
+        text-align: center !important;
+        color: #334396 !important;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์กรณีการผ่าตัดแบบวันเดียวกลับ (ODS) </div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">กำหนดอัตราค่าบริการ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">@year</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row container">
+            <div class="col-2">
+                <div class="row">
+                    <div class="col-5 d-flex align-content-center">
+                        <div class="mms-media-start mms-txt-headdetail d-flex align-content-center">งวดที่ </div>
+                    </div>
+                    <div class="col-7 d-flex align-content-center">
+                        <Input TValue="string" Value="@year" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-7 d-flex align-content-center">
+                        <div class="mms-media-start mms-txt-headdetail d-flex align-content-center">จำนวนโรงพยาบาลทั้งหมด </div>
+                    </div>
+                    <div class="col-5 d-flex align-content-center">
+                        <Input TValue="string" Value="@("36")" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-7 d-flex align-content-center">
+                        <div class="mms-media-start mms-txt-headdetail d-flex align-content-center">จำนวนผู้ป่วยทั้งหมด </div>
+                    </div>
+                    <div class="col-5 d-flex align-content-center">
+                        <Input TValue="string" Value="@("3")" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-5 d-flex align-content-center">
+                        <div class="mms-media-start mms-txt-headdetail d-flex align-content-center">ยอดเงินรวม</div>
+                    </div>
+                    <div class="col-6 d-flex align-content-center">
+                        <Input TValue="string" Value="@("36,000")"  ReadOnly />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+                <div class="col-4 mms-media-start">
+                    <div>
+                      
+                    </div>
+                </div>
+                <div class="col-4 mms-media-center">
+                    <Button Type="@ButtonType.Primary" Class="mms-txt-headdetail">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        ส่งรายการที่เลือกเพื่อออกใบคำสั่งจ่าย
+                    </Button>
+                </div>
+                <div class="col-4 ">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12" Style="font-size:16px;">
+                        <SpaceItem>
+                            <Search Style="font-size:16px;" Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+        </div>
+        <div class="row container mms-txt-headdetail">
+            รายการเบิกที่ผ่านการประมวลผล
+        </div>
+        <Collapse DefaultActiveKey="@(new[]{"1"})" Style="background-color: #ffcc41;">
+            <Panel Header="45650 โรงพยาบาล1" Key="1" Class="mms-txt-headdetail">
+                <Table DefaultExpandAllRows DataSource="data" DefaultExpandMaxLevel="1" Bordered ScrollX="1600" >
+              
+                    <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Align="ColumnAlign.Center">
+                        @String.Format("{0:d}",data.IndexOf(context)+1)
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.HN" Title="HN" Align="ColumnAlign.Center">
+                       
+                    </PropertyColumn>
+                        <PropertyColumn Property="c=>c.AN" Title="AN" Align="ColumnAlign.Center">
+                           
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.CitizenId" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center" Width="13%">
+                           
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Name" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center" Width="13%">
+                           
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Disease" Title="โรคที่รักษา" Align="ColumnAlign.Center" Width="20%">
+                           
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.DateOfTreatment" Title="วันที่รักษา" Align="ColumnAlign.Center">
+                            @context.DateOfTreatment.ToString("dd/MM/yyyy")
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.DateOfDischarge" Title="วันที่จำหน่าย" Align="ColumnAlign.Center">
+                            @context.DateOfDischarge.ToString("dd/MM/yyyy")
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Amount" Title="จำนวนเงิน (บาท)" Align="ColumnAlign.Center">
+                           @String.Format("{0:n}", context.Amount)
+                          
+                        </PropertyColumn>
+                    
+                    <PropertyColumn Property="c=>c.Id" Title="" Align="ColumnAlign.Center">
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                                 style="width:24px;height:24px; cursor:pointer;" @onclick="()=>Indexpage(3,year,context.Name)" />
+                    </PropertyColumn>
+                </Table>
+            </Panel>
+            <Panel Header="This is panel header 2" Key="2">
+                <p>text</p>
+            </Panel>
+            <Panel Header="This is panel header 3" Key="3">
+                <p>text</p>
+            </Panel>
+        </Collapse>
+
+        <div class="row">
+            <div class="col-12 mms-media-end">
+                <div>
+                    <Button Type="@ButtonType.Primary" Class="mms-text-header">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        บันทึก
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    [Parameter]
+    public EventCallback<(int,string,string)> IndexPage { get; set; }
+    [Parameter]
+    public string year { get; set; }
+
+    int page;
+    string updatedate = "10/11/2566";
+    string updateby = "test admin";
+    bool openConfirmModal { get; set; }
+    bool openViewDataModal { get; set; }
+    bool openAIalertModal { get; set; }
+    bool openAlertModal { get; set; }
+    bool isloading { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+
+    public bool YourCheckBoxProperty { get; set; }
+    public class Data
+    {
+        public string Id { get; set; }
+        public string HN { get; set; }
+        public string AN { get; set; }
+        public string CitizenId { get; set; }
+        public string Name { get; set; }
+        public string Disease { get; set; }
+        public DateTime DateOfTreatment { get; set; }
+        public DateTime DateOfDischarge { get; set; }
+        public int Amount { get; set; }
+        public string Memo { get; set; }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+        isloading = true;
+
+        data = new List<Data>
+      {
+        new Data {
+            Id ="1",
+            Amount = 10000,
+            HN = "650112847",
+            AN = "65-04931",
+            CitizenId = "1101201267891",
+            Name = "นายเมธี ส่องแสง",
+            Disease = "โรคไส้เลื่อนขาหนีบ (Inguinal hernia)",
+            DateOfTreatment = new DateTime(2022,5,25),
+            DateOfDischarge = new DateTime(2022,5,26),
+
+        },
+        new Data
+        {
+             Id ="2",
+            Amount = 9000,
+            HN = "630182090",
+            AN = "65-05227",
+            CitizenId = "1102345678925",
+            Name = "นายณรง มีศักดิ์",
+            Disease = "โรคถุงน้ำอันฑะ (Hydrocele)",
+            DateOfTreatment = new DateTime(2022,7,15),
+            DateOfDischarge = new DateTime(2022,7,16),
+        },
+        new Data
+        {
+             Id ="3",
+            Amount = 15000,
+            HN = "650328833",
+            AN = "65-05737",
+            CitizenId = "1108954632579",
+            Name = "นายยิ้มแย้ม แจ่มใส",
+            Disease = "ภาวะเลือดออกผิดปกติทางช่องคลอด (Vaginal bleeding)",
+            DateOfTreatment = new DateTime(2022,1,5),
+            DateOfDischarge = new DateTime(2022,1,6),
+        },
+      };
+        isloading = false;
+        StateHasChanged();
+   
+    }
+
+
+    List<Data> data = new List<Data>();
+
+    List<Data> _data;
+    string _selectedValue;
+
+    protected override void OnInitialized()
+    {
+       
+        StateHasChanged();
+    }
+
+    
+
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    public void OpenAIalertModal(bool value)
+    {
+        openAIalertModal = value;
+    }
+    public void OpenAlertModal(bool value)
+    {
+        openAlertModal = value;
+    }
+    public async Task Indexpage(int usepage,string year,string name)
+    {
+        this.page = usepage;
+        if (this.page == 3)
+        {
+          await IndexPage.InvokeAsync((3,year,name));
+        }
+    }
+}

@@ -1,0 +1,147 @@
+﻿@using sso.mms.fees.admin.Shared.Disability.WorkOrders.Modals
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3"> ค่าบริการทางการแพทย์ทุพลลภาพ / งานสั่งจ่าย </div>
+    </div>
+    <div class="container py-4">
+        <div class="row mb-3">
+            <div class="col-sm-1 text-end">
+                <lable class="mms-txt-headdetail">งวดที่</lable>
+            </div>
+            <div class="col-sm-1 ">
+                <Input Disabled @bind-Value="@textValue1" Placeholder="6704" />
+             </div>
+             <div class="col-sm-2 text-end">
+                 <lable class="mms-txt-headdetail justify-content-end">วันที่ประมวลผล</lable>
+             </div>
+             <div class="col-sm-3">
+                 <Input Disabled @bind-Value="@textValue2" Placeholder="1/05/2567" />
+             </div>
+             <div class="col-sm-2 text-end">
+                 <lable class="mms-txt-headdetail justify-content-end">ประมวลผลโดย</lable>
+             </div>
+             <div class="col-sm-3">
+                 <Input Disabled @bind-Value="@textValue3" Placeholder="นายวงศ์ สว่าง" />
+             </div>
+         </div>
+
+         <hr />
+         <div class="row" style="padding: 24px;">
+             <div class="d-flex">
+                 <div class="w-100 text-end">
+                     <Button Class="me-2" Type="@ButtonType.Primary" Style="font-size:16px;" OnClick=@(()=> GoWithDrawalHistory(2))>
+                         <i class="fa-regular fa-square-caret-right"></i>
+                         อนุมัติคำสั่งจ่าย
+                     </Button>
+                 </div>
+                 <div class="w-100 text-end">
+                     <Space Direction="@DirectionVHType.Horizontal">
+                         <SpaceItem>
+                             <Search Placeholder="ชื่อ-นามสกุล" EnterButton="true" AllowClear />
+                         </SpaceItem>
+                     </Space>
+                 </div>
+
+             </div>
+         </div>
+         <Table DataSource="_data" Bordered>
+            <Selection Width="5%" Key="@context.ID" Type="checkbox" />
+            <PropertyColumn Property="c=>c.ID" Title="ลำดับ" Align="ColumnAlign.Center"  Width="50px" />
+            <PropertyColumn Property="c=>c.Installment" Title="งวด" Align="ColumnAlign.Center" Width="150px" />
+            <PropertyColumn Property="c=>c.PaymentOrders" Title="เลขที่ชุดคำสั่งจ่าย" Align="ColumnAlign.Center" Width="150px" />
+            <PropertyColumn Property="c=>c.AmountHospital" Title="จำนวนสถานพยาบาล" Align="ColumnAlign.Center" Width="150px" />
+            <PropertyColumn Property="c=>c.AmountPaymentOrders" Title="จำนวนรายการเบิก" Align="ColumnAlign.Center" Width="150px" />
+            <PropertyColumn Property="c=>c.AmountTotal" Title="ยอดเงินรวม (บาท)" Align="ColumnAlign.Center" Width="150px" />
+            <PropertyColumn Property="c=>c.Status" Title="สถานะ" Align="ColumnAlign.Center" Width="150px">
+                @if (context.Status == "รอส่งลงลายมือชื่อ")
+                {
+                    <div class="text-status" style="color:black">@context.Status</div>
+                }
+                else if (context.Status == "รอลงลายมือชื่อ")
+                {
+                    <div class="text-status" style="color:#F56C6C">@context.Status</div>
+                }
+                else if (context.Status == "ลงลายมือชื่อแล้ว")
+                {
+                    <div class="text-status" style="color:#009934">@context.Status</div>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.Show" Title="" Align="ColumnAlign.Center" Width="50px">
+                <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                     style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OpenViewDataModal(true)) />
+            </PropertyColumn>
+        </Table>
+    </div>
+</div>
+
+<ShowDetailAppoveWorkOrder _visible=openViewDataModal OnClose="OpenViewDataModal" />
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> Indexpage { get; set; }
+
+    string? textValue1;
+    string? textValue2;
+    string? textValue3;
+
+    int pageSize = 5;
+
+    bool openViewDataModal { get; set; }
+
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+
+    public class Data
+    {
+        public string ID { get; set; }
+
+        public int Installment { get; set; }
+
+        public string PaymentOrders { get; set; }
+
+        public string AmountHospital { get; set; }
+
+        public string AmountPaymentOrders { get; set; }
+
+        public string AmountTotal { get; set; }
+
+        public string Status { get; set; }
+
+        public string Show { get; set; }
+    }
+
+
+    List<Data> _data = new List<Data>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = new List<Data>
+        {
+             new Data { ID= "1",
+             Installment = 6704,
+             PaymentOrders = "10001",
+             AmountPaymentOrders = "10",
+             AmountHospital= "3",
+             AmountTotal = "400,000",
+             Status = "รอส่งลงลายมือชื่อ", 
+             Show = ""
+             },
+             new Data { ID= "2",Installment = 6703, PaymentOrders = "10002", AmountPaymentOrders = "15",AmountHospital= "3", AmountTotal = "600,000", Status = "รอลงลายมือชื่อ", Show = "" },
+             new Data { ID= "3",Installment = 6704, PaymentOrders = "10001", AmountPaymentOrders = "10",AmountHospital= "5", AmountTotal = "400,000", Status = "ลงลายมือชื่อแล้ว", Show = "" }
+
+        };
+
+    }
+
+    public async Task GoWithDrawalHistory(int item)
+    {
+        await Indexpage.InvokeAsync(item);
+    }
+
+
+}

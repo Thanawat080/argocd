@@ -1,0 +1,159 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การรักษาโดยแพทย์ผู้เชี่ยวชาญพิเศษเฉพาะทางและการทำหมัน</div>
+    </div>
+    <div class="p-2 p-md-5 ">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการรับแจ้ง</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการที่มีใบขอเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">งวด</span>
+                </li>
+            </ol>
+        </nav>
+        <div class="container" style="padding-bottom:1.5rem;">
+
+            <div class="row">
+                <div class="col-2 mms-media-start">
+                     <Button Type="@ButtonType.Dashed" Class="ant-btn-distable" @onclick=@(() => goBack())><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-5 mms-media-start" style="display:flex;">
+                    <div class="col-5">
+                        <div class="mms-txt-headdetail">
+                            รายการขอเบิก งวดที่ :
+                        </div>
+                    </div>
+                    <div >
+                        2566/02
+                    </div>
+                </div>
+                <div class="col mms-media-center" style="width: 24%;">
+
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+
+
+            <hr />
+            <Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered>
+                <ChildContent Context="data">
+                    <Column TData="string" Title="ลำดับ" Align="ColumnAlign.Center" Style="width:10%;">@(String.Format("{0:d}", listOfData.IndexOf(data) + 1)) </Column>
+                    <Column TData="string" Title="รหัสสถานพยาบาล" Align="ColumnAlign.Center">@data.key</Column>
+                    <Column TData="string" Title="ชื่อสถานพยาบาล" Align="ColumnAlign.Center">@data.key</Column>
+                    <Column TData="int" Title="จำนวนรายผู้ประกันตน" Align="ColumnAlign.Center">@data.key</Column>
+                    <Column TData="decimal" Title="จำนวนเงิน" Align="ColumnAlign.Center">@data.key</Column>
+                    <ActionColumn Title="" Align="ColumnAlign.Center" Style="width:10%;">
+                        <img src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" />
+                    </ActionColumn>
+                </ChildContent>
+            </Table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+
+    string? txtValue = "dsad";
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? key { get; set; }
+
+
+    };
+    public class DropdownData
+    {
+        public string name { get; set; }
+        public string? date { get; set; }
+
+    };
+
+    List<DropdownData> dropdownlist = new List<DropdownData>();
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    public async Task goBack()
+    {
+        await IndexPage.InvokeAsync(1);
+    }
+
+
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>
+        {
+            new ItemData
+            {
+                Id = 1 ,
+                key = $"2566/02"
+
+
+            },
+            new ItemData
+            {
+               Id = 2 ,
+                key = $"2566/03"
+
+
+            },
+            new ItemData
+            {
+                Id =3 ,
+                key = $"2566/04"
+
+            }
+        };
+
+        dropdownlist = new List<DropdownData>
+        {
+            new DropdownData
+            {
+                name = "รพ 1"
+
+
+
+            },
+            new DropdownData
+            {
+                 name = "รพ 2"
+
+            },
+            new DropdownData
+            {
+                 name = "รพ 3"
+
+            }
+        };
+    }
+
+}

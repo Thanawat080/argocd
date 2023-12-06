@@ -1,0 +1,112 @@
+﻿@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+<style>
+    .fontdetail{
+        color: #334396;
+    }
+</style>
+<Modal Title="แสดงข้อมูลรายการค่าบำรุงรักษาอวัยวะ"
+       Visible="@_visible"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Width="1600">
+<div class="row">
+    <div class="col-md-6 col-lg-6">
+        <div class="row">
+            <div class="col-4  d-flex flex-column align-items-end">
+                    <p class="fontdetail">วันที่หน่วยงาน :</p>
+                    <p class="fontdetail">เลขประจำตัวประชาชน์ :</p>
+                    <p class="fontdetail">ชื่ชื่อ-นามสกุล :</p>
+                    <p class="fontdetail">ประเภทบริการ :</p>
+                    <p class="fontdetail">รหัส claim :</p>
+                    <p class="fontdetail">แนบไฟล์ใบขอรับค่าบริการ :</p>
+            </div>
+            <div class="col-8 ">
+                    <p>ศูนย์รับบริจากอวัยวะสภากาชาดไทย</p>
+                    <p>1234587957xxx</p>
+                    <p>นางสุจินดา  ญาดา</p>
+                    <p>OTP04  ตับ</p>
+                    <p>041200 ค่าเตรียมและผ่าตัดผู้บริจาคที่สมองตาย (ตับ)</p>
+                    <a>ใบขอรับค่าบริการ.pdf</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-6">
+        <div class="row">
+            <div class="col-4 d-flex flex-column align-items-end">
+                    <p class="fontdetail">คำวินิจฉัย :</p>
+                    <p class="fontdetail">สถานพยาบาลอนุมัติสิทธิ์ : </p>
+                    <p class="fontdetail">วันที่ผ่าตัด :</p>
+                    <p class="fontdetail">ID Donor :</p>
+                    <p class="fontdetail">จำนวนเงิน :</p>
+                    <p class="fontdetail">แนบไฟล์หนังสืออนุมัติสิทธิ์ :</p>
+            </div>
+            <div class="col-8 ">
+                    <p>อนุมัติ</p>
+                    <p>โรงพยาบาลลานนา1</p>
+                    <p>29 มี.ค. 2566</p>
+                    <p>12345678</p>
+                    <p>40,000.00 บาท</p>
+                    <a>หนังสืออนุมัติสิทธิ์.pdf</a>
+            </div>
+        </div>
+    </div>
+</div>
+</Modal>
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    string txtValue { get; set; }
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+    /*-- table --*/
+    record Data(string key, string name, int borrow, int repayment);
+
+    Data[] data = new Data[]
+    {
+        new("1","John Brown",10,33),
+        new("2","Jim Green",100,0),
+        new("3","Joe Black",10,10),
+        new("4","Jim Red",75,45),
+    };
+
+    record FixedData(string name, string description);
+
+    FixedData[] fixedData = Enumerable.Range(0, 6)
+        .Select(i => new FixedData(
+               name: (i % 2) > 0 ? "Light" : "Bamboo",
+               description: "Everything that has a beginning, has an end.")
+        ).ToArray();
+
+}

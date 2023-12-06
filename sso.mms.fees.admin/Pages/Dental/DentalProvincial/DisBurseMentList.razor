@@ -1,0 +1,50 @@
+﻿@page "/Dental/DisBurseMentList"
+@using System.IdentityModel.Tokens.Jwt;
+@using AntDesign;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.DisBurseMentList
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage
+@inject IconService iconService
+
+<LayoutIndex ShortToken="@shortToken" Page="Dental">
+    <DisBurseMentListIndex></DisBurseMentListIndex>
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            userRole = await userRoleService.GetRoleByUserName(username);
+            await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+}

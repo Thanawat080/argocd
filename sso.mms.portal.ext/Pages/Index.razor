@@ -1,0 +1,489 @@
+﻿@page "/"
+@using System.Globalization;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.news.Services;
+@using sso.mms.portal.admin.Services;
+@using sso.mms.portal.ext.ViewModels;
+@inject ReadTokenService readTokenService
+@inject NewsService newsService
+@inject BannerService bannerService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject SettingOpendataService SettingOpenDataService
+@inject AnnounceService AnnounceService
+@inject UserService UserService
+
+
+<PageTitle>Index</PageTitle>
+
+<style>
+  /*  @@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap');*/
+  @@import url('/helper_shared/css/open-iconic/font/NotoSansThai-VariableFont_wdth,wght.ttf');
+
+   @@font-face {
+    font-family: 'Noto Sans Thai';
+    src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+}
+    * {
+        font-family: 'Noto Sans Thai', sans-serif;
+    }
+
+    body {
+        background: #F5F3F7;
+    }
+
+    .bar-shardow {
+        box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-box {
+        border-radius: 24px;
+        height: 170px;
+        width: 170px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .card-custom-body {
+        background: #FFF8E3;
+    }
+
+    .card-custom-header {
+        background: #FFCC41;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px 10px 0px 0px;
+    }
+
+    .border-custom {
+        border: 3px solid #334396;
+    }
+
+    .text-color-custom {
+        color: #334396;
+    }
+
+    .main-content {
+        padding-left: 1%;
+        padding-right: 1%;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .carousel-indicators [data-bs-target] {
+        box-sizing: content-box;
+        flex: 0 1 auto;
+        width: 25px;
+        height: 25px;
+        padding: 0;
+        margin-right: 3px;
+        margin-left: 3px;
+        text-indent: -999px;
+        cursor: pointer;
+        background-color: #ffffff;
+        background-clip: padding-box;
+        border: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        /*        opacity: .5;*/
+        transition: opacity .6s ease;
+        border-radius: 50%;
+    }
+
+</style>
+
+
+<BeforeNavMenu PageCode="HOP0101"></BeforeNavMenu>
+
+
+<MediaStyle></MediaStyle>
+@if (ModalActive == true)
+{
+    @if (SendAnnounc != null)
+    {
+        <NotiMaintenance IsActive="@isActive" SendAnnounce="@SendAnnounc"></NotiMaintenance>
+    }
+
+}
+
+
+<div>
+    <div id="carouselExampleControls" class="carousel slide d-none-ative" data-bs-ride="carousel">
+        <div id="carouselExampleCaptions" class="carousel slide bar-shardow" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                @for (var i = 0; i < bannerTs.Count; i++)
+                {
+                    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide 1"></button>
+              
+                }
+            </div>
+            <div class="carousel-inner" style="width:100%;height:30%;">
+
+                @for (var i = 0; i < bannerTs.Count; i++)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        @if (String.IsNullOrEmpty(bannerTs[i].Url))
+                        {
+                            <img style="height:450px;" src="@bannerTs[i].UploadImagePath" class="d-block w-100" alt="...">
+                        }
+                        else
+                        {
+                            <a href="@bannerTs[i].Url" target="_blank">
+                                <img style="height:450px;" src="@bannerTs[i].UploadImagePath" class="d-block w-100" alt="...">
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="main-content" style="display:none;">
+    <div class="row mt-5">
+        <div class="col col-sm-12 col-md-12" align="center">
+            @for (var i = 0; i < ImageListDetail.Count; i++)
+            {
+                <MenuList ImagePath="@ImageListDetail[i].ImagePath"
+                      DetailImagePath="@ImageListDetail[i].DetailImagePath"
+                      Height="@ImageListDetail[i].Height"
+                      Width="@ImageListDetail[i].Width"
+                      Path="@ImageListDetail[i].Path" />
+            }
+        </div>
+    </div>
+
+    <div class="main-menu">
+        <div class="card card-custom-body mb-3 mt-5 w-100">
+            <div class="card-header-m">
+                <h3 class="text-header-m">ค่าบริการทางการแพทย์</h3>
+            </div>
+            <div style="border-radius: 10px 10px 10px 10px;box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);">
+                <div class="row mt-5" align="center">
+                    <div class="col col-sm-12 col-md-12 d-flex align-items-center" style=" padding-left:5%;">
+                        @for (var i = 0; i < ImageAssetMainDetailList.Count; i++)
+                        {
+
+                            <MenuListPhysician ImagePath="@ImageAssetMainDetailList[i].ImagePath"
+                                           DetailImagePath="@ImageAssetMainDetailList[i].DetailImagePath"
+                                           Height="@ImageAssetMainDetailList[i].Height"
+                                           Width="@ImageAssetMainDetailList[i].Width" />
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-menu">
+    <div class="row" style="padding-top:2%;">
+
+        <CardNews ResponseNews="@responseNews" OnClickToNews=@GotoNews GetNewsMid=@GetNewsMid />
+
+    </div>
+</div>
+
+<div style="padding-top:48px">
+    <OpenData SettingOpendata="@SystemSetting" />
+</div>
+
+<div class="container">
+    <ManualPortal  />
+</div>
+
+<footer class="mt-5" style="background:#224183;Height:auto;width:auto;padding-top:10px;padding-bottom:20px;">
+    <FooterPortal />
+</footer>
+
+
+
+@code {
+    public bool isActive;
+    public bool ModalActive;
+
+    List<ImageAssetDetailList> ImageListDetail = new List<ImageAssetDetailList>()
+        {
+
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/1.png",
+                DetailImagePath = "ข้อมูลสถานพยาบาล",
+                Height = "75px",
+                Width = "75px"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/2.png",
+                DetailImagePath = "สถานะการเบิกจ่าย",
+                  Height = "75px",
+                Width = "75px"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/3.png",
+                DetailImagePath = "บัตรรับรองการขึ้นทะเบียน",
+                 Height = "75px",
+                Width = "75px"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/4.png",
+                DetailImagePath = "Online Chat",
+                  Height = "75px",
+                Width = "75px"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/5.png",
+                DetailImagePath = "การแจ้งเตือน",
+                 Height = "75px",
+                Width = "75px"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/6.png",
+                DetailImagePath = "การจัดการผู้ใช้งาน",
+                Height = "75px",
+                Width = "75px",
+                Path = "/addnewuser"
+
+            },
+            new ImageAssetDetailList() {
+                ImagePath = "Data/Assets/Images/7.png",
+                DetailImagePath = "จำนวนผู้ประกันที่เลือกสถานพยาบาล",
+                Height = "75px",
+                Width = "75px"
+
+            },
+
+
+        };
+
+    List<ImageAssetMainDetailList> ImageAssetMainDetailList = new List<ImageAssetMainDetailList>()
+        {
+
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/1.png",
+                DetailImagePath = "ตามภาระเสี่ยง",
+                Height = "75px",
+                Width = "75px",
+
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/2.png",
+                DetailImagePath = "AdJRW >= 2",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/3.png",
+                DetailImagePath = "ODS",
+                Height = "70px",
+                Width = "70px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/4.png",
+                DetailImagePath = "ORS",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/5.png",
+                DetailImagePath = "Packageโรคหัวใจและหลอดเลือด",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/6.png",
+                DetailImagePath = "ปลูกถ่ายอวัยวะ",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/7.png",
+                DetailImagePath = "ฮีโมฟีเลีย",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/8.png",
+                DetailImagePath = "ส่งเสริมสุขภาพป้องกันโรค",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/9.png",
+                DetailImagePath = "Lab HIV",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/10.png",
+                DetailImagePath = "วัคซีน",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/11.png",
+                DetailImagePath = "สารเมทาโดน",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/12.png",
+                DetailImagePath = "รักษาเฉพาะทาง และทำหมัน",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/13.png",
+                DetailImagePath = "ทุพพลภาพ",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/14.png",
+                DetailImagePath = "ฟอกเลือดด้วยเครื่องไตเทียม",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "helper_shared/icon_sso/Frame15190ucepicon.png",
+                DetailImagePath = "เจ็บป่วยฉุกเฉิน \n วิกฤต UCEP",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "helper_shared/icon_sso/Frame15191alert.png",
+                DetailImagePath = "เจ็บป่วยฉุกเฉิน \n 72 ชม.",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/17.png",
+                DetailImagePath = "บำรุงรักษาอวัยวะสภากาชาดไทย",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/18.png",
+                DetailImagePath = "COVID-19",
+                Height = "75px",
+                Width = "75px",
+
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/19.png",
+                DetailImagePath = "ทันตกรรม",
+                Height = "75px",
+                Width = "75px",
+
+            },
+            new ImageAssetMainDetailList() {
+                ImagePath = "Data/Assets/Images/imagemainmenu/20.png",
+                DetailImagePath = "การฟื้นฟูด้านอาชีพ และการแพทย์",
+                Height = "75px",
+                Width = "75px",
+
+
+            },
+        };
+
+    List<NewsDetailList> NewsDetailList = new List<NewsDetailList>();
+
+    List<BannerT> bannerTs = new List<BannerT>();
+
+    private List<NewsM>? responseNews = new List<NewsM>();
+
+    public List<AnnounceT> Announce;
+
+    public List<SettingOpendataT> SystemSetting;
+
+    private AnnounceT SendAnnounc;
+
+    private int getNewsMid;
+    private string formattedDate;
+    public string? env = ConfigureCore.ConfigENV;
+    public string? urlNews;
+    public string? urlNotification;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        ModalActive = false;
+        Announce = await AnnounceService.GetAnnounceT();
+        SystemSetting = await SettingOpenDataService.GetSettingOpendataT();
+        responseNews = await newsService.GetGroupNewT();
+        bannerTs = await bannerService.GetPortalBannersT();
+
+
+        StateHasChanged();
+
+        urlNews = ConfigureCore.redirectsNews;
+        urlNotification = ConfigureCore.redirectNotification;
+
+        ModalActive = true;
+
+        if(Announce != null)
+        {
+            SendAnnounc = Announce.FirstOrDefault(w => w.ActiveStatus == true);
+        }
+    }
+
+    public void GetNewsMid(int newsMid)
+    {
+        getNewsMid = newsMid;
+    }
+
+    public void GotoNews(bool click)
+    {
+        if (click)
+        {
+            NavigationManager.NavigateTo(urlNews + $"news?newsmid={getNewsMid}");
+
+        }
+    }
+
+}

@@ -1,0 +1,187 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3" style="color :black">ค่าบริการทางการแพทย์ทันตกรรม   </div>
+    </div>
+    <div class="container py-4">
+        
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">ประวัติรายการที่ไม่อนุมัติ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการที่ไม่อนุมัติ</span>
+                </li>
+
+            </ol>
+        </nav>
+        <div style="padding-top:15px;">
+        </div>
+
+        <div class="mms-txt-headdetail">ช่วงเวลา</div>
+        <div class="row">
+            <div class="d-flex  mms-media-center">
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-4 mms-media-center">
+                            <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+
+                        </div>
+                        <div class="mms-txt-headdetail d-flex justify-content-center align-items-center col-1" style="width:60px; ">ถึง : </div>
+                        <div class="col-4 mms-media-center">
+
+                            <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 ">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch col-12">
+                        <SpaceItem>
+                            <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered ScrollX="800" Class="zebra-striped-table">
+            <ChildContent Context="data">
+                <Column Width="8%" Align="ColumnAlign.Center" TData="string" Title="ลำดับ">@data.Id</Column>
+                <Column Width="8%" Align="ColumnAlign.Center" TData="string" Title="เลขใบคำสั่งจ่าย">@data.Order</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="รหัสสถานพยาบาล">@data.Code</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="เลขประจำตัวประชาชน"> @data.IdenCode</Column>
+                <Column Width="20%" Align="ColumnAlign.Center" TData="string" Title="ชื่อ-นามสกุล"> @data.Name</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="วันที่ใช้สิทธิ"> @data.date</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="จำนวนเงิน"> @data.price</Column>
+                <Column Width="7%" Align="ColumnAlign.Center" TData="string" Title="สถานะ" Style="color:#D94827;"> @data.status</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="">
+                    
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=> OpenViewModal(true)) />
+                </Column>
+
+            </ChildContent>
+        </Table>
+    </div>
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+<ViewModal _visible="@openViewModal" OnClose="@OpenViewModal"></ViewModal>
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+    @using sso.mms.fees.admin.Shared.Dental.DentalCentralPublic.DisapprovedTranHistory.Modals
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    bool openViewModal;
+    bool isloading;
+    string title = "จัดการคำขอใช้รถทันตกรรม";
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+    RenderFragment okbutton =
+    @<div style="color:#fff;">
+        <Icon Type="save" Theme="outline" />
+        บันทึก
+    </div>;
+    RenderFragment canclebutton =@<div>
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+        </div>
+    ;
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    private int GetColSpan(string key, string columnTitle = "")
+    {
+        GetAlign(key, "รวมทั้งหมด");
+        if (key == "รวมทั้งหมด")
+            if (columnTitle == "รวมทั้งหมด")
+                return 4;
+            else
+                return 0;
+        else
+            return 1;
+    }
+    private void GetAlign(string key, string columnTitle = "")
+    {
+
+        if (key == "รวมทั้งหมด")
+            if (columnTitle == "รวมทั้งหมด")
+                columnAlign = ColumnAlign.Right;
+            else
+                columnAlign = ColumnAlign.Left;
+        else
+            columnAlign = ColumnAlign.Center;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        listOfData = new List<ItemData>
+        {
+        new ItemData
+        {
+            Id = 1,
+             Order = "11102141",
+            Code = 1234567,
+            IdenCode = "123467890xxx",
+            Name = "นายดวงดี  วิชัยวงศ์",
+            date = "23 มิ.ย 67",
+            price = 900,
+            status = "ไม่อนุมัติ"
+
+        },new ItemData
+        {
+            Id = 2,
+            Order = "11102141",
+            Code = 1234567,
+            IdenCode = "123467890xxx",
+            Name = "นายดวงดี  วิชัยวงศ์",
+            date = "23 มิ.ย 67",
+            price = 900,
+            status = "ไม่อนุมัติ"
+
+        },
+        };
+        isloading = false;
+        StateHasChanged();
+    }
+
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+    class Person
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+    }
+    List<Person> _persons;
+    string _selectedValue;
+    Person _selectedItem;
+
+    List<ItemData> listOfData = new List<ItemData>();
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Order { get; set; }
+        public int Code { get; set; }
+        public string  IdenCode { get; set; }
+        public string  Name{ get; set; }
+        public string date { get; set; }
+        public double price { get; set; }
+        public string status { get; set; }
+    };
+  
+}
+

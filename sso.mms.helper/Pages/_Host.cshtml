@@ -1,0 +1,9 @@
+﻿@page "/"
+@namespace sso.mms.helper.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Response.Headers["Cache-Control"] = "no-store";
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />

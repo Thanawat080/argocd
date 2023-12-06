@@ -1,0 +1,163 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ประสบอันตรายหรือเจ็บป่วยฉุกเฉิน 72 ชั่วโมง</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-title py-2">ประวัติรายการเบิก</span>
+                </li>
+                @*<li class="breadcrumb-item" aria-current="page" style="cursor:pointer;" @onclick="()=> Back(1)">
+                <span class="breadcum-sucress py-2">ค้นหา</span>
+                </li>*@
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงรายการที่ส่งเบิก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4 align-items-center">
+            <div class="mms-media-start mms-txt-headdetail py-1">ช่วงเวลา</div>
+            <div class="col-sm-12 col-md-6 py-2">
+                <div class="d-flex mms-txt-headdetail align-items-center">
+                    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />
+                    <span class="px-2">ถึง</span>
+                    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 py-2">
+                <div class="d-flex justify-content-end">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-75">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="ItemData" Bordered RowClassName="@(_=>"editable-row")" ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="7%" Align="ColumnAlign.Center">@(String.Format("{0:d}", listOfData.IndexOf(data) + 1)) </Column>
+                <Column TData="string" Title="เลขที่ส่งเบิก" Align="ColumnAlign.Center">@data.CardId</Column>
+                <Column TData="string" Title="เลขประจำตัวประชาชน / หมายเลข Passport" Width="20%" Align="ColumnAlign.Center">@data.Name</Column>
+                <Column TData="string" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center">@data.AdmitDate</Column>
+                <Column TData="string" Title="Admit Date" Align="ColumnAlign.Center">@data.DischargeDate</Column>
+                <Column TData="string" Title="Discharge Date" Align="ColumnAlign.Center">@data.Hours</Column>
+                <Column TData="string" Title="จำนวนชั่วโมงรวม" Align="ColumnAlign.Center">@data.Hours<span class="ms-2">ชั่วโมง</span></Column>
+                <Column TData="string" Title="จำนานเงิน(บาท)" Align="ColumnAlign.Center">@String.Format("{0:n}",data.Price)</Column>
+                <Column TData="string" Title="สถานะ" Align="ColumnAlign.Left">
+                    @if (data.StatusType == "1")
+                    {
+                        <span style="color:green"><span class="status-color-green me-2"></span>จ่ายเเล้ว</span>
+                    }
+                    else if (data.StatusType == "2")
+                    {
+                        <span style="color:red"><span class="status-color-red me-2"></span>ไม่ได้จ่าย</span>
+                    }
+                </Column>
+                <Column TData="string" Title="" Width="5%" Align="ColumnAlign.Center">
+                    <img title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" />
+                </Column>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+            </Table>
+        </div>
+    </div>
+
+    @using sso.mms.fees.ext.Shared._72Hours.Disbursementhistory.Modals
+    <DetailModel _visible=@OpenModalDetail OnClose="@View" />
+
+    @code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    IEnumerable<ItemData> selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    bool _visible = false;
+
+    bool OpenModalDetail { get; set; }
+
+    public void View(bool value)
+    {
+        OpenModalDetail = value;
+    }
+
+    /*------------- Navigate Page ---------*/
+    public async Task Navigate(int page)
+    {
+        await IndexPage.InvokeAsync(page);
+
+    }
+    /*------------- Navigate Page ---------*/
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Hours { get; set; }
+        public string CardId { get; set; }
+        public string Name { get; set; }
+        public string StatusType { get; set; }
+        public int Price { get; set; }
+        public DateTime AdmitDate { get; set; }
+        public DateTime DischargeDate { get; set; }
+    }
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>()
+            {
+                new ItemData{
+                Id = 1,
+                Hours = "24",
+                CardId = "157998956234",
+                Name = "สวยงาม ตามใจ",
+                StatusType = "1",
+                Price = 10000,
+                AdmitDate = DateTime.Now,
+                DischargeDate = DateTime.Now,
+            },new ItemData{
+                Id = 2,
+                Hours = "72",
+                CardId = "157998956234",
+                Name = "สวยงาม ตามใจ2",
+                StatusType = "2",
+                Price = 15000,
+                AdmitDate = DateTime.Now,
+                DischargeDate = DateTime.Now,
+            }, new ItemData{
+                Id = 3,
+                Hours = "48",
+                CardId = "157998956234",
+                Name = "สวยงาม ตามใจ3",
+                 StatusType = "1",
+                Price = 20000,
+                AdmitDate = DateTime.Now,
+                DischargeDate = DateTime.Now,
+            }, new ItemData{
+                Id = 3,
+                Hours = "48",
+                CardId = "157998956234",
+                Name = "สวยงาม ตามใจ3",
+                 StatusType = "1",
+                Price = 20000,
+                AdmitDate = DateTime.Now,
+                DischargeDate = DateTime.Now,
+            }, new ItemData{
+                Id = 3,
+                Hours = "48",
+                CardId = "157998956234",
+                Name = "สวยงาม ตามใจ3",
+                 StatusType = "1",
+                Price = 20000,
+                AdmitDate = DateTime.Now,
+                DischargeDate = DateTime.Now,
+            },
+        };
+    }
+}

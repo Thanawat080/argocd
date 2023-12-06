@@ -1,0 +1,48 @@
+﻿@using Blazored.LocalStorage;
+@inject ILocalStorageService _localstorage;
+
+<div class="mms-nav-title" >
+<div class="container py-4">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="col-3">
+                <div class="mms-text-title mx-1" style="color : #000 ; text-align :end">
+                    เลือกหน่วยปฏิบัติงาน :</div>
+        </div>
+        <div class="col-6">
+                <select value="@txtValue" class="form-select" @onchange="UpdateTxtValue" disabled="@checkselect"
+                aria-label="Default select example" style="text-align :center">
+                <option value=1>สปส.เขต 1</option>
+                <option value=2>สปส.เขต 2</option>
+                <option value=3>สปส.เขต 3</option>
+                
+            </select>
+        </div>
+    </div>
+
+</div>
+</div>
+
+@code {
+    int txtValue;
+    bool checkselect =false;
+    [Parameter] 
+    public int CheckStatus { get; set; }
+    [Parameter] 
+    public EventCallback<int> SelectUnit { get; set; }
+
+    private async void UpdateTxtValue(ChangeEventArgs e)
+    {
+        txtValue = Convert.ToInt32(e.Value);
+        await _localstorage.SetItemAsync("select", txtValue);
+        await SelectUnit.InvokeAsync(txtValue);
+    }
+    protected override async void OnInitialized()
+    {
+        if(CheckStatus != 1)
+        {
+            checkselect = true;
+        }
+        txtValue = await _localstorage.GetItemAsync<int>("select");
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,49 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+<style>
+
+    .modalStyle .ant-modal-header {
+        background: #F56C6C !important;
+    }
+</style>
+<Modal Title="แจ้งเตือนรายการ"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       WrapClassName="modalStyle"
+       Footer="@footer">
+
+    <div class="container" align="center">
+        <div class="p-3">
+            <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/alert.png"
+                 style="width:74px;height:74px;" />
+        </div>
+        <h2 class="pb-2">ท่านต้องการลบรายการนี้ใช่หรือไม่!</h2>
+        <h4>กดยืนยันเพื่อดำเนินการต่อ</h4>
+        <div class="pt-2">
+            <Button OnClick="@HandleOk" Type="@ButtonType.Primary">ยืนยัน</Button>
+        </div>
+    </div>
+</Modal>
+@code {
+    bool loading = false;
+
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+}

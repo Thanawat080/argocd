@@ -1,0 +1,84 @@
+﻿@using sso.mms.fees.admin.Shared.OrganTransplantation.NotificationList.Components
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3"><b>การปลูกถ่ายอวัยวะ</b> / รายการผู้ใช้บริการ / ค้นหารายการตามงวด / แสดงรายการงวดที่เลือก /<span style="color:#125DFD">รายละเอียดการประมวลผล</span></div>
+    </div>
+
+
+
+    <div class="container py-4 me-5 mr-5">
+        <Table DataSource="data" Bordered HidePagination>
+                <PropertyColumn Title="งวด" Property="c=>c.installment"></PropertyColumn>
+                <PropertyColumn Title="ประมวลผลทั้งหมด" Property="c=>c.progressAll"></PropertyColumn>
+                <PropertyColumn Title="ผ่านการประมวลผล" Property="c=>c.successProgress"></PropertyColumn>
+                <PropertyColumn Title="ไม่ผ่านการประมวลผล" Property="c=>c.noPassProgress"></PropertyColumn>
+          
+        </Table>
+
+        <div class="row mt-5">
+            <div class="col-md-12 col-lg-6 col-xl-6">
+                <div class="mms-media-end" @onclick=@(() => goEdit(4))>
+                    <Button Type="@ButtonType.Primary"><i class="fa-solid fa-clock-rotate-left"></i>&nbsp; ส่งไปทำใบคำสั่งจ่าย</Button>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2 justify-content-end">
+            <div class="col-md-12 col-lg-3">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <div class="container py-4">
+            <div class="mms-txt-header p-3">รายการเบิกที่ผ่านการประมวลผล</div>
+            <DisbursePassProgressTable></DisbursePassProgressTable>
+        </div>
+
+        <div class="container py-4">
+            <div class="mms-txt-header p-3">รายการเบิกที่ไม่ผ่านการประมวลผล</div>
+            <DisburseNoPassProgressTable></DisburseNoPassProgressTable>
+        </div>
+        <div class="d-flex flex-column">
+            <div>
+                วันที่ : 1 เม.ย 2566
+            </div>
+            <div>
+                จำนวนสถานพยาบาลทั้งหมด : สถานพยาบาล
+            </div>
+            <div>
+                เจ้าหน้าที่ผู้ประมวลผล : นายวงศ์ สว่าง
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    record Data(string installment, string progressAll, string successProgress, string noPassProgress);
+
+    Data[] data = new Data[]
+    {
+        new("6603","30","28","1"),
+    };
+
+    private int Table;
+
+    public void Addtable()
+    {
+        Table = 1;
+    }
+
+    string txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+}

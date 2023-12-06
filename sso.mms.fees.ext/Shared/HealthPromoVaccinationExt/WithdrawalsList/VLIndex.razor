@@ -1,0 +1,336 @@
+﻿@using System.Text;
+<style>
+    .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+        color: #fff;
+        background: #3B6C43;
+        border-color: #3B6C43;
+        height: 40px;
+        padding-top: 0.3rem;
+    }
+
+    .ant-radio-button-wrapper:last-child {
+        border-radius: 0 2px 2px 0;
+        height: 40px;
+        padding-top: 0.3rem;
+    }
+
+    .ant-radio-button-wrapper:first-child {
+        border-left: 1px solid #d9d9d9;
+        border-radius: 2px 0 0 2px;
+        height: 40px;
+        padding-top: 0.3rem;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ส่งเสริมสุขภาพและป้องกันโรคกรณีวัคซีน</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการที่ส่งเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    @if (radioValue5 == "A")
+                    {
+                        <span class="breadcum-process py-2">3 สายพันธุ์</span>
+                    }
+                    else
+                    {
+                        <span class="breadcum-process py-2">4 สายพันธุ์</span>
+                    }
+                </li>
+            </ol>
+        </nav>
+        <div class="mms-media-start py-4">
+            <div class="mms-txt-headerBlack">สรุปรายการที่ส่งเบิก</div>
+        </div>
+        <Table DataSource="listOfData" TItem="ItemData" @bind-PageSize="pageSize" Bordered ScrollX="1000" HidePagination>
+            <ColumnDefinitions>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.fullName
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.identificationNumber
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.surgeryDate
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.idDonor
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.idDonor
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.idDonor
+                </Column>
+                <Column TData="string" Align="ColumnAlign.Center">
+                    @context.amount
+                </Column>
+                @{
+                    var totalBorrow = listOfData.Sum(x => x.pay);
+                    var totalRepayment = listOfData.Sum(x => x.pay);
+                    var totalsum = listOfData.Sum(x => x.amount);
+                }
+                <SummaryRow>
+                    <SummaryCell>รวมทั้งหมด</SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalBorrow</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalRepayment</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalBorrow</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalRepayment</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalBorrow</Text>
+                    </SummaryCell>
+                    <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@totalsum</Text>
+                    </SummaryCell>
+                </SummaryRow>
+            </ColumnDefinitions>
+            <HeaderTemplate>
+                <TableRow>
+                    <SimpleTableHeader RowSpan="2" Title="ประเภทบริการ"></SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2" Title="จำนวนรายการ"></SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2" Title="จำนวนเงิน(บาท)"></SimpleTableHeader>
+                    <SimpleTableHeader ColSpan="2" Title="จ่ายเเล้ว"></SimpleTableHeader>
+                    <SimpleTableHeader ColSpan="2" Title="ยังไม่จ่าย"></SimpleTableHeader>
+                </TableRow>
+                <TableRow>
+                    <SimpleTableHeader>รายการ</SimpleTableHeader>
+                    <SimpleTableHeader>จำนวนเงิน(บาท)</SimpleTableHeader>
+                    <SimpleTableHeader>รายการ</SimpleTableHeader>
+                    <SimpleTableHeader>จำนวนเงิน(บาท)</SimpleTableHeader>
+                </TableRow>
+            </HeaderTemplate>
+            <PaginationTemplate>
+                <Pagination 
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+            </Table>
+            <hr />
+            <div class="mms-media-start py-4">
+                <div class="mms-txt-headerBlack">รายการที่ส่งเบิกเเยกตามประเภทบริการ</div>
+            </div>
+            <div class="row pb-4">
+                <div class="col-sm-12 col-md-8">
+                    <RadioGroup TValue="string" OnChange="e => ChangType(e)" @bind-Value="radioValue5" ButtonStyle="@RadioButtonStyle.Solid">
+                    <Radio RadioButton Value="@("A")">3 สายพันธุ์</Radio>
+                    <Radio RadioButton Value="@("B")">4 สายพันธุ์</Radio>
+                    </RadioGroup>
+                </div>
+                <div class="col-sm-12 col-md-4 d-flex align-items-md-end py-2">
+                    <Space Direction="@DirectionVHType.Vertical" Style="width:100%">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+
+            <Table DataSource="listOfData" TItem="ItemData" @bind-PageSize="pageSize" Bordered @bind-SelectedRows="selectedRows" ScrollX="1000">
+            <ColumnDefinitions>
+                <Column TData="string" Title="ลำดับ" Width="6%" Align="ColumnAlign.Center">
+                    @String.Format("{0:d}", listOfData2.IndexOf(context) + 1)
+                </Column>
+                <Column TData="string" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center">
+                    @context.fullName
+                </Column>
+                <Column TData="string" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center">
+                    @context.identificationNumber
+                </Column>
+                <Column TData="string" Title="วันที่ฉีด" Align="ColumnAlign.Center">
+                    @context.surgeryDate
+                </Column>
+                <Column TData="string" Title="วันที่บันทึก" Align="ColumnAlign.Center">
+                    @context.idDonor
+                </Column>
+                <Column TData="string" Title="ชนิดวัคซีน" Align="ColumnAlign.Center">
+                    @context.Vactype
+                </Column>
+                <Column TData="string" Title="จำนวนเงิน" Align="ColumnAlign.Center">
+                    @context.idDonor
+                </Column>
+                <Column TData="string" Title="สถานะ" Align="ColumnAlign.Center">
+                    @if (context.status == true)
+                    {
+                        <div style="color:green;">เสร็จสิ้น</div>
+                    }
+                    else
+                    {
+                        <div style="color:red;">รอบันทึกผล</div>
+                    }
+                </Column>
+                <Column TData="string" Width="5%" Align="ColumnAlign.Center">
+                    <img title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(() => Callmodal(true))" />
+                </Column>
+            </ColumnDefinitions>
+            <PaginationTemplate>
+                <Pagination 
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+            </Table>
+
+        </div>
+    </div>
+
+
+    @using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.WithdrawalsList.Modals
+    <ModalViewDetail _visible=@callmodal OnClose="@Callmodal" />
+
+    @code {
+    /*-- CallbackModel --*/
+    bool callmodal { get; set; }
+    public int page;
+    public void Callmodal(bool value)
+    {
+        callmodal = value;
+    }
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    IEnumerable<ItemData> selectedRows;
+    string phoder = "วว/ดด/ปป";
+    string radioValue5 = "A";
+
+    List<ItemData> listOfData = new List<ItemData>();
+    List<ItemData> listOfData1 = new List<ItemData>();
+    List<ItemData> listOfData2 = new List<ItemData>();
+
+    public async void ChangType(string e)
+    {
+        if (e == "A")
+        {
+            listOfData = listOfData1;
+            StateHasChanged();
+        }
+        else if (e == "B")
+        {
+            listOfData = listOfData2;
+            StateHasChanged();
+        }
+    }
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+
+    }
+    private int total => listOfData.Count();
+    private int total2 => listOfData2.Count();
+    private int pageSize = 5;
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string identificationNumber { get; set; }
+        public string fullName { get; set; }
+        public string Vactype { get; set; }
+        public string surgeryDate { get; set; }
+        public string idDonor { get; set; }
+        public int pay { get; set; }
+        public string hospitalAccept { get; set; }
+        public string serviceType { get; set; }
+        public string createdDate { get; set; }
+        public int amount { get; set; }
+        public bool status { get; set; }
+
+    };
+
+    protected override void OnInitialized()
+    {
+        listOfData1 = Enumerable.Range(0, 4).Select(i => new ItemData
+            {
+                Id = i,
+                identificationNumber = $"xxxxxxx{i}",
+                fullName = "นายสมศรี",
+                Vactype = "3 สายพันธุ์",
+                surgeryDate = "29 มี.ค. 2566",
+                idDonor = "12345678",
+                pay = 100,
+                hospitalAccept = "โรงพยาบาล 1",
+                serviceType = "กระจกตา",
+                createdDate = "29 มี.ค. 2566",
+                amount = 2500,
+                status = false
+            }).ToList();
+        listOfData1.Add(new ItemData
+            {
+                Id = 2,
+                identificationNumber = $"xxxxxxx{20}",
+                fullName = "นายสมศักษดิ์",
+                Vactype = "3 สายพันธุ์",
+                surgeryDate = "299 มี.ค. 2566",
+                idDonor = "999999999",
+                hospitalAccept = "โรงพยาบาล 2",
+                serviceType = "5555",
+                createdDate = "29 มี.ค. 2566",
+                amount = 3600,
+                status = true
+            });
+
+        listOfData2 = Enumerable.Range(0, 1).Select(i => new ItemData
+            {
+                Id = i,
+                identificationNumber = $"xxxxxxx{i}",
+                fullName = "นายสมปอง",
+                Vactype = "4 สายพันธุ์",
+                surgeryDate = "29 มี.ค. 2566",
+                idDonor = "12345678",
+                pay = 100,
+                hospitalAccept = "โรงพยาบาล 1",
+                serviceType = "กระจกตา",
+                createdDate = "29 มี.ค. 2566",
+                amount = 2500,
+                status = false
+            }).ToList();
+        listOfData2.Add(new ItemData
+            {
+                Id = 2,
+                identificationNumber = $"xxxxxxx{20}",
+                fullName = "นายสมควร",
+                Vactype = "4 สายพันธุ์",
+                surgeryDate = "299 มี.ค. 2566",
+                idDonor = "999999999",
+                hospitalAccept = "โรงพยาบาล 2",
+                serviceType = "5555",
+                createdDate = "29 มี.ค. 2566",
+                amount = 3600,
+                status = true
+            });
+        listOfData = listOfData1;
+        StateHasChanged();
+    }
+
+
+    private void OnBlur()
+    {
+        Console.WriteLine("blur");
+    }
+
+    private void OnFocus()
+    {
+        Console.WriteLine("focus");
+    }
+
+    private void OnSearch(string value)
+    {
+        Console.WriteLine($"search: {value}");
+    }
+}

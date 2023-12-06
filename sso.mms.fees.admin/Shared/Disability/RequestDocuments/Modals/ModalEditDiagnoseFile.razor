@@ -1,0 +1,135 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Maximizable="@true"
+       DefaultMaximized="@true" Style="z-index:10200;" Class="overflow-auto">
+
+    <div class="row">
+        <div class="col">
+            ชื่อสถานพยาบาล : โรงพยาบาล W
+        </div>
+        <div class="col">
+            ผู้วินิจฉัย : นางเเพรวา  ตาสวย
+        </div>
+        <div class="col">
+            คำวินิจฉัย : มีสิทธิ์
+        </div>
+        <div class="col">
+            สถานะจ่าย : -
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            รหัสสถานพยาบาล : 1234569
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+            หมายเหตุ : ได้รับเอกสารเพิ่มเติมเเล้ว...
+        </div>
+        <div class="col">
+            วันที่จ่าย : -
+        </div>
+
+    </div>
+    <div class="d-flex flex-column pb-3">
+        <div>
+            ชื่อ-นามสกุล : นางวันเพ็ญ  เด่นใจ
+        </div>
+        <div>
+            เลขประจำตัวประชาชน : 1234567890xxx
+        </div>
+        <div>
+            วันเกิด : 12  พฤษภาคม 2530
+        </div>
+        <div>
+            เพศ : ชาย
+        </div>
+        <div>
+            สถานะผู้ประกันตน : ผู้ทุพพลภาพ
+        </div>
+    </div>
+
+    <div class="d-flex flex-column">
+        <div>
+            รายละเอียดการรักษา
+        </div>
+        <div>
+            วันที่เข้ารักษา  23 มิ.ย 67 - 25 มิ.ย 67
+        </div>
+        <div class="d-flex justify-content-between pe-3">
+            <div>
+                จำนวนวัน : 1 วัน
+            </div>
+            <div>
+                พิมพ์เอกสาร
+            </div>
+        </div>
+        <div>
+            ค่า RW : 2.9900
+        </div>
+        <div>
+            DRG : 01630
+        </div>
+        <div class="d-flex">
+            <div class="pe-2">
+                จำนวนค่ารักษาพยาบาลรวม : 36,000 บาท
+            </div>
+            <div>
+                จำนวนเงินที่คำนวนได้ : 35,880 บาท
+            </div>
+
+        </div>
+    </div>
+
+</Modal>
+
+@code {
+    string title = "แก้ไขการวินิจฉัย";
+    private Model model = new Model();
+    bool loading = false;
+    List<ItemData> listOfData = new List<ItemData>();
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 3).Select(i => new ItemData { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+}

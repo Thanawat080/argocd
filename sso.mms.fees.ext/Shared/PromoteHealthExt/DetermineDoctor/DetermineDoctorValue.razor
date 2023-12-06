@@ -1,0 +1,309 @@
+﻿@using Blazored.LocalStorage;
+@using sso.mms.fees.ext.Providers.PromoteHealth.DetermineReferenceValue;
+@using sso.mms.helper.Utility;
+@inject ILocalStorageService _localstorage;
+@inject SweetAlertService Swal;
+@inject DetermineReferenceServices determineReferenceServices
+@using sso.mms.fees.ext.Providers.PromoteHealth.DetermineDoctor;
+@inject DetermineDoctorServices determineDoctorServices;
+<style>
+    html, body {
+        overflow-x: visible;
+    }
+
+    input {
+        color: black !important;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page" @onclick="()=> goBack(1)">
+                    <span class="breadcum-sucress py-2">กำหนดรายชื่อผู้วินิจฉัย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">@checklistm.ChecklistName</span>
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="row pb-3">
+            <div class="col-xl-4 mms-media-start">
+                <div class="mms-txt-headdetail w-50">วันที่แก้ไขล่าสุด</div>&nbsp;
+                <DatePicker @bind-Value="@updateDate" Disabled="true" Format="dd/MM/yyyy" />
+            </div>
+            <div class="col-xl-5 mms-media-center">
+                <div class="mms-txt-headdetail w-50">แก้ไขล่าสุดโดย</div>&nbsp;
+                <Input Placeholder="Basic usage" @bind-Value="@checklistm.UpdateBy" Disabled="true" />
+            </div>
+        </div>
+        <div class="row py-3">
+            <div class="col-md-6">
+                <p class="mms-txt-headdetail w-50">รายชื่อผู้วินิจฉัย/อ้างอิง</p>
+            </div>
+            <div class="col-md-6 mms-media-end">
+                <Button Type="@ButtonType.Primary" style="padding: 4px 30px" @onclick=@(() => addItem())><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+            </div>
+        </div>
+
+        <EditForm Model=@forValidate>
+            <DataAnnotationsValidator />
+            <Table DataSource='ListOfDoctor.Where(x =>x.DeleteStatus != "D").OrderBy(y => y.SetRefDoctorId)' TItem="AaiHealthSetRefDoctorMView" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+
+                <ChildContent Context="data">
+                    @{
+                        var setStyle = "";
+                        if (data.Delete == false)
+                        {
+                            setStyle = "text-align: center;";
+                        }
+                        else
+                        {
+                            setStyle = "text-align: center; background-color: #DCDCDC;";
+                        }
+                    }
+                    <Column TData="string" Title="ลำดับ" Width="8%" Style="@setStyle">
+                        <div class="d-flex justify-content-center">
+                            @if (data.Delete == true)
+                            {
+                                <img class="mx-2" src="helper_shared/icon_sso/x-mark.png" width="20px" height="20px" />
+                            }
+                            @String.Format("{0:d}", ListOfDoctor.Where(x =>x.DeleteStatus != "D").OrderBy(y => y.SetRefDoctorId).ToList().IndexOf(data) + 1)
+                        </div>
+                    </Column>
+
+                    <Column TData="string" Title="ชื่อ - นามสกุล" Style="@setStyle" Width="43%">
+                        @if (data.Edit)
+                        {
+                            <Input Type="text" @bind-Value="data.DoctorName" AutoFocus />
+                        }
+                        else if (data.SetRefDoctorId == 0)
+                        {
+                            <Input Type="text" @bind-Value="data.DoctorName" AutoFocus />
+                            if (String.IsNullOrEmpty(data.DoctorName))
+                            {
+                                <ValidationMessage For="@(() => forValidate.DoctorName)" style="padding: 0 2%" />
+                            }
+                            
+                        }
+                        else
+                        {
+                            <div class="editable-cell-value-wrap" style="padding-right:24px">
+                                @data.DoctorName
+                            </div>
+                        }
+                    </Column>
+                    <Column TData="string" Style="@setStyle" Width="6%">
+                        <div class="mms-media-center">
+
+                            @if (data.Delete == true)
+                            {
+                                <img class="mx-2" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; " />
+                                <img class="mx-2" src="helper_shared/icon_sso/delete.png" style="width:24px;height:24px;" />
+                            }
+                            else
+                            {
+                                <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(() => data.Edit = true)" />
+                                <img class="mx-2" title="ลบ" src="helper_shared/icon_sso/delete.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => deleteItem(data.SetRefDoctorId, @String.Format("{0:d}", ListOfDoctor.ToList().IndexOf(data)))) />
+                            }
+
+                        </div>
+                    </Column>
+
+                </ChildContent>
+            </Table>
+            <div class="mms-media-end">
+                <Button Class="ant-btn-distable" Style="margin-right: 1%" @onclick=@(() => goBack(1))><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+                <Button Type="@ButtonType.Primary" Style="padding: 4px 30px" @onclick=@(() => save()) HtmlType="submit"><i class="fa-regular fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@if (DialogIsOpen)
+{
+    <ModalDelete OnClose="@OnDialogClose" title="ลบรายชื่อ" description="ต้องการลบรายชื่อนี้หรือไม่ ?">
+    </ModalDelete>
+}
+
+@if (DialogIsOpenSave)
+{
+    <ModalSaveChange OnClose="@OnDialogCloseSave" title="ยืนยันการบันทึกข้อมูลใช่หรือไม่" description="">
+    </ModalSaveChange>
+}
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    int? editIdname;
+    int? editId;
+    List<ItemDataName> listOfDataName = new List<ItemDataName>();
+
+    List<AaiHealthSetRefDoctorMView> ListOfDoctor = new List<AaiHealthSetRefDoctorMView>();
+    AaiHealthSetRefDoctorMView forValidate = new AaiHealthSetRefDoctorMView();
+    DataSaveDoctor dataSaveDoctor = new DataSaveDoctor();
+
+    [Parameter]
+    public decimal CheckListMID { get; set; }
+
+
+
+    public string hosmCode { get; set; } = "";
+    public string username { get; set; } = "";
+    private bool DialogIsOpen = false;
+    private bool DialogIsOpenSave = false;
+    public bool isloading = false;
+    public decimal doctorId { get; set; }
+    AaiHealthChecklistM checklistm = new AaiHealthChecklistM();
+    public DateTime updateDate;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        hosmCode = await _localstorage.GetItemAsync<String>("hospitalMCode");
+        username = await _localstorage.GetItemAsync<String>("username");
+
+        ListOfDoctor = await determineReferenceServices.GetRefDoctor(CheckListMID, hosmCode);
+        checklistm = await determineDoctorServices.GetById(CheckListMID);
+        updateDate = checklistm.UpdateDate.Value.AddYears(543);
+
+
+    }
+    private async Task OnDialogCloseSave(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+
+            var res = await determineReferenceServices.saveandupdateDoctor(dataSaveDoctor);
+            if (res == "success")
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                        "บันทึกข้อมูลสำเร็จ",
+                        null,
+                        SweetAlertIcon.Success
+                        );
+                await IndexPage.InvokeAsync((1));
+            }
+            else
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                        "บันทึกข้อมูลไม่สำเร็จ",
+                        null,
+                        SweetAlertIcon.Error
+                        );
+
+            }
+        }
+        DialogIsOpenSave = false;
+    }
+
+    public async Task save()
+    {
+
+        isloading = true;
+        DialogIsOpenSave = true;
+        // make model for save
+
+
+        //savemodel.savedoctor = listDataDoctor;
+        dataSaveDoctor.doctor = ListOfDoctor;
+        dataSaveDoctor.username = username;
+
+
+        //var res = await determineReferenceServices.SaveAndUpdate(savemodel);
+
+
+        isloading = false;
+
+        StateHasChanged();
+
+    }
+
+
+    void startEditName(decimal id)
+    {
+        editIdname = Decimal.ToInt32(id);
+    }
+
+    public async void addItem()
+    {
+        ListOfDoctor.Add(new AaiHealthSetRefDoctorMView()
+            {
+                SetRefDoctorId = 0,
+                DoctorName = null,
+                DeleteStatus = "A",
+                CreateDate = DateTime.Now,
+                CreateBy = username,
+                UpdateDate = DateTime.Now,
+                UpdateBy = username,
+                HospitalCode = hosmCode,
+                ChecklistId = CheckListMID,
+                Edit = false,
+                Delete = false,
+
+            });
+
+    }
+    public async Task goBack(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public async void deleteItem(decimal Id, string index)
+    {
+        if (Id == 0)
+        {
+            int index1 = Int32.Parse(index);
+            var itemToRemove = ListOfDoctor[index1];
+            ListOfDoctor.Remove(itemToRemove);
+        }
+        else
+        {
+            doctorId = Id;
+            DialogIsOpen = true;
+            StateHasChanged();
+            //ListOfDoctor.FirstOrDefault(f => f.SetRefDoctorId == Id).DeleteStatus = "D";
+        }
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+            ListOfDoctor.FirstOrDefault(f => f.SetRefDoctorId == doctorId).Delete = true;
+
+            isloading = false;
+
+        }
+        DialogIsOpen = false;
+        StateHasChanged();
+    }
+    public class ItemDataName
+    {
+        public int Id { get; set; }
+        public string name { get; set; }
+
+    };
+}

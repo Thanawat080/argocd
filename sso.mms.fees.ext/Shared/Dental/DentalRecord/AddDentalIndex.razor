@@ -1,0 +1,468 @@
+﻿@using sso.mms.fees.api.Entities.Dental
+@using sso.mms.fees.api.ViewModels.Dental
+@using sso.mms.fees.ext.Providers.Dental.RecordCar
+@inject RecordCarServices recordCarServices
+@inject SweetAlertService Swal
+<style>
+    .custom-input-file {
+        position: absolute;
+        background: white;
+        opacity: 0;
+        width: 100px;
+        height: 100px;
+    }
+
+    .div-file-input {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border-radius: 10px;
+        width: 100%;
+        height: 150px;
+    }
+
+    .img-upload {
+        border-radius: 16px;
+        width: inherit;
+        height: 96%;
+    }
+</style>
+
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีทันตกรรม</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page" @onclick="()=> back(1)">
+                    <span class="breadcum-sucress py-2">รายการขอใช้รถทันตกรรม</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เพิ่มการขอใช้รถ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="d-flex justify-content-around my-4">
+           
+            <div class="col-5 mx-4 my-2">
+                <div class="col-xl-12 my-3">
+                    <div class="">
+                        <div class="mms-txt-headdetail">ชื่อสถานที่ออกให้บริการ<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <Input Placeholder="Basic usage" @bind-Value="@carH.PlaceName" />
+                    </div>
+                </div>
+                <div class="col-xl-12 my-3">
+                    <div class="">
+                        <div class="mms-txt-headdetail">วันที่ออกให้บริการ<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <DatePicker @bind-Value="carH.ServiceStartDate" TValue="DateTime" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                    </div>
+                </div>
+                <div class="col-xl-12 my-3">
+                    <div class="">
+                        <div class="mms-txt-headdetail">วันที่สิ้นสุดการออกให้บริการ<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <DatePicker @bind-Value="carH.ServiceEndDate" TValue="DateTime" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                    </div>
+                </div>
+                <div class="col-xl-12 my-3">
+                    <div class="col-6">
+                        <div class="mms-txt-headdetail">จังหวัดปลายทาง<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <select class="form-select"
+                                aria-label="Default select example" @onchange ="e => ChangeProvince(e)">
+                            <option value="" selected>เลือกจังหวัด</option>
+                            @if (provincelist.Count() != 0)
+                            {
+                                @foreach (var item in provincelist)
+                                {
+                                    <option value="@item.ProvId">@item.ProvName</option>
+                                }
+
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-12 my-3">
+                    <div class="">
+                        <div class="mms-txt-headdetail">อำเภอ / เขต<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <select @onchange="e =>ChangeDistrict(e)" class=" form-select"
+                                aria-label="Default select example">
+                            <option value="">เลือกอำเภอ</option>
+                            @if(districtlist.Count() != 0)
+                            {
+                                @foreach (var item in districtlist)
+                                {
+                                    <option value="@item.DistId">@item.DistName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-12 my-3">
+                    <div class="">
+                        <div class="mms-txt-headdetail">ตำบล / เเขวง<span style="color : red">*</span></div>
+                    </div>
+                    <div class=" mb-2 pb-1">
+                        <select @bind="@carH.PlaceSubDistrict" class="form-select"
+                                aria-label="Default select example">
+                            <option value="">เลือกตำบล</option>
+                            @if (subdistrictlist.Count() != 0)
+                            {
+                                @foreach (var item in subdistrictlist)
+                                {
+                                    <option value="@item.SubdistId">@item.SubdistName</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-5 mx-2 my-2">
+            <div class="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                    <div style="height :350px">
+                        <div class="d-flex align-items-start flex-column justify-content-between">
+                            <div class="col-xl-12">
+                                <div class="row my-3">
+                                    <div class="col-md-4">
+                                        <div class="mms-txt-headdetail">รถที่ออกให้บริการ<span style="color : #D94827">*</span></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <RadioGroup Style="font-size:16px;" TValue="string" @bind-Value="@radioValue" OnChange="(e)=>changevalue(e)">
+                                            <Radio Style="font-size:16px;" Class="mms-txt-headdetail w-100" Value="@("H")">รถของสถานพยาบาล</Radio>
+                                            <Radio Style="font-size:16px;" Class="mms-txt-headdetail w-100" Value="@("R")" >รถเช่า</Radio>
+                                        </RadioGroup>
+                                      @*  <div class="row">
+                                            <div class="col-1"><span><Checkbox Style="border-block-color:#334396;"></Checkbox></span></div>
+                                            <div class="col"><div class="mms-txt-headdetail w-100">รถของสถานพยาบาล</div></div>
+                                        </div>
+                                        <div class="row">
+                                             <div class="col-1"><span><Checkbox Style="border-block-color:#334396;"></Checkbox></span></div>
+                                            <div class="col"><div class="mms-txt-headdetail w-100">รถเช่า</div></div>
+                                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                            @if (carD.Count >= 1)
+                            {
+                                @foreach (var item in carD)
+                                {
+                                    <div class="col-12">
+                                        <div class="d-flex my-2 align-content-center">
+                                            <div class="col-3 d-flex  align-content-center justify-content-center">
+                                                <div style="font-size:18px;color:#d6d6d6;"> คันที่ : @item.DentalCarDId</div>
+                                            </div>
+                                            <div class="col-8">
+                                                <Input Placeholder="ทะเบียนรถ" @bind-Value="@item.LicensePlate" />
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                @if (item.DentalCarDId == 1 && nextCount < 5)
+                                                {
+                                                    <button style="background-color: white;height: 40px;" @onclick="AddItem" >
+                                                        <img src="helper_shared/FeesExtImage/plus.jpg" style="width: 35px; margin-left:5px" />
+                                                    </button>
+                                                }
+                                                else if (item.DentalCarDId == nextCount)
+                                                {
+                                                    <button style="background-color: white;height: 40px;" @onclick="@( () => RemoveItem(item) )">
+                                                        <img src="helper_shared/FeesExtImage/minus.jpg"  style="width : 35px ;margin-left:5px"/>
+                                                     </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div >
+                        <div class="col-xl-12">
+                            <br />
+                            <br />
+                            <div class="col-12">
+                               
+                                <div class="mms-txt-headdetail pb-1">แนบไฟล์แนบไฟล์ใบอนุญาต สธ.<span style="color : #D94827">*</span></div> @if (FileName != "")
+                                {
+                                    <a class="img-upload" href="@FileUrl" target="_blank">@FileName</a>
+                                }
+                            </div>
+                            <div class="row px-3">
+                                
+                                <div style="border: 2px dashed #D5D5D5;border-radius: 10px;" class="col-10 ">
+                                    <div class="div-file-input">
+                                        <InputFile class="custom-input-file" style="cursor:pointer;width:100%;height:100%" OnChange="@LoadImage" multiple />
+                                       
+                                       
+                                            <div class="h1" style="color:#B6B6B6;"><i class="fa-solid fa-cloud-arrow-up"></i> อัปโหลด</div>
+                                      
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+        <div class="d-flex justify-content-end my-4 mt-4">
+            <div class="mt-4 pt-2">
+                <Button Class="ant-btn-distable" @onclick=@(() => back(1))><i class="fa-regular fa-circle-xmark"></i> &nbsp; ย้อนกลับ</Button>
+            </div>
+            @*<i class="fa-regular fa-circle-xmark"></i> fa-circle-chevron-left*@
+
+            &nbsp;&nbsp;
+            <div class="mt-4 pt-2">
+                <Button Type="@ButtonType.Primary" @onclick=Submit><i class="fa-solid fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@if (isLoading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+
+@code {
+    bool isLoading = false;
+    string radioValue = "R";
+    string Placeholder = "วว/ดด/ปปปป";
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string txtValue { get; set; } = "xxxx";
+    public IBrowserFile File;
+    List<IFormFile> formFile = new List<IFormFile>();
+    public string FileName = "";
+    public string ImageUrl = "";
+    public string FileUrl;
+    public int nextCount;
+    private List<AaiDentalCarD> carD = new List<AaiDentalCarD>();
+    private List<AdbMProvince> provincelist = new List<AdbMProvince>();
+    private List<AdbMDistrict> districtlist = new List<AdbMDistrict>();
+    private List<AdbMSubdistrict> subdistrictlist = new List<AdbMSubdistrict>();
+    private AaiDentalCarH carH = new AaiDentalCarH();
+    // เพิ่ม input fields เริ่มต้นตามค่า count
+    protected override async void OnInitialized()
+    {
+        isLoading = true;
+        var provresponse = await recordCarServices.GetProvince();
+        if (provresponse.Status == 200 )
+        {
+            provincelist = provresponse.ResultList;
+            isLoading = false;
+            StateHasChanged();
+        }
+        carD.Add(new AaiDentalCarD() { DentalCarDId = carD.Count+1 }); // ใช้ count เริ่มต้นที่ 1
+        carH.ServiceStartDate =DateTime.Now;
+        carH.ServiceEndDate =DateTime.Now;
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private void AddItem()
+    {
+        nextCount = carD.Count + 1;
+        carD.Add(new AaiDentalCarD() { DentalCarDId = nextCount });// เพิ่ม input field ใหม่โดยเพิ่มค่า count ตามลำดับ
+        StateHasChanged();
+    }
+    private void changevalue(string item)
+    {
+        foreach (var items in carD)
+        {
+            items.CarType = item;
+
+        }
+        StateHasChanged();
+        Console.WriteLine(item);
+    }
+    private async void RemoveItem(AaiDentalCarD item)
+    {
+        // อัพเดทค่า count ให้ input fields ที่เหลือก่อนที่จะลบออก
+        carD.Remove(item); // ลบ item หลังจากอัพเดทค่า count แล้ว
+        nextCount = nextCount - 1;
+        StateHasChanged();
+    }
+    public async Task back(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        //geenerate check only pdf file 
+        var ext = Path.GetExtension(inputFileChangeEventArgs.File.Name);
+        if (ext != ".pdf")
+        {
+            var swalresult = await Swal.FireAsync(
+           "กรุณาเลือกไฟล์ pdf เท่านั้น",
+           null,
+           SweetAlertIcon.Warning
+           );
+            return;
+        }
+        this.formFile.Clear();
+        File = inputFileChangeEventArgs.File;
+        var stream = File.OpenReadStream(1024 * 1024 * 10);
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        var bytes = memoryStream.ToArray();
+        var formFile = new FormFile(memoryStream, 0, bytes.Length, File.Name, File.Name);
+        this.formFile.Add(formFile);
+        var response = recordCarServices.UploadFile(this.formFile);
+        FileUrl = response.Result;
+        FileName = inputFileChangeEventArgs.File.Name;
+        StateHasChanged();
+    }
+    private async void Submit()
+    {
+        isLoading = true;
+        List<AaiDentalCarDViewModel> carData= new List<AaiDentalCarDViewModel>();
+        AaiDentalCarHViewModel carHData= new AaiDentalCarHViewModel();
+        if(String.IsNullOrEmpty(carH.PlaceName) 
+        || String.IsNullOrEmpty(carH.PlaceProvince) 
+        || String.IsNullOrEmpty(carH.PlaceDistrict) 
+        || String.IsNullOrEmpty(carH.PlaceSubDistrict) 
+        || String.IsNullOrEmpty(carH.ServiceStartDate.ToString()) 
+        || String.IsNullOrEmpty(carH.ServiceEndDate.ToString()))
+        {
+            isLoading = false;
+            StateHasChanged();
+            var swalresult = await Swal.FireAsync(
+           "กรุณากรอกข้อมูลให้ครบถ้วน",
+           null,
+           SweetAlertIcon.Warning
+           );
+            return;
+        }
+        foreach (var items in carD)
+        {
+            if (String.IsNullOrEmpty(items.LicensePlate))
+            {
+                isLoading = false;
+                StateHasChanged();
+                var swalresult = await Swal.FireAsync(
+               "กรุณากรอกข้อมูลให้ครบถ้วน",
+               null,
+               SweetAlertIcon.Warning
+               );
+                return;
+            }
+        }
+        carHData = new AaiDentalCarHViewModel
+            {
+                HospitalCode = "99988", //ดึงข้อมูลจาก localstorage
+                SsoOrgId = 0,       //ดึงข้อมูลจาก localstorage
+                PlaceName = carH.PlaceName,
+                ServiceDate = DateTime.Now,
+                ServiceStartDate = carH.ServiceStartDate,
+                ServiceEndDate = carH.ServiceEndDate,
+                PlaceProvince = carH.PlaceProvince,
+                PlaceDistrict = carH.PlaceDistrict,
+                PlaceSubDistrict = carH.PlaceSubDistrict,
+                RegisterDoc = FileUrl,
+                RegisterDocFileName = FileName,
+                CreateBy = "test",//ดึงข้อมูลจาก localstorage
+                CreateDate = DateTime.Now,
+                UpdateBy = "test",//ดึงข้อมูลจาก localstorage
+                UpdateDate = DateTime.Now,
+
+        };
+        foreach (var items in carD)
+        {
+            //generate add items to carData 
+            carData.Add(new AaiDentalCarDViewModel
+                {
+                    LicensePlate = items.LicensePlate,
+                    CarType = radioValue,
+                    CreateBy = "test",
+                    CreateDate = DateTime.Now,
+                    UpdateBy = "test",
+                    UpdateDate = DateTime.Now,
+            });
+        }
+
+        var data =  new InsertDataViewModel()
+        {
+                carD = carData,
+                carH = carHData,
+
+        };
+        var result = await recordCarServices.AddDentalRecord(data);
+
+        if (result == "success")
+        {
+            isLoading = false;
+            StateHasChanged();
+            var swalresult=   await Swal.FireAsync(
+            $"บันทึกข้อมูลสำเร็จ" ,
+            null,
+            SweetAlertIcon.Success
+            );
+            if (swalresult.IsConfirmed)
+            {
+                await IndexPage.InvokeAsync(1);
+            }
+
+        }
+        else
+        {
+            isLoading = false;
+            StateHasChanged();
+            var swalresult = await Swal.FireAsync(
+           $"บันทึกข้อมูลไม่สำเร็จ  \n {result}",
+           null,
+           SweetAlertIcon.Error
+           );
+        }
+
+    }
+
+    private async void ChangeProvince(ChangeEventArgs e)
+    {
+        carH.PlaceProvince = e.Value.ToString();
+        isLoading = true;
+        var response = await recordCarServices.GetDistrict(Int32.Parse(e.Value.ToString()));
+        if (response.Status == 200)
+        {
+            districtlist = response.ResultList;
+            isLoading = false;
+            StateHasChanged();
+        }
+        isLoading = false;
+        StateHasChanged();
+    }
+    private async void ChangeDistrict(ChangeEventArgs e)
+    {
+        carH.PlaceDistrict = e.Value.ToString();
+        isLoading = true;
+        var response = await recordCarServices.GetSubDistrict(Int32.Parse(e.Value.ToString()));
+        if (response.Status == 200)
+        {
+            subdistrictlist = response.ResultList;
+            isLoading = false;
+            StateHasChanged();
+        }
+        isLoading = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,61 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ กรณี Package โรคหัวใจและหลอดเลือด กับสถานพยาบาลในความตกลง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">รายการขอเบิก</div>
+        <hr />
+        <div>
+            <Space Direction="@DirectionVHType.Horizontal" Class="d-flex justify-content-end">
+                <SpaceItem>
+                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                 </SpaceItem>
+             </Space>
+         </div>
+         <div class="mt-3">
+             <Table DataSource="data" OnChange="OnChange" TItem="Data">
+                 <Column Title="ลำดับ" DataIndex="No" TData="int" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="งวดการจ่าย" DataIndex="Year" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="ยอดเงินรวม (บาท)" DataIndex="SumAmount" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="" DataIndex="Detail" TData="string" Align="ColumnAlign.Center" Width="80px" Style="background: #EAE8EC;">
+                      <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" @onclick=@(() => Detail(2)) />
+                 </Column>
+             </Table>
+         </div>
+         <Pagination Class="py-3"
+                ShowSizeChanger
+                OnShowSizeChange="OnShowSizeChange"
+                DefaultCurrent="3"
+                Total="500" />
+     </div>
+ </div>
+
+ @code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task Detail(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public record Data(int No, string Year, string SumAmount, string Detail);
+
+    public Data[] data =
+    {
+        new(1,"2566/3","128,000.00",""),
+        new(2,"2566/2","128,000.00",""),
+        new(3,"2566/1","128,000.00",""),
+    };
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+}

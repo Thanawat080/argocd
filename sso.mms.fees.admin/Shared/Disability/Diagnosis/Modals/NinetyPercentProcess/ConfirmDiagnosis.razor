@@ -1,0 +1,32 @@
+﻿
+<Modal Title="@("รายการเบิกที่ไม่ผ่านการประมวลผล")"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Width="500">
+
+
+
+</Modal>
+@code {
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    RenderFragment footer = @<Template>
+    </Template>;
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+}

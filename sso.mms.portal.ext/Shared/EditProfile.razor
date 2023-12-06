@@ -1,0 +1,563 @@
+﻿@page "/editProfile"
+@using Blazored.LocalStorage;
+@using sso.mms.helper.Components.Navbar;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.Data;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.ViewModels;
+@using sso.mms.login.Services;
+@inject IJSRuntime JsRuntime
+@inject NavigationManager Navigation
+@inject ILocalStorageService _localstorage;
+@inject ReadTokenService readTokenService
+@inject UserService userService;
+@inject KeyCloakService keyCloakService;
+@inject SweetAlertService Swal
+<style>
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .swal2-container.swal2-center > .swal2-popup {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        border-radius: 16px;
+    }
+
+    .swal2-title {
+        position: relative;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.8em 1em 0;
+        color: inherit;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        text-transform: none;
+        word-wrap: break-word;
+        color: #334396;
+        font-family: Noto Sans Thai;
+    }
+
+    .swal2-styled.swal2-confirm {
+        border: 0;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        background: #334396;
+        width: 150px;
+    }
+</style>
+
+<NavbarLoginSSO PageCode="HOP0601" Fname="@getUser?.FirstName" Lname="@getUser?.LastName"></NavbarLoginSSO>
+
+
+
+<MediaStyle></MediaStyle>
+  @if(getRealm != null)
+  {
+@if (getRealm == "sso-mms-hospital")
+{
+    if(hospitalUser != null){
+<div class="bg-color pt-5 pb-5">
+    <div class="container ">
+        <div class="card-main">
+            <div class="card-title">
+                <p class="f-title">ข้อมูลผู้ใช้งานสถานพยาบาล</p>
+            </div>
+            <div class="row pt-5 px-4 txth-from-reg">
+                <div class="col-md-12 col-lg-4 col-xl-4">
+                    <div class="d-flex justify-content-center">
+                        <img class="edit-img-user" src="helper_shared/icon_sso/Edit_user.png" />
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-8 col-xl-8">
+                    <form class="container">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Username</label>
+                                <input type="text" id="username" class="form-control form-control-lg" @bind="@hospitalUser.UserName" disabled readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label">เลขบัตรประจำตัวประชาชน</label>
+                                <input type="text" id="idcard" class="form-control form-control-lg" @bind="@hospitalUser.IdenficationNumber" disabled readonly />
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label">คำนำหน้า</label>
+                                <input class="form-control form-control-lg" value="@showPrefix" list="datalistOptions" id="exampleDataList" placeholder="โปรดเลือกคำนำหน้าชื่อ..." @onchange=@((item) => selectPrefixM(item.Value.ToString())) disabled readonly>
+                                <datalist id="datalistOptions">
+                                    @if (prefixMs != null)
+                                    {
+                                        @foreach (var item in prefixMs)
+                                        {
+                                            <option value="@item.Name"></option>
+                                        }
+                                    }
+                                </datalist>
+
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label">ชื่อ</label>
+                                <input type="text" id="lastName" class="form-control form-control-lg" @bind="@hospitalUser.FirstName" disabled readonly />
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label">ชื่อ กลาง</label>
+                                <input type="text" id="firstName" class="form-control form-control-lg" @bind="@hospitalUser.MiddleName" disabled readonly />
+
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label">นามสกุล</label>
+                                <input type="text" id="lastName" class="form-control form-control-lg" @bind="@hospitalUser.LastName" disabled readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">ตำแหน่ง</label>
+                                @if(hospitalUser.PositionName == null)
+                                {
+                                    <input type="text" id="firstName" class="form-control form-control-lg" value="ไม่มีตำแหน่ง" disabled readonly />
+                                }
+                                else
+                                {
+                                <input type="text" id="firstName" class="form-control form-control-lg" @bind="@hospitalUser.PositionName" disabled readonly />
+                                    
+                                }
+
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">สถานพยาบาล</label>
+                                <input type="text" id="firstName" class="form-control form-control-lg" @bind="@showHospital" disabled readonly />
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label">E-mail</label>
+                                <input type="text" id="firstName" class="form-control form-control-lg" @bind="@hospitalUser.Email" disabled readonly />
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label">เบอร์โทรศัพท์</label>
+                                <input type="text" id="firstName" class="form-control form-control-lg" @bind="@hospitalUser.Mobile" disabled readonly />
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                            </div>
+                            <div class="col-md-5">
+                                <div class="mt-4 pt-2">
+                                    <button class="btn btn-primary btn-lg w-100 btn-l-s" type="button" data-bs-toggle="modal" data-bs-target="#modalchangpassword">
+                                        <img src="helper_shared/icon_sso/re-register.png" style="height:32px;width:32px; margin-right:1rem;" />เปลี่ยนรหัสผ่าน
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 pb-4">
+                                <div class="mt-4 pt-2">
+                                    <a href="@prefix/portal?token=@shortToken">
+                                        <button class="btn btn-outline-secondary btn-lg w-100 btn-r-s">
+                                            <i class="fa-solid fa-circle-chevron-left fa-lg"></i>&nbsp; ย้อนกลับ
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        }
+<Footer />
+
+<!-- Modal -->
+<div class="modal fade" id="modalchangpassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 15px;background: #F5F3F7;">
+            <div class="modal-header">
+                <button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.227 19.7727L19.7737 12.226M19.7737 19.7727L12.227 12.226M16.0003 29.3327C23.3337 29.3327 29.3337 23.3327 29.3337 15.9993C29.3337 8.66602 23.3337 2.66602 16.0003 2.66602C8.66699 2.66602 2.66699 8.66602 2.66699 15.9993C2.66699 23.3327 8.66699 29.3327 16.0003 29.3327Z" stroke="#224183" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" align="center">
+                <img src="helper_shared/icon_sso/key.png" style="height:96px;width:96px;" />
+            </div>
+            <form class="container p-5" @onsubmit="@SubmitChangePassword" action="">
+                <div>
+                    <p class="text-login-title m-1">เปลี่ยนรหัสผ่าน</p>
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">รหัสผ่านปัจจุบัน</label>
+                    <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@oldpassword required />
+
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">รหัสผ่านใหม่</label>
+                    <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@newpassword required />
+
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">ยืนยันรหัสผ่านใหม่</label>
+                    <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@confirmpassword required />
+
+                </div>
+                <div class="container" align="center">
+                    <button type="submit" class="btn btn-primary btn-login mb-4" style="width:325px;">
+                        ยืนยันการเปลี่ยนรหัสผ่าน
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+}
+    else if (getRealm == "sso-mms-auditor")
+{
+
+        <div class="bg-color pt-5 pb-5">
+            <div class="container ">
+                <div class="card-main">
+                    <div class="card-title">
+                        <p class="f-title">ข้อมูลผู้ใช้งานสถานพยาบาล</p>
+                    </div>
+                    <div class="row pt-5 px-4 txth-from-reg">
+                        <div class="col-md-12 col-lg-4 col-xl-4">
+                            <div class="d-flex justify-content-center">
+                                <img class="edit-img-user" src="helper_shared/icon_sso/Edit_user.png" />
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-8 col-xl-8">
+                            <form class="container">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">Username</label>
+                                        <input type="text" id="username" class="form-control form-control-lg" @bind="@AuditorMUser.UserName" disabled readonly />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">เลขบัตรประจำตัวประชาชน</label>
+                                        <input type="text" id="idcard" class="form-control form-control-lg" @bind="@AuditorMUser.IdenficationNumber" disabled readonly />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">คำนำหน้า</label>
+                                        <input class="form-control form-control-lg" value="@showPrefix" list="datalistOptions" id="exampleDataList" placeholder="โปรดเลือกคำนำหน้าชื่อ..." @onchange=@((item) => selectPrefixM(item.Value.ToString())) disabled readonly>
+                                        <datalist id="datalistOptions">
+                                            @if (prefixMs != null)
+                                            {
+                                                @foreach (var item in prefixMs)
+                                                {
+                                                    <option value="@item.Name"></option>
+                                                }
+                                            }
+                                        </datalist>
+
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ</label>
+                                        <input type="text" id="lastName" class="form-control form-control-lg" @bind="@AuditorMUser.FirstName" disabled readonly />
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ กลาง</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind="@AuditorMUser.MiddleName" disabled readonly />
+
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">นามสกุล</label>
+                                        <input type="text" id="lastName" class="form-control form-control-lg" @bind="@AuditorMUser.LastName" disabled readonly />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">ตำแหน่ง</label>
+                                        @if (AuditorMUser.Position == null)
+                                        {
+                                            <input type="text" id="firstName" class="form-control form-control-lg" value="ไม่มีตำแหน่ง" disabled readonly />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" id="firstName" class="form-control form-control-lg" @bind="@AuditorMUser.Position" disabled readonly />
+
+                                        }
+
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">สถานพยาบาล</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind="@showHospital" disabled readonly />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">E-mail</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind="@AuditorMUser.Email" disabled readonly />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">เบอร์โทรศัพท์</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind="@AuditorMUser.Mobile" disabled readonly />
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="mt-4 pt-2">
+                                            <button class="btn btn-primary btn-lg w-100 btn-l-s" type="button" data-bs-toggle="modal" data-bs-target="#modalchangpassword">
+                                                <img src="helper_shared/icon_sso/re-register.png" style="height:32px;width:32px; margin-right:1rem;" />เปลี่ยนรหัสผ่าน
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pb-4">
+                                        <div class="mt-4 pt-2">
+                                            <a href="@prefix/portal?token=@shortToken">
+                                                <button class="btn btn-outline-secondary btn-lg w-100 btn-r-s">
+                                                    <i class="fa-solid fa-circle-chevron-left fa-lg"></i>&nbsp; ย้อนกลับ
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <Footer />
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalchangpassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="border-radius: 15px;background: #F5F3F7;">
+                    <div class="modal-header">
+                        <button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.227 19.7727L19.7737 12.226M19.7737 19.7727L12.227 12.226M16.0003 29.3327C23.3337 29.3327 29.3337 23.3327 29.3337 15.9993C29.3337 8.66602 23.3337 2.66602 16.0003 2.66602C8.66699 2.66602 2.66699 8.66602 2.66699 15.9993C2.66699 23.3327 8.66699 29.3327 16.0003 29.3327Z" stroke="#224183" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body" align="center">
+                        <img src="helper_shared/icon_sso/key.png" style="height:96px;width:96px;" />
+                    </div>
+                    <form class="container p-5" @onsubmit="@SubmitChangePassword" action="">
+                        <div>
+                            <p class="text-login-title m-1">เปลี่ยนรหัสผ่าน</p>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label modal-txt">รหัสผ่านปัจจุบัน</label>
+                            <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@oldpassword required />
+
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label modal-txt">รหัสผ่านใหม่</label>
+                            <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@newpassword required />
+
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label modal-txt">ยืนยันรหัสผ่านใหม่</label>
+                            <input type="password" id="password" class="form-control form-control-lg" placeholder="********" @bind=@confirmpassword required />
+
+                        </div>
+                        <div class="container" align="center">
+                            <button type="submit" class="btn btn-primary btn-login mb-4" style="width:325px;">
+                                ยืนยันการเปลี่ยนรหัสผ่าน
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
+    }
+    }
+    @if(isload){
+    <LoadingPage></LoadingPage>
+    }
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    public string? oldpassword = "";
+    public string? newpassword = "";
+    public string? confirmpassword = "";
+    public string? env = ConfigureCore.ConfigENV;
+    public string? SecretKey = ConfigureCore.SecretKey;
+    public string? prefix = "";
+    public string? prefixMcode = "";
+    public string? showPrefix = "";
+    public string? showHospital;
+    public bool isCloseModal;
+    bool isload = false;
+    private ResponseLogin getUser { get; set; } = null!;
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+    private HospitalM hospM { get; set; } = null!;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "userid")]
+    public int userId { get; set; }
+    private List<PrefixM> prefixMs { get; set; }
+    private HospitalUserM hospitalUser { get; set; }
+    private AuditorUserM AuditorMUser { get; set; }
+    private string getRealm;
+    protected override async Task OnInitializedAsync()
+    {
+
+        isload = true;
+        if (hospitalUser != null)
+        {
+            Console.WriteLine(hospitalUser);
+        }
+
+        prefix = ConfigureCore.redirectPortalExt;
+
+        prefixMs = await userService.getPrefix();
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        getRealm = await _localstorage.GetItemAsync<string>("userType");
+
+        //hospitalUser = await userService.GetUserById(userId, getRealm);
+        if (getRealm == "sso-mms-hospital")
+        {
+            hospitalUser = await userService.GetUserById(userId, getRealm);
+            StateHasChanged();
+        }
+        else
+        {
+            AuditorMUser = await userService.GetUserById(userId, getRealm);
+            StateHasChanged();
+        }
+
+        if (hospitalUser != null)
+        {
+
+            hospM = await keyCloakService.CheckHospCode(hospitalUser.HospitalMId.ToString());
+            if (hospM != null)
+            {
+                showHospital = hospM.Code + " " + hospM.Name;
+            }
+            var prefixfind = prefixMs.FirstOrDefault(f => f.Code == hospitalUser.PrefixMCode);
+            if (prefixfind != null)
+            {
+                showPrefix = prefixfind.Name;
+            }
+           
+        }
+     
+        //responseShortToken = await readTokenService.ReadToken(shortToken!);
+        //if (responseShortToken != null)
+        //{
+        //Console.WriteLine("ResponseShortToken", responseShortToken);
+        //isLoading = false;
+        //}
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        isload = false;
+        StateHasChanged();
+
+
+    }
+
+    public async void selectPrefixM(string name)
+    {
+        var prefixselect = prefixMs.Find(f => f.Name == name);
+        if (prefixselect != null)
+        {
+            prefixMcode = prefixselect.Code;
+        }
+
+
+
+    }
+    private async void SubmitChangePassword()
+    {
+        var decryptedOldPassword = AesOperation.DecryptString(SecretKey, hospitalUser.Password);
+        if (oldpassword != decryptedOldPassword)
+        {
+            //await JsRuntime.InvokeVoidAsync("alert", "รหัสผ่านปัจจุบัน ไม่ถูกต้อง !!");
+            await Swal.FireAsync(
+            "ตรวจสอบรหัสผ่านปัจจุบันใหม่อีกครั้ง",
+            null,
+            SweetAlertIcon.Error
+                );
+        }
+        else
+        {
+            if (newpassword != confirmpassword)
+            {
+                //await JsRuntime.InvokeVoidAsync("alert", "รหัสใหม่ไม่ตรงกัน !!");
+                await Swal.FireAsync(
+                "ตรวจสอบรหัสผ่านใหม่อีกครั้ง",
+                null,
+                SweetAlertIcon.Error
+                );
+
+            }
+            else if (newpassword == decryptedOldPassword)
+            {
+                //await JsRuntime.InvokeVoidAsync("alert", "ไม่สามารถใช้รหัสผ่านนี้ได้ !!");
+                await Swal.FireAsync(
+                "ตรวจสอบรหัสผ่านใหม่อีกครั้ง",
+                null,
+                SweetAlertIcon.Error
+                );
+
+            }
+            else
+            {
+                ResponseChangePasswordModel response = await userService.ChangePassword(newpassword, hospitalUser.UserName, oldpassword, hospitalUser.Id, "sso-mms-hospital");
+                if (response.isStatus)
+                {
+                    //await JsRuntime.InvokeVoidAsync("alert", "เสร็จสิ้น !!");
+                    await Swal.FireAsync(
+               "เปลี่ยนรหัสผ่านสำเร็จ",
+               null,
+               SweetAlertIcon.Success
+               );
+                    await JsRuntime.InvokeVoidAsync("CloseModal", "#modalchangpassword");
+                    //  Navigation.NavigateTo($"{prefix}/portal?token={shortToken.Trim('\"')}");
+                }
+
+            }
+        }
+
+    }
+
+    public async Task goback()
+    {
+        // await Navigation.NavigateTo($"/portal?token={shortToken}");
+    }
+}

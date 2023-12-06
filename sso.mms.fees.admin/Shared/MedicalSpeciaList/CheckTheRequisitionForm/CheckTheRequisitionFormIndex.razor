@@ -1,0 +1,178 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การรักษาโดยแพทย์ผู้เชี่ยวชาญพิเศษเฉพาะทางและการทำหมัน</div>
+    </div>
+    <div class="p-2 p-md-5 ">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">ตรวจสอบใบขอเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">ตรวจสอบ</span>
+                </li>
+                @*                <li class="breadcrumb-item" aria-current="page">
+                <span class="breadcum-process py-2">แสดงรายการงวดที่เลือก</span>
+                </li>*@
+            </ol>
+        </nav>
+        <div class="container" style="padding-bottom:1.5rem;">
+
+
+            <div class="row">
+                <div class="col-xl-3 mms-media-start">
+                    <div class="mms-txt-headdetail">งวด</div>:&nbsp;
+                    <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled="true" />
+                </div>
+               
+            </div>
+            <div class="row">
+
+                <div class="col-2 mms-media-start">
+                </div>
+                <div class="col mms-media-center" style="
+    width: 24%;
+">
+
+                    <div class="mms-media-end">
+                        <Button Type="@ButtonType.Primary"><i class="fa-solid fa-arrow-up"></i> &nbsp; ตรวจสอบ</Button>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+            <hr />
+            <Table DataSource="@listOfData" Bordered PageSize="50">
+                <ColumnDefinitions>
+                    <PropertyColumn Property="c=>c.hoscode" Align="ColumnAlign.Center" Width="10%">
+                        @(String.Format("{0:d}", listOfData.IndexOf(context) + 1)) </PropertyColumn>
+                    <PropertyColumn Property="c=>c.hoscode" Align="ColumnAlign.Center"  Width="15%"/>
+                    <PropertyColumn Property="c=>c.hosname" />
+                    <PropertyColumn Property="c=>c.count" Align="ColumnAlign.Center" Width="15%"/>
+                    <PropertyColumn Property="c=>c.price" Align="ColumnAlign.Center" Width="15%" />
+
+                </ColumnDefinitions>
+                <HeaderTemplate>
+                    <TableRow>
+                        <SimpleTableHeader ColSpan="5">คำขอเบิกค่าบริการทางการแพทย์ของสถานพยาบาล</SimpleTableHeader>
+                    </TableRow>
+                    <TableRow>
+                        <SimpleTableHeader>ลำดับ</SimpleTableHeader>
+                        <SimpleTableHeader>รหัสโรงพยาบาล</SimpleTableHeader>
+                        <SimpleTableHeader>ชื่อโรงพยาบาล</SimpleTableHeader>
+
+                        <SimpleTableHeader>ใบคำขอ(ฉบับ)</SimpleTableHeader>
+                        <SimpleTableHeader>จำนวนเงิน(บาท)</SimpleTableHeader>
+                    </TableRow>
+                </HeaderTemplate>
+                </Table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+
+    string? txtValue = "dsad";
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? hoscode { get; set; }
+        public string? hosname { get; set; }
+         public decimal price { get; set; }
+        public int count { get; set; }
+
+    };
+    public class DropdownData
+    {
+        public string name { get; set; }
+        public string? date { get; set; }
+
+    };
+
+    List<DropdownData> dropdownlist = new List<DropdownData>();
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    public async Task goDetail()
+    {
+        await IndexPage.InvokeAsync(2);
+    }
+
+
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>
+        {
+            new ItemData
+            {
+                Id = 1 ,
+                hoscode = $"660801",
+                hosname = "test1",
+                price = 1234,
+                count = 5
+
+
+            },
+            new ItemData
+            {
+               Id = 2 ,
+                hoscode = $"COVID2566-G120123",
+                hosname = "test2",
+                price = 445,
+                count = 2
+
+            },
+            new ItemData
+            {
+                Id =3 ,
+                hoscode = $"20230601",
+                hosname = "test3",
+                price = 5645,
+                count = 1
+
+            }
+        };
+
+        dropdownlist = new List<DropdownData>
+        {
+            new DropdownData
+            {
+                name = "รพ 1"
+
+
+
+            },
+            new DropdownData
+            {
+                 name = "รพ 2"
+
+            },
+            new DropdownData
+            {
+                 name = "รพ 3"
+
+            }
+        };
+    }
+
+}

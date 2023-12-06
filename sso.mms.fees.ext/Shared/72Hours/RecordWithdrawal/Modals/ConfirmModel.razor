@@ -1,0 +1,67 @@
+﻿<style>
+    .xmark .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+</style>
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+
+<Modal Title="@("แสดงรายการ")"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       WrapClassName="xmark">
+    <div class="mms-media-center flex-column">
+        <div><img src="helper_shared/PortalAdminImage/Alert-Gray.png" style="width:60px;height:60px;" /></div>
+        <h5 class="p-2">
+            เมื่อทำการยืนยันการเบิกไปแล้ว
+        </h5>
+        <h5 class="p-2">
+            จะไม่สามารถเเก้ไขข้อมูลการเบิกได้
+        </h5>
+        <h5 class="p-2">ดำเนินการต่อหรือไม่?</h5>
+        <Button Type="@ButtonType.Dashed" @onclick="HandleOk" Class="mms-btn-green" Style="width:250px;"><i class="fa-solid fa-circle-check"></i>&nbsp;ยืนยันการเบิก</Button>
+    </div>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+}

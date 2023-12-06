@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>156559bf-2138-43ec-ae85-e16b33d044cc</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<LangVersion>preview</LangVersion>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<_ContentIncludedByDefault Remove="wwwroot\css\Sidebar.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AntDesign" Version="0.16.2" />
+		<PackageReference Include="Blazorise.Bootstrap" Version="1.3.2" />
+		<PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.3.2" />
+		<PackageReference Include="ClosedXML.Report" Version="0.2.6" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="NPOI" Version="2.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\sso.mms.fees.api\sso.mms.fees.api.csproj" />
+		<ProjectReference Include="..\sso.mms.helper\sso.mms.helper.csproj" />
+		<ProjectReference Include="..\sso.mms.login\sso.mms.login.csproj" />
+		<ProjectReference Include="..\sso.mms.portal.admin\sso.mms.portal.admin.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="Pages\Methadone\MD_Index.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="Shared\72Hours\RecordWithdrawal\Modals\AddListModel.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="Shared\Methadone\RecordWithdrawal\MDRW_AddList.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="wwwroot\css\site.css">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="wwwroot\css\Data\Assets\Images\" />
+		<Folder Include="wwwroot\download\" />
+		<Folder Include="wwwroot\Files\Dental\" />
+	</ItemGroup>
+
+</Project>

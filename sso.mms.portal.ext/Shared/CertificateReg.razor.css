@@ -1,0 +1,66 @@
+﻿.bg-color {
+    background: #F5F3F7;
+}
+
+.card-title {
+    background: #FFCC41;
+    border: 1px solid #FFCC41;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px 10px 0px 0px;
+    width: 100%;
+    margin-bottom: 0rem;
+}
+
+.text-title {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+    color: #334396;
+}
+
+.card-body {
+    width: auto;
+    height: auto;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 0rem 0rem;
+}
+
+.text-cer {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 150%;
+    color: #334396;
+}
+
+.btn-cer-upload {
+    background: #334396;
+    border-radius: 4px;
+    width: 173px;
+    height: 51px;
+}
+.text-upload {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #FFFFFF;
+}
+.bg-upload-report {
+    width: 100%;
+    height: 611px;
+    background: #D9D9D9;
+    border-radius: 6px;
+}
+
+.bg-upload-certificate {
+    margin-top: 7rem;
+    width: 100%;
+    height: 400px;
+    background: #D9D9D9;
+    border-radius: 6px;
+}

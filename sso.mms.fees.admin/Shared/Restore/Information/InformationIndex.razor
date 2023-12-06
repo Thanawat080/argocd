@@ -1,0 +1,337 @@
+﻿
+
+<style>
+    .ant-collapse-header {
+        border-radius: 8px 8px 0px 0px;
+        border: 1px solid #E3E3E3;
+        background: #FFC326;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าใช้จ่ายการฟื้นฟู ด้านการแพทย์ ด้านอาชีพ และด้านการรักษาและผ่าตัดของผู้เข้ารับการฟื้นฟู</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">สืบค้นข้อมูลผู้ประกันตน</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงข้อมูลผู้ประกันตน</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+
+        <div class="row py-4" style="padding:15px;">
+            <Collapse DefaultActiveKey="@(new[]{"1"})" OnChange="Callback">
+                <Panel Header="ข้อมูลผู้ประกันตน" Key="1">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">ชื่อ-สกุล :</div>
+                                <div class="col">นางสุจินดา  ญาดา</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">อายุ :</div>
+                                <div class="col">58</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">เลขประจำตัวประชาชน :</div>
+                                <div class="col">1234587957xxx</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">มาตรา :</div>
+                                <div class="col">มาตรา 33</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row ">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">โรงพยาบาลตามสิทธิ :</div>
+                                <div class="col">โรงพยาบาลลานนา1</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">สถานประกอบการ :</div>
+                                <div class="col">บริษัท ยิ้มสดใส จำกัด</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail"  style="text-align: right;">สถานะผู้ประกันตน :</div>
+                                <div class="col">เป็นผู้ประกันตน </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">สิทธิผู้ทุพพลภาพ :</div>
+                                <div class="col">อนุมัติ เมื่อวันที่ 5 เมษายน 2565</div>
+                            </div>
+                        </div>
+                    </div>
+                </Panel>
+            </Collapse>
+            <br/>
+            <Collapse DefaultActiveKey="@(new[]{"1"})" OnChange="Callback">
+                <Panel ShowArrow="true" Header="กิจกรรมบำบัด / กายภาพบำบัด" Key="2">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">กิจกรรมบำบัด :</div>
+                                <div class="col">2 ครั้ง</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                         
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">จำนวนเงินรวม :</div>
+                                <div class="col">200 บาท</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                          
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-end" style="margin-left:8px;" @onclick="() => openModal()">
+                        <Button Type="@ButtonType.Primary">
+                            ดูรายละเอียดเพิ่มเติม
+                        </Button>
+                    </div>
+                </Panel>
+
+            </Collapse>
+            <br/>
+            <Collapse DefaultActiveKey="@(new[]{"1"})" OnChange="Callback">
+
+        
+                <Panel ShowArrow="true" Header="หลักสูตรฝึกเตรียมเข้าทำงาน" Key="3">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">ชื่อหลักสูตร :</div>
+                                <div class="col">อบรมไฟฟ้าเบื้องต้น</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">จำนวนเงินรวม :</div>
+                                <div class="col">2,000 บาท</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">วันที่เข้าอบรม :</div>
+                                <div class="col">12  มกราคม 25566</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                </Panel>
+             
+
+            </Collapse>
+            <br />  
+            <Collapse DefaultActiveKey="@(new[]{"1"})" OnChange="Callback">
+
+                <Panel ShowArrow="true" Header="หลักสูตรฝึกอาชีพ" Key="4">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">ชื่อหลักสูตร :</div>
+                                <div class="col">ซ่อมเครื่องทำความเย็น</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">จำนวนเงินรวม :</div>
+                                <div class="col">2,000 บาท</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col mms-txt-headdetail" style="text-align: right;">วันที่เข้าอบรม :</div>
+                                <div class="col">25 กุมภาพันธ์ 2566</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                </Panel>
+
+            </Collapse>
+        </div>
+    </div>
+</div>
+
+<Modal Title="รายละเอียด กิจกรรมบำบัด / กายภาพบำบัด"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Width="700">
+    <Table DataSource="todos" TItem="todo" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+        <ChildContent Context="data">
+            <Column TData="string" Title="ลำดับ" Width="7%" Style="text-align:center;">
+                @String.Format("{0:d}", todos.IndexOf(data) + 1)
+            </Column>
+            <Column TData="string" Title="รายการ" Width="30%" Style="text-align:start;">
+                @data.value
+            </Column>
+            <Column TData="string" Title="วันที่รักษา" Width="17%" Style="text-align:center;">
+                @data.date
+            </Column>
+            <Column TData="string" Width="13%" Style="text-align:start;" Title="ราคาต่อหน่วย(บาท)">
+                @data.price
+            </Column>
+
+        </ChildContent>
+    </Table>
+</Modal>
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public class DropdownData
+    {
+        public string name { get; set; }
+        public string? date { get; set; }
+
+    };
+
+    public class todo
+    {
+        public string value { get; set; }
+        public string? date { get; set; }
+        public string? price { get; set; }
+
+    };
+    
+    List<DropdownData> dropdownlist = new List<DropdownData>();
+    public bool isloading = false;
+
+    List<todo> todos = new List<todo>();
+    
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+    private async Task openModal()
+    {
+
+        _visible = true;
+    }
+    
+
+    protected override async void OnInitialized()
+    {
+        dropdownlist = new List<DropdownData>
+        {
+            new DropdownData
+            {
+                name = "type1"
+
+
+
+            },
+            new DropdownData
+            {
+                 name = "type2"
+
+            },
+            new DropdownData
+            {
+                 name = "type3"
+
+            }
+        };
+
+        todos = new List<todo>
+        {
+            new todo
+            {
+                value = "ค่าใช่จ่ายทางกิจกรรมบำบัด",
+                date = "15  ม.ค  66",
+                price = "100.00"
+
+
+
+            },
+            new todo
+            {
+                   value = "ค่าใช่จ่ายทางกิจกรรมบำบัด",
+                date = "9  ม.ค  66",
+                price = "300.00"
+
+            },
+            new todo
+            {
+                   value = "ค่าใช่จ่ายทางกิจกรรมบำบัด",
+                date = "9  ม.ค  66",
+                price = "300.00"
+
+            }
+        };
+
+    }
+
+    void Callback(string[] keys)
+    {
+        Console.WriteLine(string.Join(',', keys));
+    }
+
+
+
+}

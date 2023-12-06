@@ -1,0 +1,80 @@
+﻿@using sso.mms.fees.admin.Shared.OrganTransplantation.Payrate.Modals
+<div class="text-title-payrate">ตั้งค่า OTP01 ไต</div>
+<hr>
+<div class="row mt-2 align-items-center" style="margin-bottom:38px">
+    <div class="col-md-12 col-lg-6 col-xl-6">
+        <Button Style="width: 151px; height: 51px; flex-shrink: 0;" Type="@ButtonType.Primary" OnClick="@(() => OpenAddData(true))">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;เพิ่ม
+        </Button>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-6 text-end">
+        <Space Direction="@DirectionVHType.Vertical" Style="width:370px;height: 48px">
+            <SpaceItem>
+                <Search Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" AllowClear />
+             </SpaceItem>
+         </Space>
+     </div>
+ </div>
+
+ <Table DataSource="@data" Bordered HidePagination>
+    <ChildContent>
+        <PropertyColumn Title="ลำดับ" Property="c=>c!.No" Width="20px" Align="ColumnAlign.Center" />
+        <PropertyColumn Title="รหัส claim" Property="c=>c!.ClaimNumber" Width="20px" Align="ColumnAlign.Center" />
+        <PropertyColumn Title="ชื่อ claim" Property="c=>c!.ClaimName" Width="20px" Align="ColumnAlign.Center" />
+        <PropertyColumn Title="จำนวน" Property="c=>c!.Amount" Width="20px" Align="ColumnAlign.Center" />
+        <PropertyColumn Title="วงเงิน" Property="c=>c!.FinancialAmount" Width="20px" Align="ColumnAlign.Center" />
+        <PropertyColumn Title="" Property="c=>c!.NoContent" Width="20px">
+            <img class="mx-2" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px;" @onclick="@(() => SendPropData(context))">
+            <img class="mx-2" src="helper_shared/PortalAdminImage/delete.png" style="width:24px;height:24px;" />
+        </PropertyColumn>
+    </ChildContent>
+</Table>
+
+<AddPayrate OnClose="@OpenAddData" _visible="@openAddData" _title="กำหนดอัตราจ่าย  OTP01 ไต" />
+
+<EditPayrate OnClose="@OpenEditData" _visible="@openEditData" _title="กำหนดอัตราจ่าย  OTP01 ไต" data="@dataPayrate" />
+
+
+
+
+@code {
+
+
+    int pageSize = 5;
+
+    public bool openAddData { get; set; }
+
+    public bool openEditData { get; set; }
+
+
+    public MockPayrateModel dataPayrate { get; set; }
+
+    public async Task OpenAddData(bool value)
+    {
+        openAddData = value;
+    }
+
+    public async Task OpenEditData(bool value)
+    {
+        openEditData = value;
+    }
+
+    public async Task SendPropData(MockPayrateModel value)
+    {
+        dataPayrate = value;
+        await OpenEditData(true);
+    }
+
+
+
+    List<MockPayrateModel> data = new List<MockPayrateModel>()
+    {
+        new MockPayrateModel( "1", "1101","บริจาคที่", "1","40,000.00", "")
+    
+    };
+
+    void OnChange(QueryModel<MockPayrateModel> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+}

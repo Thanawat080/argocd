@@ -1,0 +1,319 @@
+﻿@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@using sso.mms.fees.api.Entities.Dental
+@using sso.mms.fees.api.ViewModels.Dental
+@using sso.mms.fees.admin.Providers.Dental.RecordCar
+@inject RecordCarServices recordCarServices
+@inject IJSRuntime JSRuntime
+
+<style>
+
+    .modalStyle .ant-modal-header {
+        background: #F56C6C !important;
+    }
+    .ant-form-item-control-input-content{
+        align-items: baseline;
+        display:flex;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ทันตกรรม</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการขอใช้รถทันตกรรม</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" >
+                    <span class="breadcum-process py-2">รายการทั้งหมด</span>
+                </li>
+             
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+       
+        <div class="mms-txt-headdetail">ช่วงเวลา</div>
+        <div class="row">
+            <div class="d-flex  mms-media-center">
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-4 mms-media-center">
+                            <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+
+                        </div>
+                        <div class="mms-txt-headdetail d-flex justify-content-center align-items-center col-1" style="width:60px; ">ถึง : </div>
+                        <div class="col-4 mms-media-center">
+
+                            <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 ">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                        <SpaceItem>
+                            <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <Table DataSource="ListDataSearch" TItem="AaiDentalCarHView" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column Width="8%" Align="ColumnAlign.Center" TData="string" Title="ลำดับ">@String.Format("{0:d}",ListDataSearch.IndexOf(data)+1)</Column>
+                    <Column Width="15%" Align="ColumnAlign.Center" TData="string" Title="ชื่อสถานพยาบาล">@data.HospitalCode</Column>
+                <Column Width="15%" Align="ColumnAlign.Center" TData="string" Title="ชื่อสถานที่"> @data.PlaceName</Column>
+                <Column Width="20%" Align="ColumnAlign.Center" TData="string" Title="วันที่ออกให้บริการ">
+                  @ThaiDateFormat.FormatShotMonth(data.ServiceStartDate) -  @ThaiDateFormat.FormatShotMonth(data.ServiceEndDate)</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="วันที่เเจ้ง">@ThaiDateFormat.FormatShotMonth(data.ServiceDate)</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="จำนวน (คัน)"> @data.sumCar</Column>
+                <Column Width="10%" Align="ColumnAlign.Center" TData="string" Title="รหัสรถ">
+                    @{
+                        var carlist = data.AllLicensePlate.Split(',');
+                    }
+                    @foreach (var item in carlist)
+                    {
+                        <div>@item,</div>
+                    }
+                </Column>
+                <Column Width="7%" Align="ColumnAlign.Center" TData="string" Title="สถานะ" Style="color:#67C23A;">
+                    @if (data.DantalCarStatus.Trim() == "1")
+                    {
+                        <span style=" color :#67C23A">
+                            อนุญาต
+                        </span>
+                    }
+                    else if (data.DantalCarStatus.Trim() == "0")
+                    {
+                        <span style=" color :#F89523">
+                            รออนุญาต
+                        </span>
+                    }
+                    else if (data.DantalCarStatus.Trim() == "8")
+                    {
+                        <span style=" color :#FF1414">
+                            แจ้งเเก้ไข
+                        </span>
+                    }
+                    </Column>
+                <Column Width="5%" Align="ColumnAlign.Center" TData="string" Title="">
+                    <img  title="ดู" src="helper_shared/PortalAdminImage/edit.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>Edit(data.DentalCarHId)) />
+                </Column>
+            </ChildContent>
+        </Table>
+    </div>
+</div>
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       OkText="@okbutton"
+       CancelText="@canclebutton"
+       Width="1300"
+       WrapClassName="modalStyle">
+    <span style="padding-left: 10%;" class="mms-txt-header">ชื่อสถานพยาบาล : โรงพยาบาล1</span>
+    <br />
+    <div class="row d-flex justify-content-center align-content-center container" style="align-content : center; display:flex; justify-content:center; padding-top :20px;">
+        <div class="row  mms-txt-headdetail ">
+            <div class="col-md-12 col-lg-8">
+                <div class="row d-flex align-content-center">
+                    <div class="mms-txt-headdetail col-3  d-flex align-content-center justify-content-end">วันที่ออกให้บริการ :</div>
+                    <div class="col-md-12 col-lg-3">
+                        <DatePicker @bind-Value="@ListDataView.ServiceStartDate" InputReadOnly Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                    </div>
+                    <div class="mms-txt-headdetail d-flex justify-content-center align-content-center" style="width: 60px;">ถึง</div>
+                    <div class="col-md-12 col-lg-3">
+                        <DatePicker @bind-Value="@ListDataView.ServiceEndDate" InputReadOnly Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-4" for="radio">การอนุญาต :<span style="color:red;">*</span> </div>
+                    <RadioGroup Id="radio" @bind-Value="@ListDataView.DantalCarStatus" Class="d-flex flex-column col">
+                        <Radio Style="@style" Value="@("1")"><span class="mms-txt-headdetail">อนุญาต</span></Radio>
+                        <Radio Style="@style" Value="@("13")"><span class="mms-txt-headdetail">ไม่อนุญาต</span></Radio>
+                    </RadioGroup>
+                </div>
+            </div>
+
+        </div>
+        <div class="row d-flex mms-txt-headdetail justify-content-center align-content-center">
+
+            <div class="col-md-12 col-lg-8">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-3 d-flex align-content-center justify-content-end"> สถานที่ออกให้บริการ : </div>
+                    <div class="col-4">
+                        <Input @bind-Value="@ListDataView.PlaceName" />
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-4" for="memo"> หมายเหตุ :</div>
+                    <div class="col-8">
+                        <TextArea Id="memo" Style="width:100%" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row d-flex mms-txt-headdetail justify-content-center align-content-center">
+            <div class="col-md-12 col-lg-8">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-3 pt-2 justify-content-end"> รถที่ออกให้บริการ : </div>
+                    <div class="col-4">
+                        @{
+                            var carlist = ListDataView.AllLicensePlate.Split(',');
+                        }
+                        @for (int i = 0; i < carlist.Length; i++)
+                        {
+                            <Input Value="@($"รถในระบบ  คันที่ {(i)+1} : "+ carlist[i].ToString())" ReadOnly />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+            </div>
+
+        </div>
+     
+        <div class="row d-flex mms-txt-headdetail justify-content-center align-content-center pt-2">
+            <div class="col-md-12 col-lg-8">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-3  d-flex align-content-center justify-content-end" for="province">รถที่จังหวัดปลายทาง :</div>
+                    <div class="col-6">
+                        <Input Id="province" Value="@($"ตำบล {subdistrict} อำเภอ {district} จังหวัด {province}")" ReadOnly />
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+        <div class="row d-flex mms-txt-headdetail justify-content-center align-content-center pt-2">
+            <div class="col-md-12 col-lg-8">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-3  d-flex align-content-center justify-content-end"> แนบไฟล์ใบอนุญาต สธ. :</div>
+                    <div class="col">
+                        <a href="@ListDataView.RegisterDoc">@ListDataView.RegisterDocFileName</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+        <div class="row d-flex mms-txt-headdetail justify-content-center align-content-center pt-2">
+
+            <div class="col-md-12 col-lg-8">
+                <div class="row">
+                    <div class="mms-txt-headdetail col-3  d-flex align-content-center justify-content-end"> รายละเอียดการขอเเก้ไข :</div>
+                    <div class="col">
+                        <TextArea @bind-Value="@ListDataView.ChangeDesc" />
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col">
+            </div>
+
+        </div>
+    </div>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string title = "จัดการคำขอใช้รถทันตกรรม";
+    bool _visible = false;
+    string Placeholder = "วว/ดด/ปปปป";
+    string style = "height:30px;line-height:30px;";
+      string? province ;
+    string? district ;
+    string? subdistrict ;
+
+    List<AaiDentalCarHView> ListData = new List<AaiDentalCarHView>();
+    List<AaiDentalCarHView> ListDataSearch = new List<AaiDentalCarHView>();
+    AaiDentalCarHView ListDataView = new AaiDentalCarHView();
+    bool loading = false;
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+    RenderFragment okbutton =@<div  style="color:#fff;">
+        <Icon Type="save" Theme="outline" />
+        บันทึก
+    </div>;
+    RenderFragment canclebutton =@<div >
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+        </div>
+    ;
+
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+        _form.Submit();
+
+    }
+    private async Task GetCarHList()
+    {
+        ListData = await recordCarServices.GetAll();
+        ListDataSearch = ListData;
+    }
+    protected override async void OnInitialized()
+    {
+
+        await GetCarHList();
+        StateHasChanged();
+
+    }
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+    
+    string _selectedValue;
+
+    public async void Edit(decimal? carHId)
+    {
+        ListDataView = ListDataSearch.Where(w => w.DentalCarHId == carHId).FirstOrDefault();
+
+        var provincelist = await recordCarServices.GetProvince();
+        var districtlist = await recordCarServices.GetDistrict(Int32.Parse(ListDataView.PlaceProvince));
+        var subdistrictlist = await recordCarServices.GetSubDistrict(Int32.Parse(ListDataView.PlaceDistrict));
+
+        province = provincelist.ResultList.FirstOrDefault(w => w.ProvId == Int32.Parse(ListDataView.PlaceProvince)).ProvName;
+        district = districtlist.ResultList.FirstOrDefault(w => w.DistId == Int32.Parse(ListDataView.PlaceDistrict)).DistName;
+        subdistrict = subdistrictlist.ResultList.FirstOrDefault(w => w.SubdistId == Int32.Parse(ListDataView.PlaceSubDistrict)).SubdistName;
+        if (ListDataView != null)
+        {
+
+            _visible = true;
+        }
+
+        StateHasChanged();
+    }
+    
+    private Form<AaiDentalCarHView> _form;
+    private void OnFinish(EditContext editContext)
+    {
+      //Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+      //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+}

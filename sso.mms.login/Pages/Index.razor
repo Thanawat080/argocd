@@ -1,0 +1,31 @@
+﻿@page "/"
+
+@inject NavigationManager NavigationManager
+
+<style>
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+</style>
+
+<NavMenu PageCode="DSA0101" />
+
+<div style="overflow-x: hidden;overflow-y: hidden;">
+    <Login />
+</div>
+
+
+@code {
+
+}

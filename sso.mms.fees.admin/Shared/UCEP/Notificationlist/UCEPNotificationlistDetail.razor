@@ -1,0 +1,637 @@
+﻿ @using sso.mms.fees.admin.Shared.UCEP.Notificationlist.Modals
+<style>
+    .ant-card-c {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        font-size: 18px;
+        text-align: center;
+    }
+        .ant-card-c > .ant-card-head {
+            width: 100%;
+            background: #ffcc41 !important;
+            border-radius: 6px 6px 0px 0px !important;
+        }
+            .ant-card-c > .ant-card-head > .ant-card-head-wrapper > .ant-card-head-title {
+                font-size: 20px !important;
+                text-align: center !important;
+                color: #334396 !important;
+            }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ กรณีประสบอันตรายหรือเจ็บป่วยฉุกเฉินวิกฤต (UCEP) </div>
+    </div>
+    <div class="p-2 p-md-5 ">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการรับเเจ้ง</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">ค้นหารายการตามงวด</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">แสดงรายการงวดที่เลือก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายละเอียดการประมวลผล</span>
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="container py-4">
+            <div class="container p-2">
+                <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                        <Card Bordered="false" Title=@("งวด") Class="ant-card-c">
+                            <Body>
+                                <span>6603</span>
+                            </Body>
+                        </Card>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <Card Bordered="false" Title=@("ประมวลผลทั้งหมด") Class="ant-card-c">
+                            <Body>
+                                <span>30</span>
+                            </Body>
+                        </Card>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <Card Bordered="false" Title=@("ผ่านการประมวลผล") Class="ant-card-c">
+                            <Body>
+                                <span>28</span>
+                            </Body>
+                        </Card>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <Card Bordered="false" Title=@("ไม่ผ่านการประมวลผล") Class="ant-card-c">
+                            <Body>
+                                <span>1</span>
+                            </Body>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <div class="d-flex  align-items-center">
+                        <div class="col-4">
+                        </div>
+                        <div class="mms-media-center col-4" @onclick=@(() => visibleConfirm = true)>
+                            <Button Type="@ButtonType.Primary"><i class="fa-solid fa-right-from-bracket"></i>&nbsp; ส่งไปทำใบคำสั่งจ่าย</Button>
+                        </div>
+                        <div class="col-4 float-end">
+                            <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                                <SpaceItem>
+                                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                                </SpaceItem>
+                            </Space>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container ">
+                <div class="mms-txt-header  pt-2">รายการเบิกที่ผ่านการประมวลผล </div>
+                <hr />
+            </div>
+            <Table DefaultExpandAllRows DataSource="listOfData" TreeChildren="item=>item.Children" Bordered>
+                <ColumnDefinitions>
+                    <PropertyColumn Property="c=>c.Id" ColSpan="@GetColSpan(context.HosStatus)" Width="5%" Style="@GetColColor(context.HosStatus)">
+                        @String.Format("{0:n}",context.Id)
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.CardID"  ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Style="@GetColColor(context.HosStatus )"/>
+                    <PropertyColumn Property="c=>c.Name" Align="@(context.Key == "total"? ColumnAlign.Right : ColumnAlign.Left )" ColSpan="@GetColSpan(context.HosStatus , "name",context.Key)" Width="15%" Style="@GetColColor(context.HosStatus, "name")" />
+                    <PropertyColumn Property="c=>c.AdmitDate"  ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="15%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.DischargeDate"  ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.TotalHour" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                     @if (context.Key == "total")
+                    {
+                        <PropertyColumn Property="c=>c.amount"  ColSpan="4" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    }else{
+                        <PropertyColumn Property="c=>c.amount"  ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                  
+                    }
+                     <PropertyColumn Property="c=>c.promis" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="" Style="@GetColColor(context.HosStatus)">
+                        <Checkbox @bind-Checked=@context.promis OnChange="()=>SwapCheckPromis(context,listOfData)">
+                        </Checkbox>
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.unpromis" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="" Style="@GetColColor(context.HosStatus)">
+                        <Checkbox @bind-Checked=@context.unpromis OnChange="()=>SwapCheckUnPromis(context)">
+                        </Checkbox>
+                    </PropertyColumn>
+                
+                 
+                    <PropertyColumn Property="c=>c.Id" Title="" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="7%" Style="@GetColColor(context.HosStatus)">
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;"  />
+
+                    </PropertyColumn>
+
+
+                </ColumnDefinitions>
+                <HeaderTemplate>
+                    <TableRow>
+                        <TableHeader @bind-Field="context.Id" RowSpan="2">ลำดับ</TableHeader>
+                        <TableHeader @bind-Field="context.CardID" RowSpan="2">เลขที่คำสั่งจ่าย</TableHeader>
+                        <TableHeader @bind-Field="context.Name" RowSpan="2">เลขที่เอกสาร EMCO</TableHeader>
+                        <TableHeader @bind-Field="context.AdmitDate" RowSpan="2">ชื่อ-นามสกุล</TableHeader>
+                        <TableHeader @bind-Field="context.DischargeDate" RowSpan="2">ประเภท</TableHeader>
+                        <TableHeader @bind-Field="context.TotalHour" RowSpan="2">HN/<span style="color:#D94827;">AN</span></TableHeader>
+                        <TableHeader @bind-Field="context.amount" RowSpan="2"> จำนานเงิน </TableHeader>
+                        <TableHeader @bind-Field="context.promis" ColSpan="2">วินิจฉัย</TableHeader>
+                        <SimpleTableHeader RowSpan="2"></SimpleTableHeader>
+                    </TableRow>
+                    <TableRow>
+                        <SimpleTableHeader>
+                            <Checkbox Indeterminate="@indeterminate" @bind-Checked="@isChecked" OnChange="(e) => ChangeCheck(e,context.Id,listOfData)">
+                            </Checkbox>อนุมัติ
+                        </SimpleTableHeader>
+                        <SimpleTableHeader Style="color:red;">ไม่อนุมัติ</SimpleTableHeader>
+
+                    </TableRow>
+                </HeaderTemplate>
+@*                 <PaginationTemplate>
+                    <Pagination Class="pt-2"
+                                Total="context.Total"
+                                PageSize="context.PageSize"
+                                Current="context.PageIndex"
+                                ShowSizeChanger
+                                OnChange="context.HandlePageChange" />
+                </PaginationTemplate> *@
+            </Table>
+            <div class="container ">
+                <div class="mms-txt-header  pt-2">รายการเบิกที่ไม่ผ่านการประมวลผล </div>
+                <hr />
+            </div>
+            <Table DefaultExpandAllRows DataSource="listOfData2" TreeChildren="item=>item.Children" Bordered>
+
+                <ColumnDefinitions>
+                    <PropertyColumn Property="c=>c.Id" ColSpan="@GetColSpan(context.HosStatus)" Width="5%" Style="@GetColColor(context.HosStatus)">
+                        @String.Format("{0:n}",context.Id)
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.CardID" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Style="@GetColColor(context.HosStatus )" />
+                    <PropertyColumn Property="c=>c.Name" ColSpan="@GetColSpan(context.HosStatus , "name",context.Key)" Width="15%" Style="@GetColColor(context.HosStatus, "name")" />
+                    <PropertyColumn Property="c=>c.AdmitDate" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="15%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.DischargeDate" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.TotalHour" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.amount" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.promis" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="" Style="@GetColColor(context.HosStatus)">
+                        <Checkbox @bind-Checked=@context.promis OnChange="()=>SwapCheckPromis2(context,listOfData2)">
+                        </Checkbox>
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.unpromis" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="" Style="@GetColColor(context.HosStatus)">
+                        <Checkbox @bind-Checked=@context.unpromis OnChange="()=>SwapCheckUnPromis2(context)">
+                        </Checkbox>
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Id" Title="" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)">
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => visibleAlert = true) />
+
+                    </PropertyColumn>
+
+                </ColumnDefinitions>
+                <HeaderTemplate>
+                    <TableRow>
+                        <TableHeader @bind-Field="context.Id" RowSpan="2">ลำดับ</TableHeader>
+                        <TableHeader @bind-Field="context.CardID" RowSpan="2">เลขประจำตัวประชาชน</TableHeader>
+                        <TableHeader @bind-Field="context.Name" RowSpan="2">ชื่อ-นามสกุล</TableHeader>
+                        <TableHeader @bind-Field="context.AdmitDate" RowSpan="2">Admit Date</TableHeader>
+                        <TableHeader @bind-Field="context.DischargeDate" RowSpan="2">Discharge Date</TableHeader>
+                        <TableHeader @bind-Field="context.TotalHour" RowSpan="2">จำนวนชั่วโมงรวม</TableHeader>
+                        <TableHeader @bind-Field="context.amount" RowSpan="2"> จำนานเงิน(บาท) </TableHeader>
+                        <TableHeader @bind-Field="context.promis" ColSpan="2">วินิจฉัย</TableHeader>
+                        <SimpleTableHeader RowSpan="2"></SimpleTableHeader>
+                    </TableRow>
+                    <TableRow>
+                        <SimpleTableHeader>
+                            <Checkbox Indeterminate="@indeterminate" @bind-Checked="@isChecked2" OnChange="(e) => ChangeCheck(e,context.Id,listOfData2)">
+
+                            </Checkbox>อนุมัติ
+                        </SimpleTableHeader>
+                        <SimpleTableHeader Style="color:red;">ไม่อนุมัติ</SimpleTableHeader>
+
+                    </TableRow>
+                </HeaderTemplate>
+@*                 <PaginationTemplate>
+                <Pagination Class="pt-2"
+                                Total="context.Total"
+                                PageSize="context.PageSize"
+                                Current="context.PageIndex"
+                                            ShowSizeChanger
+                                OnChange="context.HandlePageChange" />
+                </PaginationTemplate> *@
+            </Table>
+        </div>
+        
+    </div>
+</div>
+<ConfirmModal _visible=@visibleConfirm OnClose="CloseModal"></ConfirmModal>
+<AlertModal _visible=@visibleAlert OnClose="CloseModal"> </AlertModal> 
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    bool visibleConfirm = false;
+    bool visibleAlert = false;
+
+
+    string? txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    public class ItemData
+    {
+        public string? Id { get; set; }
+        public string? CardID { get; set; }
+        public string? EMCO { get; set; }
+        public string? PayDate { get; set; }
+        public string? Type { get; set; }
+        public string? AnHn { get; set; }
+        public string? Key { get; set; }
+        public string? Address { get; set; }
+
+        public bool HosStatus { get; set; }
+        public bool promis { get; set; }
+        public bool unpromis { get; set; }
+        public string? Name { get; set; }
+        public string? HospName { get; set; }
+        public string? AdmitDate { get; set; }
+        public string? DischargeDate { get; set; }
+        public string? TotalHour { get; set; }
+        public int amount { get; set; }
+        public List<ItemData> Children { get; set; }
+    };
+
+    List<ItemData> listOfData = new List<ItemData>();
+    List<ItemData> listOfData2 = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData> {
+            new ItemData {
+                HosStatus  = true,
+                Id = "1",
+                Key = "1",
+                Name = "โรงพยาบาลดำรงค์ : 2210031",
+                Children = new List<ItemData> {
+                     new ItemData
+                    {
+                        Id = "1" ,
+                        CardID = $"100066900037809",
+                        EMCO = $"20230907083008-11558-002",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"IPD ปกติ",
+                        AnHn = $"6604570",
+                        Name = $"นางสุจินดา  ญาดา",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"29 มี.ค. 2566",
+                        DischargeDate = $"31 มี.ค. 2566",
+                        TotalHour = $"48ชั่วโมง",
+                        amount = 2100,
+
+                    },
+                    new ItemData
+                    {
+                       Id = "2" ,
+                        CardID = $"100066900037808",
+                        EMCO = $"20230907084513-11558-003",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"OPD",
+                        AnHn = $"6604570",
+                        Name = $"นายใจดี สุขใจ",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 4180,
+                    },
+                    new ItemData
+                    {
+                       Id = "3" ,
+                        CardID = $"100066900037807",
+                        EMCO = $"20230907086532-11558-004",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"IPD ปกติ",
+                        AnHn = $"6604570",
+                        Name = $"นายใจร้าย มากมาย",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 1100,
+                    }
+                },
+            },
+             new ItemData {
+                HosStatus  = true,
+                Id = "1",
+                Key = "1",
+                Name = "2210031 : โรงพยาบาลราม1",
+                 Children = new List<ItemData> {
+                     new ItemData
+                    {
+                        Id = "1" ,
+                        CardID = $"100066900037809",
+                        EMCO = $"20230907083008-11558-002",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"IPD ปกติ",
+                        AnHn = $"16571/66",
+                        Name = $"นางสาวสมพิตร โสจันทึก",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"29 มี.ค. 2566",
+                        DischargeDate = $"31 มี.ค. 2566",
+                        TotalHour = $"48ชั่วโมง",
+                        amount = 7641,
+
+                    },
+                    new ItemData
+                    {
+                       Id = "2" ,
+                        CardID = $"100066900037808",
+                        EMCO = $"20230904183607-11565-002",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"IPD ปกติ",
+                        AnHn = $"16808/66",
+                        Name = $"นายสุพจน์ ทวีรีตน์",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 24460,
+                    },
+                    new ItemData
+                    {
+                       Id = "3" ,
+                        CardID = $"100066900037807",
+                        EMCO = $"20230911152465-11569-004",
+                        PayDate = $"UCEP2566-G120123",
+                        Type = $"OPD",
+                        AnHn = $"6605587",
+                        Name = $"นายศุภกิจ กิจวัตร",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 480,
+                    }
+                },
+            },
+        };
+        listOfData2 = new List<ItemData> {
+            new ItemData {
+                HosStatus  = true,
+                Id = "1",
+                Key = "1",
+                Name = "โรงพยาบาลดำรงค์1",
+                Children = new List<ItemData> {
+                     new ItemData
+                    {
+                        Id = "1" ,
+                        CardID = $"1234587957xxx",
+                        Name = $"นางสุจินดา  ญาดา",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"29 มี.ค. 2566",
+                        DischargeDate = $"31 มี.ค. 2566",
+                        TotalHour = $"48ชั่วโมง",
+                        amount = 10000,
+
+                    },
+                    new ItemData
+                    {
+                       Id = "2" ,
+                        CardID = $"1234567890xxx",
+                        Name = $"นางบุษบา  กล้ายิ่ง",
+                        HospName = $"โรงพยาบาลดำรงค์1",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 20000,
+                    }
+                },
+            },
+             new ItemData {
+                HosStatus  = true,
+                Id = "1",
+                Key = "1",
+                Name = "โรงพยาบาลดำรงค์2",
+                Children = new List<ItemData> {
+                     new ItemData
+                    {
+                        Id = "1" ,
+                        CardID = $"1234587957xxx",
+                        Name = $"นางสุจินดา  ญาดา",
+                        HospName = $"โรงพยาบาลดำรงค์2",
+                        AdmitDate = $"29 มี.ค. 2566",
+                        DischargeDate = $"31 มี.ค. 2566",
+                        TotalHour = $"48ชั่วโมง",
+                        amount = 10000,
+
+                    },
+                    new ItemData
+                    {
+                       Id = "2" ,
+                        CardID = $"1234567890xxx",
+                        Name = $"นางบุษบา  กล้ายิ่ง",
+                        HospName = $"โรงพยาบาลดำรงค์2",
+                        AdmitDate = $"15 มี.ค. 2566",
+                        DischargeDate = $"15 มี.ค. 2566",
+                        TotalHour = $"24ชั่วโมง",
+                        amount = 20000,
+                    }
+                },
+            },
+        };
+        foreach (var item in listOfData)
+        {
+
+            int totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+
+            ItemData total = new ItemData()
+                {
+                    Id = "",
+                    Key = "total",
+                    Name = "รวม Total",
+                    amount = totalAge,
+                    Address = "",
+                };
+            item.Children.Add(total);
+        }
+    }
+    private int CalculateTotalChildrenAge(List<ItemData> children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.amount;
+        }
+        return totalAge;
+    }
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return 10;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            if (key == "total")
+            {
+                return 5;
+            }
+            else
+            {
+                if (columnTitle == "total")
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    } 
+    private async Task SwapCheckPromis(ItemData item,List<ItemData> listItem )
+    {
+        int  childrenCount = 0;
+        int  promisCount = 0;
+        foreach(var count in listItem)
+        {
+             childrenCount += count.Children.Count();
+            promisCount += count.Children.Where(w => w.promis).Count();
+            if (childrenCount == promisCount)
+            {
+                 isChecked = true;
+            }
+            else
+            {
+                isChecked = false;
+            }
+        }
+        
+        if (item.promis)
+        {
+            item.unpromis = false;
+        }
+        StateHasChanged();
+    }
+    private async Task SwapCheckPromis2(ItemData item,List<ItemData> listItem )
+    {
+        int  childrenCount = 0;
+        int  promisCount = 0;
+        foreach(var count in listItem)
+        {
+            childrenCount += count.Children.Count();
+            promisCount += count.Children.Where(w => w.promis).Count();
+            if (childrenCount == promisCount)
+            {
+                 isChecked2 = true;
+            }
+            else
+            {
+                isChecked2 = false;
+            }
+        }
+        
+        if (item.promis)
+        {
+            item.unpromis = false;
+        }
+        StateHasChanged();
+    }
+    bool indeterminate;
+    bool isChecked;
+    bool isChecked2;
+    int numofpromis;
+    int numofchilden;
+    private async Task SwapCheckUnPromis(ItemData item)
+    {
+
+        if (item.unpromis)
+        {
+            item.promis = false;
+            isChecked = false;
+        }
+        StateHasChanged();
+    }
+    private async Task SwapCheckUnPromis2(ItemData item)
+    {
+
+        if (item.unpromis)
+        {
+            item.promis = false;
+            isChecked2 = false;
+        }
+        StateHasChanged();
+    }
+    private async Task ChangeCheck(bool e, string id,List<ItemData> item)
+    {
+        if (e)
+        {
+            foreach (var listItem in item)
+            {
+                foreach (var subitem in listItem.Children)
+                {
+                    subitem.promis = true;
+                    subitem.unpromis = false;
+                }
+            }
+        }
+        else
+        {
+            foreach (var listItem in item)
+            {
+                foreach (var subitem in listItem.Children)
+                {
+                    subitem.promis = false;
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+    public async Task CloseModal(bool stat)
+    {
+        visibleConfirm = stat;
+        visibleAlert = stat;
+    }
+}

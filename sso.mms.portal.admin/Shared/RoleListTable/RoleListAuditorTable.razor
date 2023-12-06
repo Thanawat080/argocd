@@ -1,0 +1,159 @@
+﻿@using AntDesign;
+@using sso.mms.helper.Data;
+@using sso.mms.helper.Utility
+@using sso.mms.portal.admin.Pages.ManageAccess;
+@using sso.mms.portal.admin.Services;
+@using sso.mms.portal.admin.ViewModels;
+@inject ManageMentMenuService ManageMentMenuService
+@inject SweetAlertService Swal
+
+
+<style>
+
+    .ant-table-thead > tr > th {
+        background-color: #FFCC41;
+    }
+
+</style>
+
+<div class="modal-header">
+    <h5 class="modal-title" style="color: #334396;">เลือกบทบาท</h5>
+    <button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close" @onclick="@OnInitializedAsync">
+        <i class="fa-regular fa-circle-xmark fa-2xl " style="color:#334396"></i>
+    </button>
+</div>
+
+<AntDesign.Table @ref="table" DataSource="@RoleInAuditUser.ToArray()" Class="px-3">
+    <AntDesign.PropertyColumn Property="c=>c.RoleCode" Title="รหัสบทบาท"></AntDesign.PropertyColumn>
+    <AntDesign.PropertyColumn Property="c=>c.Name" Title="บทบาท">
+        <AntDesign.Template>
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked="@IscheckedRole(context,AuditUserListAndRole.RoleListView)"
+            @onchange="@(e => ToggleRoleSelectionAudit(context, AuditUserListAndRole.RoleList, ListAuditUserListAndRole, AuditUserListAndRole.User.UserName))" />
+            <span>@context.Name</span>
+        </AntDesign.Template>
+    </AntDesign.PropertyColumn>
+</AntDesign.Table>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" style="border-radius: 4px;border: 2px solid #334396;background: #FFF;color: #334396;" data-bs-dismiss="modal" @onclick="@OnInitializedAsync">
+        ย้อนกลับ
+    </button>
+    <button type="button" class="btn btn-primary btn-otp px-4" data-bs-dismiss="modal" @onclick="@(e => InsertAndGetRoleAuditUser(AuditUserListAndRole.User, AuditUserListAndRole.RoleList))">บันทึก</button>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public List<RoleGroupM> RoleInAuditUser { get; set; }
+
+
+    [Parameter]
+    public AuditUserRole? AuditUserListAndRole { get; set; }
+
+    [Parameter]
+    public List<AuditUserRole>? ListAuditUserListAndRole  { get; set; }
+
+
+    [Parameter]
+    public Func<Task> RenderRoleService { get; set; }
+
+    [Parameter]
+
+    public EventCallback<bool> Isloading { get; set; }
+
+    ITable table;
+
+
+    private bool IscheckedRole(RoleGroupM rgm, List<ManageMentMenuModel.ViewModelForGetRoleUserMappingAndName> roleListView)
+    {
+        foreach (var roleItem in roleListView)
+        {
+            if (roleItem.RoleGroupId == rgm.Id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void ToggleRoleSelectionAudit(RoleGroupM roleGroupM, List<RoleUserMapping> roleList, List<AuditUserRole> auditUserListAndRole, string userName)
+    {
+        bool insert = false;
+        bool delete = false;
+        foreach (var item in auditUserListAndRole)
+        {
+            if (item.User.UserName == userName)
+            {
+                foreach (var roleItem in item.RoleList)
+                {
+                    //delete
+                    if (roleItem.RoleGroupId == roleGroupM.Id)
+                    {
+                        delete = true;
+                        break;
+                    }
+                }
+                insert = true;
+            }
+        }
+
+        if (delete == true)
+        {
+            roleList.Remove(roleList.Find(x => x.RoleGroupId == roleGroupM.Id));
+        }
+        else if (insert == true)
+        {
+            roleList.Add(new RoleUserMapping()
+                {
+                    RoleGroupId = roleGroupM.Id,
+                    UserName = userName,
+                    UserType = "AUDIT"
+                });
+        }
+    }
+
+    private async void InsertAndGetRoleAuditUser(AuditorUserM data, List<RoleUserMapping> itemList)
+    {
+
+        try
+        {
+            await Isloading.InvokeAsync(true);
+            await ManageMentMenuService.deleteRoleUserMapping(data.UserName);
+            foreach (var item in itemList)
+            {
+                ManageMentMenuModel.ViewModelRoleGroup roleInsert = new ManageMentMenuModel.ViewModelRoleGroup();
+                roleInsert.RoleGroupId = item.RoleGroupId;
+                roleInsert.UserName = data.UserName;
+                roleInsert.UserType = "AUDIT";
+                roleInsert.CreateBy = "MMS-USER";
+                roleInsert.UpdateBy = "MMS-USER";
+                await ManageMentMenuService.saveRoleUserMapping(roleInsert);
+            }
+            ListAuditUserListAndRole = new List<AuditUserRole>();
+            await RenderRoleService();
+            await Isloading.InvokeAsync(false);
+            StateHasChanged();
+            await Swal.FireAsync(
+                    "บันทึกสำเร็จ",
+                    null,
+                    SweetAlertIcon.Success
+                    );
+        }
+        catch (Exception ex)
+        {
+            await Isloading.InvokeAsync(false);
+            StateHasChanged();
+            await Swal.FireAsync(
+                    "บันทึกไม่สำเร็จ",
+                    null,
+                    SweetAlertIcon.Error
+                    );
+            throw;
+        }
+
+    }
+
+
+
+}

@@ -1,0 +1,290 @@
+﻿@page "/chat"
+@using Blazored.LocalStorage;
+@using System.IdentityModel.Tokens.Jwt;
+@using sso.mms.chat.Services;
+@using sso.mms.chat.ViewModels;
+@using sso.mms.helper.Configs;
+@using System.Threading
+@using sso.mms.helper.PortalModel;
+@using sso.mms.helper.Utility
+@using sso.mms.helper.ViewModels;
+@using sso.mms.login.Services;
+@using sso.mms.helper.Components.Navbar
+@using sso.mms.login.ViewModels;
+@using sso.mms.notification.Services;
+@using sso.mms.notification.ViewModel;
+
+@inject UserRoleService userRoleService
+@inject NotificationService notificationService
+@inject ILocalStorageService _localstorage;
+@inject ReadTokenService readTokenService
+@inject ChatRoomService ChatRoomService;
+@inject ChatService ChatService;
+<PageTitle>Index</PageTitle>
+
+<style>
+    /*@@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap');*/
+
+    @@font-face {
+        font-family: 'Noto Sans Thai';
+        src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+    }
+
+    body {
+        background: #F5F3F7;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    @@media only screen and (min-width: 440px) {
+        .wid-banner {
+            width: 286px;
+            height: 52.3px;
+        }
+    }
+
+    @@media only screen and (max-width: 440px) {
+        .wid-banner {
+            width: 100%;
+            height: 100%;
+        }
+
+        .img_a-t {
+            display: none;
+        }
+    }
+
+    @@media only screen and (min-width: 768px) {
+        .c-style-content {
+            padding-left: 75px;
+            padding-right: 75px;
+        }
+    }
+
+    .px-75 {
+        padding-left: 75px;
+        padding-right: 75px;
+        background: #fff;
+    }
+
+</style>
+@if (isLoading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+@*<img src="helper_shared/favicon.ico" height="50px" width="50px"/>*@
+
+<NavbarLoginSSO PageCode="@pagecode" Fname="@getUser?.FirstName" Lname="@getUser?.LastName" NotiNo="@notiNo"></NavbarLoginSSO>
+
+<MediaStyle></MediaStyle>
+<div>
+    <div class="container py-4">
+        <div class="row" style="display: flex;align-items: flex-start;">
+            <div class="col-md-12 col-lg-5 col-xl-4">
+                <OnlineChat 
+                    ChatRoomList="@ChatRoomList" 
+                    OnGetChatRoomData="@GetChatRoom" 
+                    ChatRoomId="@ChatRoomId" 
+                    OnSearchChatList="@SearchChatList" 
+                    searchChatRoomList="searchChatRoomList" />
+            </div>
+            <div class="col-md-12 col-lg-7 col-xl-8">
+                @if (ChatTRoom != null)
+                {
+                    <WindowsChat 
+                        ChatRoomName="@ChatRoomName" 
+                        ChatTRoom="@ChatTRoom" 
+                        ChatRoomId="@ChatRoomId" 
+                        Username="@responseShortToken.UserName"
+                        CloseChat="@CloseChat"
+                        />
+                }
+                else
+                {
+                    <WindowsStartChat />
+                }
+            </div>
+
+        </div>
+    </div>
+    <footer>
+        <Footer />
+    </footer>
+</div>
+
+
+  
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+    string pagecode = "HOP0801";
+
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url;
+    public bool isLoading = false;
+    private int notiNo;
+    public string orgCode = "";
+    public string username = "";
+    public string userType = "";
+    public UserRole userRole;
+    public int ChatRoomId;
+    public string ChatRoomName;
+    public List<string>? roleCodeList = new List<string>();
+    public List<string> menuList = new List<string>();
+
+    public List<ChatT> ChatTRoom { get; set; }
+
+    public List<ChatRoom> ChatRoomList { get; set; }
+
+    public List<ChatRoom> searchChatRoomList { get; set; }
+
+    public string? searchList = "";
+
+    private List<NotiM>? responseNoti = new List<NotiM>();
+
+    public NotiTApiModel notiTapi = new NotiTApiModel();
+
+    private ResponseLogin getUser { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        responseShortToken = await readTokenService.ReadToken(shortToken!);
+        if (shortToken != null)
+        {
+            Console.WriteLine("ResponseShortToken", responseShortToken);
+            if (env == "Development")
+            {
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+                var t = jwt.Payload.ToList();
+                KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+                var username = result.Value.ToString();
+                userRole = await userRoleService.GetRoleByUserName(username);
+                await _localstorage.SetItemAsync("userRole", userRole);
+            }
+            else
+            {
+                userRole = await userRoleService.GetRoleByUserName(await _localstorage.GetItemAsync<String>("username"));
+                await _localstorage.SetItemAsync("userRole", userRole);
+            }
+            if (userRole != null && userRole.role != null)
+            {
+                try
+                {
+                    menuList = userRole.role.Select(i => i.menu.Where(m => m.isRoleRead == true && m.appCode == "PORTAL-HOS").Select(t => t.menuCode).ToList()).ToList().SelectMany(list => list).ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
+
+            JwtSecurityTokenHandler tokenHandler2 = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt1 = tokenHandler2.ReadJwtToken(responseShortToken.accessToken);
+            var token = jwt1.Payload.ToList();
+            KeyValuePair<string, object> result_username = token.FirstOrDefault(pair => pair.Key == "preferred_username");
+            KeyValuePair<string, object> resultRealm = token.FirstOrDefault(pair => pair.Key == "iss");
+            userType = resultRealm.Value.ToString().Split('/').Last();
+            username = result_username.Value.ToString();
+            orgCode = await userRoleService.GetHospitalCode(username);
+
+            await _localstorage.SetItemAsync("userRole", userRole);
+            await _localstorage.SetItemAsync("userType", userType);
+            await _localstorage.SetItemAsync("orgCode", orgCode);
+
+            if (userRole != null)
+            {
+                roleCodeList = userRole.role.Select(roleObject => roleObject.roleCode).ToList();
+            }
+
+            await _localstorage.SetItemAsync("roleCodeList", roleCodeList);
+            notiTapi = new NotiTApiModel
+                {
+                    userType = userType,
+                    username = username,
+                    orgCode = orgCode,
+                    roleCodeList = roleCodeList
+                };
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        var userName = await _localstorage.GetItemAsync<string>("username");
+
+        Console.WriteLine("Original username: " + userName);
+
+        Console.WriteLine("Original username: " + userName.Replace(" ", ""));
+
+        if (responseShortToken.HospitalMId != null)
+        {
+            ChatRoomList = await ChatRoomService.GetChatRoom(responseShortToken.HospitalMId, userName);
+            searchChatRoomList = ChatRoomList;
+        }
+        else
+        {
+            ChatRoomList = new List<ChatRoom>();
+        }
+
+        responseNoti = await notificationService.GetNotiByUser(notiTapi);
+        if (responseNoti != null)
+        {
+            foreach (var item in responseNoti)
+            {
+                notiNo = notiNo + item.NotificationTs.Count;
+            }
+        }
+
+    }
+
+    private async Task GetChatRoom(ChatRoom item)
+    {
+        ChatRoomId = item.Id;
+        ChatRoomName = item.ChatRoomM.Name;
+        ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, 10);
+        StateHasChanged();
+        if (ChatTRoom != null)
+        {
+            pagecode = "HOP0802";
+            StateHasChanged();
+        }
+    }
+
+
+    void SearchChatList(string item)
+    {
+        searchChatRoomList = ChatRoomList.Where(obj => obj.ChatRoomM.Name.Contains(item.ToLower())).ToList();
+        StateHasChanged();
+    }
+    void CloseChat(bool stat)
+    {
+        ChatTRoom = null;
+        StateHasChanged();
+    }
+
+}

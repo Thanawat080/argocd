@@ -1,0 +1,61 @@
+﻿@page "/DentalCentralSerach/index"
+@using System.IdentityModel.Tokens.Jwt;
+@using AntDesign;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.Dental.DentalCentralPublic.SearchProvince;
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleServicea
+@inject ILocalStorageService _localstorage
+@inject IconService iconService
+
+<LayoutIndex ShortToken="@shortToken" Page="DentalCentralSerach">
+    @if (page == 1)
+    {
+        <SearchProvince IndexPage="@Indexpage" />
+    }  
+    @if (page == 2)
+    {
+        <SearchList IndexPage="@Indexpage" />
+    }
+
+
+</LayoutIndex>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+    int page = 1;
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    page = 1;
+    //    responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+    //    Console.WriteLine("responseShortToken", responseShortToken);
+
+    //    if (responseShortToken != null)
+    //    {
+    //        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+    //        JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+    //        var t = jwt.Payload.ToList();
+    //        KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+    //        var username = result.Value.ToString();
+
+    //        userRole = await userRoleService.GetRoleByUserName(username);
+    //        await _localstorage.SetItemAsync("userRole", userRole);
+
+    //    }
+    //}
+    public async Task Indexpage(int usepage)
+    {
+        this.page = usepage;
+    }
+}

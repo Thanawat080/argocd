@@ -1,0 +1,127 @@
+﻿<style>
+    .tablestyle .ant-table-thead > tr > th {
+        position: relative;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        background: #3B6C43 !important;
+        border-bottom: 1px solid #ffffff !important;
+        transition: background 0.3s ease;
+    }
+</style>
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnCancel="@HandleCancel"
+       
+       Class="mms-media-center mms-text-title"
+       Width="1300"
+       Footer="null">
+    <Table DefaultExpandAllRows DataSource="listOfData" Bordered ScrollX="800" TreeChildren="item=>item.Children" Class="mms-txt-default mx-2 my-1 tablestyle" Style="font-size : 14px !important">
+            @{
+            var SumPrice = listOfData[0].Children.Sum(x => x.childPrice);
+
+        }
+
+           
+        @if (context.Status == false)
+            {
+            <PropertyColumn Width="10%" Title="ลำดับ" Property="c => c.childId" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="@GetColColor(context.Status, "Name")"></PropertyColumn>
+            <PropertyColumn Width="20%" Title="เลขประจำตัวประชาชน" Property="c => c.childIden" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="@GetColColor(context.Status, "Name")"></PropertyColumn>
+
+            }
+
+
+        <PropertyColumn Width="10%" Title="ชื่อ-นามสกุล" Property="c => c.Name" ColSpan="@GetColSpan(context.Status,"Name")" Align="@columnAlign"  Style="@GetColColor(context.Status, "Name")"></PropertyColumn>
+        @if (context.Status == false)
+        {
+        <PropertyColumn Width="20%" Title="เลขที่รับเเจ้ง" Property="c => c.childNumber" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="@GetColColor(context.Status, "Name")"> </PropertyColumn>
+        <PropertyColumn Width="15%" Title="วันที่ใช้สิทธิ" Property="c => c.childDate" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="@GetColColor(context.Status, "Name")"> </PropertyColumn>
+        <PropertyColumn Width="15%" Title="จำนวนเงิน" Property="c => c.childPrice" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="@GetColColor(context.Status, "Name")"> </PropertyColumn>
+        <PropertyColumn Width="10%" Title="วินิจฉัย" Property="c => c.childstatus" ColSpan="@GetColSpan(context.Status)" Align="@columnAlign" Style="color :#67C23A"> </PropertyColumn>
+            <PropertyColumn Width="5%" Align="ColumnAlign.Center" Property="c => c.childId" Title="">
+            @if(context.Status == false)
+            {
+            <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                 style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OpenViewModal(true)) />
+                
+            }
+            </PropertyColumn>
+            <SummaryRow>
+                <SummaryCell Align=ColumnAlign.Right ColSpan="5">รวมทั้งหมด</SummaryCell>
+                <SummaryCell Align=ColumnAlign.Center ColSpan="3">
+                    <Text>@SumPrice</Text>
+                </SummaryCell>
+            </SummaryRow>
+            
+        }
+        </Table>
+</Modal>
+<ViewModal _visible=openViewModal OnClose="@OpenViewModal"></ViewModal>
+@code {
+    ColumnAlign columnAlign = ColumnAlign.Center;
+    string title = "แสดงข้อมูลรายการเบิก";
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public List<sso.mms.fees.admin.Shared.Dental.DentalProvincial.PaymentOrder.PaymentOrderWait.ItemData> listOfData { get; set; }
+    List<sso.mms.fees.admin.Shared.Dental.DentalProvincial.PaymentOrder.PaymentOrderWait.ItemData> L1 = new List<sso.mms.fees.admin.Shared.Dental.DentalProvincial.PaymentOrder.PaymentOrderWait.ItemData>();
+    public bool openViewModal { get; set; }   
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine("e");
+        _visible = false;
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private int GetColSpan(bool HosStatus, string columnTitle = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "Name")
+            {
+                columnAlign = ColumnAlign.Left;
+                return 8;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            columnAlign = ColumnAlign.Center;
+            return 1;
+        }
+
+}
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "Name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+}

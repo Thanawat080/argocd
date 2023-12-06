@@ -1,0 +1,91 @@
+﻿@using System.ComponentModel;
+
+
+<div class="mt-3">
+    <Table @ref="table"
+           TItem="MockUpData"
+           DataSource="@mockUpdata"
+           Total="_total"
+           Bordered
+            @bind-PageIndex="_pageIndex"
+            @bind-PageSize="_pageSize"
+            @bind-SelectedRows="selectedRows"
+           OnChange="OnChange"
+           Size="TableSize.Small">
+        @*<Selection Key="@(context.Id.ToString())" />*@
+        <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Style="background: #EAE8EC" />
+        <PropertyColumn Title="ระยะเวลาการดูแล (ปี)" Property="c=>c!.Code" Style="background: #EAE8EC" />
+        <PropertyColumn Title="อัตรา(%)" Property="c=>c!.Code" Style="background: #EAE8EC" />
+        <PropertyColumn Title="สถานะการใช้งาน" Property="c=>c!.Status" Width="200px" Style="background: #EAE8EC">
+            <Switch @bind-Value="@context.Status"></Switch>
+        </PropertyColumn>
+    </Table>
+
+    <br />
+    <p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+    <br />
+</div>
+
+
+
+
+@code {
+    MockUpData[] mockUpdata;
+
+    IEnumerable<MockUpData> selectedRows;
+    ITable table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mockUpdata = await GetForecastAsync(1, 50);
+        _total = 50;
+    }
+
+    public class MockUpData
+    {
+        public int Id { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Rate")]
+        public string Rate { get; set; }
+
+        public bool Status { get; set; }
+    }
+
+    private static readonly string[] Code = new[]
+    {
+        "1", "2", "3"
+    };
+    private static readonly string[] Rate = new[]
+      {
+        "100", "110", "120"
+    };
+
+    public async Task OnChange(QueryModel<MockUpData> queryModel)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(queryModel));
+    }
+
+    public Task<MockUpData[]> GetForecastAsync(int pageIndex, int pageSize)
+    {
+        var rng = new Random();
+        return Task.FromResult(Enumerable.Range((pageIndex - 1) * pageSize + 1, pageSize).Select(index =>
+        {
+            var temperatureC = rng.Next(-20, 55);
+            return new MockUpData
+                {
+                    Id = index,
+                    Code = Code[rng.Next(Code.Length)],
+                    Rate = Rate[rng.Next(Code.Length)],
+                    Status = false,
+                };
+        }).ToArray());
+    }
+}

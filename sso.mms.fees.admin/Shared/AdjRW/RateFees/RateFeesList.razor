@@ -1,0 +1,257 @@
+﻿@using System.Text.Json;
+
+<style>
+    .editable-cell {
+        position: relative;
+    }
+
+    .editable-cell-value-wrap {
+        padding: 5px 12px;
+        cursor: pointer;
+        height: 32px;
+    }
+
+    .editable-row:hover .editable-cell-value-wrap {
+        padding: 4px 11px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+    }
+
+    [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
+        border: 1px solid #434343;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ AdjRW</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page" @onclick=@(() => goEdit(1))>
+                    <span class="breadcum-sucress py-2">กำหนดอัตราค่าบริการ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ตั้งค่าอัตราค่าบริการ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-2">
+            <div class="col-sm-12 col-md-4">
+                <div class="p-2 d-md-flex align-items-md-center">
+                    <div class="mms-txt-headdetail">
+                        ปีงบประมาณ
+                    </div>
+                    <div class="ps-md-2">
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="p-2 d-md-flex align-items-md-center">
+                    <div class="mms-txt-headdetail">
+                        วันที่แก้ไขล่าสุด
+                    </div>
+                    <div class="ps-md-2">
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="p-2 d-md-flex align-items-md-center">
+                    <div class="mms-txt-headdetail">
+                        ยอดเงินที่เรียกคืน
+                    </div>
+                    <div class="ps-md-2">
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly disabled />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row py-4">
+            <div class="col-sm-12 col-md-6 mms-media-start">
+                <Button Type="@ButtonType.Primary" OnClick="addRow"><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+            </div>
+            <div class="col-3"></div>
+            <div class="col-sm-12 col-md-3 mms-media-end">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="listOfData" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Width="5%" Align="ColumnAlign.Center"></PropertyColumn>
+            <PropertyColumn Property="c=>c.freerate" Width="20%" Title="อัตราอัตราค่าบริการ" Align="ColumnAlign.Center">
+                @if (editId == context.Id)
+                {
+                    <Input Type="text" Placeholder="Basic usage" @bind-Value="context.freerate" OnBlur="stopEdit" />
+                }
+                else
+                {
+                    <div class="editable-cell-value-wrap" style="padding-right:24px" @onclick="()=>startEdit(context.Id)">
+                        @context.freerate
+                    </div>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.StartDate" Title="วันที่เริ่มต้นการใช้" Width="20%" Align="ColumnAlign.Center">
+                @if (editId == context.Id)
+                {
+                    <DatePicker TValue="DateTime" Picker="@DatePickerType.Date" @bind-Value="context.StartDate" OnChange="stopEdit" />
+                }
+                else
+                {
+                    <div class="editable-cell-value-wrap" style="padding-right:24px" @onclick="()=>startEdit(context.Id)">
+                        @context.StartDate
+                    </div>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c._selectedValue1" Title="สาเหตุ" Width="15%" Align="ColumnAlign.Center">
+                @if (editId == context.Id)
+                {
+                    <Select TItem="Person"
+                        TItemValue="string"
+                        DataSource="@_list"
+                        @bind-Value="context._selectedValue1"
+                        ValueName="@nameof(Person.Value)"
+                        LabelName="@nameof(Person.Name)"
+                        DisabledName="@nameof(Person.IsDisabled)"
+                        OnBlur="stopEdit">
+                    </Select>
+                }
+                else
+                {
+                    <div class="editable-cell-value-wrap" style="padding-right:24px" @onclick="()=>startEdit(context.Id)">
+                        @context._selectedValue1
+                    </div>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.switchValue" Title="สถานะการใช้งาน" Width="15%" Align="ColumnAlign.Center">
+                <div class="d-flex align-items-center">
+                    <Switch @bind-Checked="context.switchValue" />
+                    @if (context.switchValue == true)
+                    {
+                        <span class="ps-2" style="color:green">ใช้งาน</span>
+                    }
+                    else
+                    {
+                        <span class="ps-2" style="color:red">ไม่ใช้งาน</span>
+                    }
+                </div>
+            </PropertyColumn>
+        </Table>
+        <div class="mms-media-end">
+            <div>
+                <Button Type="@ButtonType.Primary"><i class="fa-solid fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    
+    protected override void OnInitialized()
+    {
+    }
+
+    int i = 0;
+    string editId;
+    public class ItemData
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Age { get; set; }
+        public int BudGet { get; set; }
+        public string People { get; set; }
+        public int BudGetYear { get; set; }
+        public string freerate { get; set; }
+        public DateTime StartDate { get; set; }
+        public string _selectedValue1 { get; set; }
+        public bool switchValue { get; set; }
+    };
+    List<ItemData> listOfData = new List<ItemData>
+        {
+            new ItemData
+            {
+            Id = "1",
+            _selectedValue1 = "jack",
+            Age = "Test Ter",
+            freerate = "9200",
+            StartDate = DateTime.Now,
+            BudGet = 500,
+            People = "10000",
+            BudGetYear = 800000,
+            switchValue = true
+            },
+            new ItemData
+            {
+            Id = "2",
+            _selectedValue1 = "jack",
+            Age = "Test Ter2",
+            freerate = "5200",
+            StartDate = DateTime.Now,
+            BudGet = 200,
+            People = "5000",
+            BudGetYear = 100000,
+             switchValue = false
+            }
+        };
+
+    void addRow()
+    {
+        i = listOfData.Count() + 1;
+
+        listOfData.Add(new ItemData
+            {
+                Id = $"{i}",
+                _selectedValue1 = "",
+                Age = "",
+                freerate = "",
+                StartDate = DateTime.Now,
+                BudGet = 0,
+                People = "...",
+                BudGetYear = 0,
+                switchValue = false
+            });
+    }
+
+    void startEdit(string id)
+    {
+        editId = id;
+    }
+
+    void stopEdit()
+    {
+        var editedData = listOfData.FirstOrDefault(x => x.Id == editId);
+        Console.WriteLine(JsonSerializer.Serialize(editedData));
+        editId = null;
+    }
+    /*--------- Select */
+
+    public class Person
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public bool IsDisabled { get; set; }
+    }
+
+    List<Person> _list = new List<Person>
+    {
+    new Person {Value = "jack", Name = "Jack"},
+    new Person {Value = "lucy", Name = "Lucy"},
+    new Person { Value = "disabled", Name = "Disabled"},
+    new Person { Value = "yaoming", Name = "YaoMing"},
+    };
+}

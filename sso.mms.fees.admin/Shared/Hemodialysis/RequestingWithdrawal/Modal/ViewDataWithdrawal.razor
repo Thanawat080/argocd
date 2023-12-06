@@ -1,0 +1,432 @@
+﻿@using System.ComponentModel.DataAnnotations;
+<style>
+    /*    .tablestyle .ant-table-thead > tr > th {
+                                        position: relative;
+                                        color: #FFFFFF !important;
+                                        font-weight: 600 !important;
+                                        text-align: center !important;
+                                        background: #3B6C43 !important;
+                                        border-bottom: 1px solid #ffffff !important;
+                                        transition: background 0.3s ease;
+                                    }*/
+
+    .ant-card {
+        border-radius: 6px;
+        border: 1px solid #f0f0f0 !important;
+    }
+</style>
+@{
+    RenderFragment footer =@<div>
+    </div>;
+}
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Width="1500"
+       Footer="@footer">
+    <Card Title=@("ข้อมูลสถานพยาบาล")>
+        <Body>
+            <div style="font-size:18px;">
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="row pLayers-2">
+                            <div class="col-6 mms-txt-headdetail text-md-end">ชื่อสถานพยาบาล :</div>
+                            <div class="col-6">โรงพยาบาลสระบุรี</div>
+                        </div>
+                        <div class="row pLayers-2">
+                            <div class="col-6 mms-txt-headdetail text-md-end">งวด :</div>
+                            <div class="col-6">660902</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-5">
+                        <div class="row pLayers-2">
+                            <div class="col-6 mms-txt-headdetail text-md-end">รหัสสถานพยาบาล :</div>
+                            <div class="col-6">10661</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <Button Type="@ButtonType.Dashed" Class="ant-btn-distable"><i class="fa-solid fa-file-lines"></i>&nbsp; ใบคำขอเบิก</Button>
+                    </div>
+                </div>
+                <div class="row pLayers-2">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 mms-txt-headdetail text-md-end">ค่าบริการฟอกเลือดด้วยเครื่องไตเทียม :</div>
+                            <div class="col-6">13 รายการ</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">จำนวน : 5 คน</div>
+                            <div class="col-6"> รวมเป็นเงิน : 13,420.00 บาท</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pLayers-2" style="color:red">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">แก้ไขค่าบริการฟอกเลือดด้วยเครื่องไตเทียม :</div>
+                            <div class="col-6">0 รายการ</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">จำนวน : 0 คน </div>
+                            <div class="col-6">รวมเป็นเงิน : 0.00 บาท</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pLayers-2">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 mms-txt-headdetail text-md-end">ค่ายา Erythropoietin :</div>
+                            <div class="col-6">8 รายการ</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">จำนวน : 2 คน</div>
+                            <div class="col-6">รวมเป็นเงิน : 1,920.00 บาท</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pLayers-2" style="color:red">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">แก้ไขค่ายา Erythropoietin :</div>
+                            <div class="col-6">0 รายการ</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-6 text-md-end">จำนวน : 0 คน </div>
+                            <div class="col-6">รวมเป็นเงิน : 0.00 บาท</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="row pLayers-2">
+                            <div class="col-6 mms-txt-headdetail text-md-end">รวมเป็นเงินทั้งหมด :</div>
+                            <div class="col-6">15,340.00 บาท</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Body>
+    </Card>
+    <br />
+    <Card Title=@("ค่าบริการฟอกเลือดด้วยเครื่องไตเทียม")>
+        <Body>
+            <Table DataSource="listOfData" Bordered ScrollX="1350">
+                    <ColumnDefinitions>
+                        <PropertyColumn Property="c=>c.Id" Width="7%" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.hospitalCode" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.hospitalName" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount2" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.amount" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.status">
+                            @if (context.status == true)
+                        {
+                            <p style="color:green">อนุมัติ</p>
+                        }
+                        else
+                        {
+                            <p style="color:red">ไม่อนุมัติ</p>
+                        }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.hospitalCode" Align="ColumnAlign.Center" Width="5%" />
+                    @{
+                        var totalBorrow = listOfData.Sum(x => x.withdrawCount);
+                        var totalRepayment = listOfData.Sum(x => x.amount);
+                        var count = listOfData.Count();
+                    }
+                    <SummaryRow>
+                        <SummaryCell ColSpan="4">รวม</SummaryCell>
+                        <SummaryCell>
+                            <Text>@count</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalBorrow</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                    </SummaryRow>
+                </ColumnDefinitions>
+                <HeaderTemplate>
+                    <TableRow>
+                        <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">HN</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">เลขประจำตัวประชาชน</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">วันที่เข้ารับบริการ</SimpleTableHeader>
+                        <SimpleTableHeader ColSpan="2">ค่าบริการ</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">จำนวนเงินรวม</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">FLAG</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">เบิก</SimpleTableHeader>
+                    </TableRow>
+                    <TableRow>
+                        <SimpleTableHeader>
+                            ฟอกเลือดด้วย
+                            เครื่องไตเทียม
+                        </SimpleTableHeader>
+                        <SimpleTableHeader>อื่นๆ</SimpleTableHeader>
+                    </TableRow>
+                </HeaderTemplate>
+            </Table>
+        </Body>
+    </Card>
+    <br />
+    <Card Title=@("ค่ายา Erythropoietin")>
+        <Body>
+            <Table DataSource="listOfData" Bordered ScrollX="1350">
+                    <ColumnDefinitions>
+                        <PropertyColumn Property="c=>c.Id" Width="7%" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.hospitalCode" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.hospitalName" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount2" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.withdrawCount2" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.amount" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property="c=>c.status">
+                            @if (context.status == true)
+                        {
+                            <p style="color:green">อนุมัติ</p>
+                        }
+                        else
+                        {
+                            <p style="color:red">ไม่อนุมัติ</p>
+                        }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.hospitalCode" Align="ColumnAlign.Center" Width="5%" />
+                    @{
+                        var totalBorrow = listOfData.Sum(x => x.withdrawCount);
+                        var totalRepayment = listOfData.Sum(x => x.amount);
+                        var count = listOfData.Count();
+                    }
+                    <SummaryRow>
+                        <SummaryCell ColSpan="4">รวม</SummaryCell>
+                        <SummaryCell>
+                            <Text>@count</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalBorrow</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                        <SummaryCell>
+                            <Text>@totalRepayment</Text>
+                        </SummaryCell>
+                    </SummaryRow>
+                </ColumnDefinitions>
+                <HeaderTemplate>
+                    <TableRow>
+                        <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">HN</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">เลขประจำตัวประชาชน</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">วันที่เข้ารับบริการ</SimpleTableHeader>
+                        <SimpleTableHeader ColSpan="2">ค่าบริการ</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">จำนวนเงินรวม</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">FLAG</SimpleTableHeader>
+                        <SimpleTableHeader RowSpan="2">เบิก</SimpleTableHeader>
+                    </TableRow>
+                    <TableRow>
+                        <SimpleTableHeader>
+                            ฟอกเลือดด้วย
+                            เครื่องไตเทียม
+                        </SimpleTableHeader>
+                        <SimpleTableHeader>อื่นๆ</SimpleTableHeader>
+                    </TableRow>
+                </HeaderTemplate>
+            </Table>
+        </Body>
+    </Card>
+    <br />
+    <Card Title=@("สถานะรายการเบิก")>
+        <Body>
+            <div class="py-4 my-5">
+                <div class="container" align="center">
+                    <div class="position-relative w-75">
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar w-100" style="background:#FFC326 !important"></div>
+                        </div>
+                    </div>
+                    <div class="container position-relative w-75">
+                        <img class="step-img position-absolute top-0 start-0 translate-middle rounded-pill" src="helper_shared/FeesAdminImage/Hemo/hemo-step1a.png" />
+                        <img class="step-img position-absolute top-0 start-30 translate-middle rounded-pill" src="helper_shared/FeesAdminImage/Hemo/hemo-step2a.png" />
+                        <img class="step-img position-absolute top-0 start-70 translate-middle rounded-pill" src="helper_shared/FeesAdminImage/Hemo/hemo-step3a.png" />
+                        <img class="step-img position-absolute top-0 start-100 translate-middle rounded-pill" src="helper_shared/FeesAdminImage/Hemo/hemo-step4a.png" />
+                    </div>
+                    <div class="container position-relative w-75">
+                        <div class="row">
+                            @*style change == noneactive*@
+                            <p class="step-tag active position-absolute top-0 start-0 translate-middle rounded-pill">สถานะรับเรื่อง</p>
+                            <p class="step-tag active  position-absolute top-0 start-30 translate-middle rounded-pill">สถานะวินิจฉัย</p>
+                            <p class="step-tag active  position-absolute top-0 start-70 translate-middle rounded-pill">สถานะคำสั่งจ่าย</p>
+                            <p class="step-tag active  position-absolute top-0 start-100 translate-middle rounded-pill">สถานะการจ่าย</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mms-txt-headdetail pt-5 mt-5">
+                    <div class="col-md-12 col-lg-3 py-2 pLayers-2">
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">สถานะรับเรื่อง :</div><span class="mms-txt-default col-6 text-start">รับเรื่อง</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">ผู้รับเรื่อง :</div><span class="mms-txt-default col-6 text-start">นางสมพร  สมรศรี</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">วันที่รับเรื่อง :</div><span class="mms-txt-default col-6 text-start">21  เมษายน 2566 </span></div>
+                    </div>
+                    <div class="col-md-12 col-lg-3 py-2 pLayers-2">
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">สถานะวินิจฉัย :</div><span class="mms-txt-default col-6 text-start">มีสิทธิ</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">ผู้อนุมัติ :</div><span class="mms-txt-default col-6 text-start">นางสมพร  สมรศร</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">วันที่อนุมัต :</div><span class="mms-txt-default col-6 text-start">21  เมษายน 2566</span></div>
+                    </div>
+                    <div class="col-md-12 col-lg-3 py-2 pLayers-2">
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">สถานะคำสั่งจ่าย :</div><span class="mms-txt-default col-6 text-start">อนุมัติ</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">ผู้อนุมัติ :</div><span class="mms-txt-default col-6 text-start">นายสามารถ สิริ</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">วันที่อนุมัต :</div><span class="mms-txt-default col-6 text-start">20 เมษายน 2566 </span></div>
+                    </div>
+                    <div class="col-md-12 col-lg-3 py-2 pLayers-2">
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">สถานะการจ่าย :</div><span class="mms-txt-default col-6 text-start">จ่ายเเล้ว</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">วันที่จ่าย :</div><span class="mms-txt-default col-6 text-start">30 เมษายน 2566</span></div>
+                        <div class="row"><div class="col-6 mms-txt-headdetail text-end">เลขใบคำสั่งจ่าย  :</div><span class="mms-txt-default col-6 text-start">100000023546</span></div>
+                    </div>
+                </div>
+            </div>
+        </Body>
+    </Card>
+    <br />
+    <Card Title=@("การวินิจฉัย")>
+        <Body>
+            <div class="d-flex">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-6 mms-txt-headdetail mms-media-center">จำนวน : 2 คน</div>
+                        <div class="col-6">รวมเป็นเงิน : 1,920.00 บาท</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex">
+                        <div class="col-6 mms-txt-headdetail mms-media-center">จำนวน : 2 คน</div>
+                        <Input @bind-Value="title" Disabled ></Input>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="col-6">
+                   
+                </div>
+                <div class="col-6 " style = "height:100px">
+                    <div class="d-flex">
+                        <div class="col-6 mms-txt-headdetail mms-media-center">หมายเหตุ :<span style ="color : red">*</span></div>
+                        <Input @bind-Value="title" Disabled></Input>
+                    </div>
+                </div>
+            </div>
+        </Body>
+    </Card>
+    <div class="m-4">
+        <div class="end-bt">
+            <button class="btn btn-secondary bt-back-c"  type="button">
+                <i class="fa-solid fa-circle-chevron-left"></i>&nbsp;
+                ย้อนกลับ
+            </button>
+            &nbsp;
+            <button class="btn btn-primary bt-con-c" type="submit">
+                <img class="end-icon" src="css/Data/Assets/Images/check.png" />
+                ยืนยันตัวตน
+            </button>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    string title = "รายละเอียดรายการเบิก";
+    private Model model = new Model();
+    bool loading = false;
+    List<ItemData2> listOfData2 = new List<ItemData2>();
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public class ItemData2
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData2 = Enumerable.Range(0, 3).Select(i => new ItemData2 { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+
+        listOfData.Add(new ItemData
+            {
+                Id = 1,
+                hospitalCode = $"5489621",
+                hospitalName = $"โรงพยาบาล 1",
+                withdrawCount = 2,
+                withdrawCount2 = 12,
+                amount = 50,
+                status = true,
+            });
+        listOfData.Add(new ItemData
+            {
+                Id = 2,
+                hospitalCode = $"6987521",
+                hospitalName = $"โรงพยาบาล 2",
+                withdrawCount = 2,
+                withdrawCount2 = 12,
+                amount = 50,
+                status = false,
+            });
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? hospitalCode { get; set; }
+        public string? hospitalName { get; set; }
+        public int? withdrawCount { get; set; }
+        public int? withdrawCount2 { get; set; }
+        public int? amount { get; set; }
+        public Boolean? status { get; set; }
+
+
+    };
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 5;
+
+}

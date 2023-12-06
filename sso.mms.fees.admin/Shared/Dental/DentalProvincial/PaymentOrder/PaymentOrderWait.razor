@@ -1,0 +1,283 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ทันตกรรม </div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page" style="cursor:pointer;" @onclick=@(()=> goPage(1))>
+                    <span class="breadcum-sucress py-2">  สร้างใบคำสั่งจ่าย   </span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">  ส่งลงลายมือชื่อ </span>
+                </li>
+
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="row d-flex">
+                <div class="col-6 mms-media-start">
+                        <div class="col-4 ">
+                            <div class="mms-txt-headdetail mms-media-center">วันที่ประมวลผล : </div>
+                        </div>
+                        <div class="col-6">
+                            <Input Disabled="@IsDisabled" Value=@txtValue />
+                        </div>
+                </div>
+                <div class="col-6 mms-media-start">
+                        <div class="col-4 ">
+                            <div class="mms-txt-headdetail mms-media-center ">ประมวลผลโดย : </div>
+                        </div>
+                        <div class="col-6">
+                            <Input Disabled="@IsDisabled" Value=@txtValue />
+                        </div>
+                </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="d-flex  mms-media-center">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-6 mms-media-start">
+                            <div >
+                                <Button class="ant-btn-distable" @onclick=@(()=> goPage(1)) Style="font-size:16px;">
+                                    <i class="fa-solid fa-circle-chevron-left"></i> &nbsp;ย้อนกลับ
+                                </Button>
+                            </div>
+
+                        </div>
+
+                        <div class="col-6 mms-media-end">
+                         
+                            @*<DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />*@
+                        </div>
+                    </div>
+                </div>
+                <div class="col-8 mms-media-end">
+                    <Button Type="@ButtonType.Primary" Class="mms-text-header" @onclick=@(()=>OpenConfirmModal(true)) Style="font-size:16px;width:211.33px;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        ลงลายมือชื่อ
+                    </Button>
+                    &nbsp;
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-6">
+                        <SpaceItem>
+                            <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="mms-media-end pt-1 pb-1">
+            <Button Class="ant-btn-distable" Style="width:150px;font-size:16px;">
+                <i class="fa-solid fa-file-arrow-down"></i>&nbsp; ดาวน์โหลด
+            </Button>
+        </div>
+          <br />
+        <Table DataSource="listOfData" Bordered HidePagination Class="mms-txt-default mx-2 my-1" Style="font-size : 14px !important;">
+                <PropertyColumn Width="10%" Title="ลำดับ" Property="c => c.Id" Align=ColumnAlign.Center Style="mx-1"></PropertyColumn>
+                <PropertyColumn Width="20%" Title="รหัสสถานพยาบาล" Property="c => c.Code" Align="ColumnAlign.Center"></PropertyColumn>
+                <PropertyColumn Width="20%" Title="ชื่อสถานพยาบาล" Property="c => c.Name" Align=ColumnAlign.Center> </PropertyColumn>
+                <PropertyColumn Width="20%" Title="จำนวนรายการเบิก" Property="c => c.Count" Align=ColumnAlign.Center> </PropertyColumn>
+                <PropertyColumn Width="15%" Title="จำนวนเงิน" Property="c => c.Price" Align=ColumnAlign.Center> </PropertyColumn>
+                <PropertyColumn Width="10%" Title="วินิจฉัย" Property="c => c.Status" Align=ColumnAlign.Center Style="color :#67C23A"> </PropertyColumn>
+                <PropertyColumn Width="5%" Align="ColumnAlign.Center" Property="c=>c.Id" Title="">
+
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OpenViewWaitModal1(true)) />
+                   
+                </PropertyColumn>
+
+                @{
+                var totalBorrow = listOfData.Sum(x => x.Count);
+                var SumPrice = listOfData.Sum(x => x.Price);
+                var CountHos = listOfData.Count();
+            }
+            <SummaryRow>
+                <SummaryCell Align=ColumnAlign.Right ColSpan="2">รวมทั้งหมด</SummaryCell>
+
+                <SummaryCell Align=ColumnAlign.Center>
+                    <Text>@CountHos</Text>
+                </SummaryCell>
+                <SummaryCell Align=ColumnAlign.Center>
+                    <Text>@totalBorrow</Text>
+                </SummaryCell>
+                <SummaryCell Align=ColumnAlign.Center>
+                    <Text>@SumPrice บาท</Text>
+                </SummaryCell>
+                <SummaryCell Align=ColumnAlign.Center ColSpan="2">
+               
+                </SummaryCell>
+            </SummaryRow>
+        </Table>
+
+    </div>
+</div>
+<ConfirmModal _visible=@openConfirmModal OnClose="@OpenConfirmModal" ></ConfirmModal>
+@*<ViewModal visible=@openViewModal OnClose="@OpenViewModal"></ViewModal>*@
+<ViewOrderWaitModal _visible=@openViewWaitModal1 OnClose="@OpenViewWaitModal1" listOfData="@listOfDataSent"></ViewOrderWaitModal>
+
+
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.PaymentOrder.Modals
+@using System.ComponentModel;
+@code {
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    string Placeholder = "วว/ดด/ปปปป";
+    string selectionType = "checkbox";
+    bool _visible = false;
+    bool viewdata = false;
+    string title = "รายละเอียดข้อมูล";
+    private Model model = new Model();
+    bool loading = false;
+    private Form<Model> _form;
+    bool openConfirmModal { get; set; }
+    bool openViewModal { get; set; }
+    bool openViewWaitModal1 { get; set; }
+    protected bool IsDisabled { get; set; } = true;
+    IEnumerable<ItemData> selectedRows;
+    string txtValue { get; set; } = "xxxx";
+   
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    public async Task goPage(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    RenderFragment okbutton =
+    @<div style="color:#fff;">
+        <Icon Type="save" Theme="outline" />
+        บันทึก
+    </div>;
+    RenderFragment canclebutton =@<div>
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+        </div>
+    ;
+
+
+
+    List<ItemData> listOfDataSent = new List<ItemData>();
+    
+    List<ItemData> listOfData = new List<ItemData>
+    {
+        new ItemData
+        {
+            Id = "1",
+            Code = "667834",
+            Name = "โรงพยาบาลลานนา 1",
+            Count = 2 ,
+            Price = 1800,
+            Status  =true,
+            Children = new List<ItemData>{
+                new ItemData {
+                    childId= "1",
+                    childIden = "545454545",
+                    Name = "ตลก",
+                    childNumber = "123",
+                    childDate = "1กค64",
+                    childPrice = 2005,
+                    childstatus = "อนุมัติ",
+                    Status = false
+
+                },
+                new ItemData{
+                    childId= "2",
+                    childIden = "99999",
+                    childNumber = "9999",
+                     Name = "ตลก",
+                    childDate = "1กค64",
+                    childPrice = 999999,
+                    childstatus = "อนุมัติ",
+                   Status = false
+                }
+            }
+
+        },
+         new ItemData
+        {
+            Id = "2",
+            Code = "11111",
+            Name = "โรงพยาบาลลานนา 2",
+            Count = 2 ,
+            Price = 1800,
+            Status  =true,
+            Children = new List<ItemData>{
+                new ItemData {
+                    childId= "2",
+                    childIden = "545454545",
+                    childNumber = "123",
+                    Name = "xxxx",
+                    childDate = "1กค64",
+                    childPrice = 2005,
+                    childstatus = "อนุมัติ",
+                    Status = false
+                }
+            }
+
+        }
+    };
+    string _selectedValue;
+
+    public class ItemData
+    {
+        public string Id { get; set; }
+        public string  Code  { get; set; }
+        public string Name { get; set; }
+        public int Count { get; set; }
+        public double Price { get; set; }
+        public bool Status { get; set; }
+        public string childId { get; set; }
+        public string childIden{ get; set; }
+        public string childName { get; set; }
+        public string childNumber { get; set; }
+        public string childDate { get; set; }
+        public double childPrice { get; set; }
+        public string childstatus { get; set; }
+        public List<ItemData> Children { get; set; }
+
+    };
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+    
+    public void OpenViewWaitModal1(bool value)
+    {
+        openViewWaitModal1 = value;
+        listOfDataSent = listOfData.Where(x => x.Id == "1").ToList();
+    }
+    void toggle(bool value) => loading = value;
+    private void HandleOk(MouseEventArgs e)
+    {
+        _form.Submit();
+    }
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine("e");
+        _visible = false;
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+}
+

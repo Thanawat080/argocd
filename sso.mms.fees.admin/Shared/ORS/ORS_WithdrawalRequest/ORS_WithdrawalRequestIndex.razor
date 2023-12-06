@@ -1,0 +1,169 @@
+﻿
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3"> ค่าบริการทางการแพทย์ประเภทผู้ป่วยในด้วยโรคที่มีค่าใช้จ่ายสูงเกินปกติ (ORS)</div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการขอเบิก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="py-4">
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="col-4 mms-media-start">
+                        <div class="">
+                            <Button Type="@ButtonType.Primary" Class="mms-text-header" OnClick=@(() => Indexpage(2,""))>
+                                <i class="fa-solid fa-circle-plus"></i>
+                                เพิ่ม
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="col-4 mms-media-end" >
+                        <Button Type="@ButtonType.Primary" Class="mms-text-header" Disabled="@(selectedRows == null || selectedRows.Count() == 0 ? true: false)">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            ส่งรายการที่เลือกเพื่อส่งเบิก
+                        </Button>
+                    </div>
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+            </div>
+            <Table DefaultExpandAllRows DataSource="data" @bind-SelectedRows="selectedRows" Bordered ScrollX="1000">
+                    <Selection Key="@context.Id" Type="checkbox" />
+                    <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Align="ColumnAlign.Center" Width="10%" />
+                    <PropertyColumn Property="c=>c.Key" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center"  />
+                    <PropertyColumn Property="c=>c.Name" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center"  />
+                    <PropertyColumn Property="c=>c.HosCode" Title="รหัสสถานพยาบาล" Align="ColumnAlign.Center"  />
+                    <PropertyColumn Property="c=>c.HosName" Title="ชื่อสถานพยาบาล" Align="ColumnAlign.Center" />
+                    <PropertyColumn Property="c=>c.Date" Title="วันที่รักษา" Align="ColumnAlign.Center" />
+                  
+                    <PropertyColumn Property="c=>c.Id" Title="" Align="ColumnAlign.Center" >
+                  
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" />
+              
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/edit.png"
+                             style="width:24px;height:24px; cursor:pointer;"  />
+                
+                </PropertyColumn>
+
+
+            </Table>
+        </div>
+    </div>
+</div>
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }
+    </style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public EventCallback<(int, string)> IndexPage { get; set; }
+
+    IEnumerable<Data> selectedRows = new List<Data>();
+   
+    int page;
+    bool openConfirmModal { get; set; }
+    bool openViewDataModal { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+    bool isloading = false;
+
+    List<Data> _data;
+
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+
+        public string Name { get; set; }
+        public string HosCode { get; set; }
+        public string HosName { get; set; }
+        public string Date { get; set; }
+
+    }
+
+    List<Data> data = new List<Data>();
+
+    string _selectedValue;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        data = new List<Data>
+    {
+        new Data {
+            HosStatus  = true,
+            Id = "1",
+            Key = "1101201267891",
+            Name = "นายเมธี ส่องแสง",
+            HosCode = "25665",
+            HosName = "โรงพยาบาล 1",
+            Date = "25/05/2566",
+        },
+        new Data {
+            HosStatus  = true,
+            Id = "2",
+            Key = "1102345678925",
+            Name = "นายนรง มีศักดิ์",
+            HosCode = "25664",
+            HosName = "โรงพยาบาล 2",
+            Date = "15/07/2566",
+        },
+         new Data {
+            HosStatus  = true,
+            Id = "3",
+            Key = "1108954632579",
+            Name = "นายยิ้มแย้ม แจ่มใส",
+            HosCode = "25663",
+            HosName = "โรงพยาบาล 3",
+            Date = "05/01/2566",
+        },
+    };
+
+
+        isloading = false;
+        StateHasChanged();
+    }
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    public async Task Indexpage(int usepage, string year)
+    {
+      
+        await IndexPage.InvokeAsync((usepage, year));
+     
+    }
+}

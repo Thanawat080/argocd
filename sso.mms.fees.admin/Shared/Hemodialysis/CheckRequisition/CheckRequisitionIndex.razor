@@ -1,0 +1,144 @@
+﻿
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีฟอกเลือดด้วยเครื่องไตเทียม และกรณีการให้ยา Erythropoietin</div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">ประวัติรายการเบิกจ่ายที่ไม่อนุมัติ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงรายการประวัติเบิกจ่าย</span>
+                </li>
+
+            </ol>
+        </nav>
+        <div style="padding-top:15px;">
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="d-flex col-8">
+                        <div class="mms-txt-headdetail col-2 mms-media-center">งวดที่ : &nbsp;</div>
+                        <div class="col-4">
+
+                            <select class="form-select" @bind=select
+                                    aria-label="Default select example">
+
+                                <option>6704</option>
+                                <option>6705</option>
+                                <option>6706</option>
+                                <option>6707</option>
+
+                            </select>
+                        </div>
+                        <div class="col-2 mx-3">
+                            <Button Type="@ButtonType.Primary">ค้นหา</Button>
+                        </div>
+                    </div>
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+
+                </div>  
+                <div class="d-flex  mms-media-center">
+
+                    <Button Type="@ButtonType.Primary" style="padding: 4px 30px;" Class="mms-text-header"><i class="fa-solid fa-arrow-up  mx-3"></i>&nbsp;ตรวจสอบ</Button>
+                 
+
+                </div>
+            </div>
+
+
+            <hr />
+            <Table DataSource="@data" Bordered >
+                    <ColumnDefinitions>
+                        <PropertyColumn Property="c=>c.id" Width="100"  />
+                        <PropertyColumn Property="c=>c.code" Width="150"  />
+                        <PropertyColumn Property="c=>c.name" Width="150"/>
+                        <PropertyColumn Property="c=>c.count" Width="100" />
+                        <PropertyColumn Property="c=>c.price" Width="100"  />
+                       
+                    </ColumnDefinitions>
+                    <HeaderTemplate>
+                        <TableRow>
+
+                            <SimpleTableHeader ColSpan="5">คำขอเบิกค่าบริการทางการแพทย์ของสถานพยาบาล</SimpleTableHeader>
+                         
+                           
+                        </TableRow>
+                        <TableRow>
+                            
+                            <SimpleTableHeader ColSpan="1">ลำดับ</SimpleTableHeader>
+                            <SimpleTableHeader ColSpan="1">รหัสโรงพยาบาล</SimpleTableHeader>
+                            <SimpleTableHeader ColSpan="1">โรงพยาบาล</SimpleTableHeader>
+                            <SimpleTableHeader ColSpan="1">ใบคำขอ(ฉบับ)</SimpleTableHeader>
+                            <SimpleTableHeader ColSpan="1">จำนวนเงิน(บาท)</SimpleTableHeader>
+                         
+                        </TableRow>
+                        
+                </HeaderTemplate>
+            </Table>
+
+
+              
+
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    List<Data> data = new List<Data>();
+    string select;
+    public async Task Indexpage(int usepage)
+    {
+
+
+        IndexPage.InvokeAsync(usepage);
+
+    }
+    public class Data
+    {
+        public int id { get; set; }
+
+        public string code { get; set; }
+
+      
+
+        public string name { get; set; }
+
+        public int count { get; set; }
+        public string price { get; set; }
+
+       
+    }
+    protected override void OnInitialized()
+    {
+        data = new List<Data>
+        {
+            new Data
+            {
+                id = 1,
+                code = "1001",
+                name = "โรงพยาบาลสระบุรี",
+                count = 1,
+                price = "1900"
+            },
+            new Data
+            {
+                id = 1,
+                code = "1001",
+                name = "โรงพยาบาลสระบุรี",
+                count = 1,
+                price = "1900"
+            }
+        };
+    }
+}

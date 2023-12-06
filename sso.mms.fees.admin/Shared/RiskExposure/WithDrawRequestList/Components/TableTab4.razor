@@ -1,0 +1,95 @@
+﻿@using System.ComponentModel
+
+<Table DataSource="@data" Bordered Size="TableSize.Default">
+        <ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+
+        </ColumnDefinitions>
+        <HeaderTemplate>
+            <TableRow>
+                <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                <SimpleTableHeader RowSpan="2">รหัสถานพยาบาล</SimpleTableHeader>
+                <SimpleTableHeader RowSpan="2">
+                    สถานพยาบาล
+                </SimpleTableHeader>
+                <SimpleTableHeader ColSpan="3">
+                    จำนวนเงิน
+                </SimpleTableHeader>
+            </TableRow>
+            <TableRow>
+                <SimpleTableHeader>
+                    (1)
+                    คำนวนจากข้อมูล
+                    มกราคม - กุมภาพันธ์
+                </SimpleTableHeader>
+                <SimpleTableHeader>
+                    (2)
+                    งวดที่ 1
+                </SimpleTableHeader>
+                <SimpleTableHeader>
+                    (3) = (1) - (2)
+                    งวดที่ 2
+                </SimpleTableHeader>
+            </TableRow>
+        </HeaderTemplate>
+        <RowTemplate>
+            <TableRow>
+
+                <TableCell>@context.Data.Id</TableCell>
+                <TableCell>@context.Data.HospitalCode</TableCell>
+                <TableCell>@context.Data.HospitalName</TableCell>
+                <TableCell>@context.Data.Formula</TableCell>
+                <TableCell>@context.Data.Installment1</TableCell>
+                <TableCell>@context.Data.Installment2</TableCell>
+
+            </TableRow>
+        </RowTemplate>
+    </Table>
+
+    @code {
+    Data[] data;
+
+    TableFilter<string>[] filters;
+
+    bool isChecked = true;
+    bool disabled = false;
+
+    void ToggleDisable()
+    {
+        disabled = !disabled;
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+
+        public string HospitalCode { get; set; }
+
+        public string HospitalName { get; set; }
+
+        public string Formula { get; set; }
+
+        public string Installment1 { get; set; }
+
+        public string Installment2 { get; set; }
+
+    }
+
+    protected override void OnInitialized()
+    {
+        data = Enumerable.Range(0, 20).Select(x => new Data
+            {
+                Id = x,
+                HospitalCode = "1",
+                HospitalName = "25665",
+                Formula = "โรงพยาบาลบางนา1",
+                Installment1 = "1,367,778",
+                Installment2 = "987,900",
+            }).ToArray();
+    }
+}

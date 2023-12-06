@@ -1,0 +1,73 @@
+﻿@page "/ors/unprocesseddisbursements"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.ORS.ORS_UnprocessedDisbursements
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+<LayoutIndex ShortToken="@ShortToken" Page="ORS">
+
+    @if (page == 1)
+    {
+        <ORS_UnprocessedDisbursementsIndex IndexPage="@((args) => Indexpage(args.Item1,args.Item2,args.Item3))" />
+    }
+    else if (page == 2)
+    {
+        <ORS_UnprocessedDisbursementsDetail IndexPage="@((args) => Indexpage(args.Item1,args.Item2,args.Item3))" year="@year" />
+    }
+  
+
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? ShortToken { get; set; } = "";
+
+    public int page = 1;
+    public string year;
+    public string name;
+
+    public async Task Indexpage(int usepage, string year, string name)
+    {
+
+        this.year = year;
+        this.page = usepage;
+        this.name = name;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(ShortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            userRole = await userRoleService.GetRoleByUserName(username);
+            await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+
+}

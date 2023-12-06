@@ -1,0 +1,319 @@
+﻿@page "/viewbanner"
+
+@using sso.mms.chat.Pages
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.Utility
+@using sso.mms.helper.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.portal.admin.Services;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.portal.admin.ViewModels;
+@inject NavigationManager Navigation
+@inject BannerService bannerService
+@inject IJSRuntime JSRuntime
+@inject SweetAlertService Swal;
+
+<style>
+    :root {
+        --mdc-theme-primary: #334396;
+    }
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+    .swal2-container.swal2-center > .swal2-popup {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        border-radius: 16px;
+    }
+
+    .swal2-title {
+        position: relative;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.8em 1em 0;
+        color: inherit;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        text-transform: none;
+        word-wrap: break-word;
+        color: #334396;
+        font-family: Noto Sans Thai;
+    }
+
+    .swal2-styled.swal2-confirm {
+        border: 0;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        background: #334396;
+        width: 150px;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            top: 0px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+</style>
+
+
+@if (bannerDataT != null)
+{
+    <div class="">
+       
+            <NavbarLoginAdmin ShortToken=@shortToken PageCode="@codeName"></NavbarLoginAdmin>
+        
+        <div class="container">
+            <div class="m-4 ">
+                <div class="card-main p-4" style="margin-top:100px">
+                    <div class="container">
+                        <p class="txt-title">แบนเนอร์</p>
+                        <br />
+                        <div class="sub-title">หัวข้อ</div>
+                        <p class="sub-detal"> @bannerDataT.BannerName</p>
+                        <br />
+                        <div class="sub-title">วันที่สร้าง</div>
+                        <p class="sub-detal"> @bannerDataT.CreateDate</p>
+                        <br />
+                        <div class="sub-title">URL</div>
+                        @if (!String.IsNullOrEmpty(bannerDataT.Url))
+                        {
+                            <p class="sub-detal"> @bannerDataT.Url</p>
+                        }
+                        else
+                        {
+                            <div class="sub-detal">ไม่มีข้อมูล Url ในระบบ </div>
+                        }
+                        <br />
+                        @*    @if (bannerDataT.StatusAnnounce == 1)
+                    {
+                    <span class="mb-4" style="font-weight:bold">ลงประกาศ</span>
+                    }
+                    else
+                    {
+                    <span class="mb-4" style="font-weight:bold">ไม่ลงประกาศ</span>
+                    }
+                    <label class="form-check-label txt-check " for="flexRadioDefault1">*@
+
+                        <p class="sub-title">สถานะประกาศ</p>
+                        <div class="d-flex flex-row pb-2">
+                            <div class="form-check d-flex align-items-center px-4">
+                                <input class="form-check-input" type="radio" value="1" checked="@radioButtonAnnouce1" onchange="@HandleRadiobuttonChange" />
+                                <label class="form-check-label txt-check pt-2" for="flexRadioDefault1">
+                                    &nbsp; <span>ลงประกาศ</span>
+                                </label>
+                            </div>
+                            <div class="form-check d-flex align-items-center px-4">
+                                <input class="form-check-input" type="radio" value="0" checked="@radioButtonAnnouce2" onchange="@HandleRadiobuttonChange" />
+                                <label class="form-check-label txt-check pt-2" for="flexRadioDefault1">
+
+                                    &nbsp;<span>ไม่ลงประกาศ</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card-banner d-flex align-items-center">
+                            <img class="banner-style" src="@bannerDataT.UploadImagePath" />
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center pt-4 py-3">
+                            <button class="btn btn-secondary btn-bo-main px-4 p-2" @onclick="GoToMainmenu">
+                                <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ
+                            </button>
+                            &nbsp;&nbsp;
+                            <button class="btn btn-primary btn-save-main px-4 p-2" @onclick="OnUpdate">
+                                <i class="fa-regular fa-floppy-disk"></i>&nbsp; บันทึก
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+<div style="margin-top:3%">
+    <Footer></Footer>
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    public string? url;
+    public string? prefix = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "id")]
+    public string? getId { get; set; } = "";
+
+
+    public BannerT? bannerDataT { get; set; }
+    public List<BannerT>? bannerDataTCheck { get; set; }
+    public List<BannerT>? CheckBanner3 { get; set; }
+    public int StatusAnnounce;
+    public bool radioButtonAnnouce1;
+    public bool radioButtonAnnouce2;
+    public string? codeName = "DSP0503";
+
+
+
+    public string? env = ConfigureCore.ConfigENV;
+
+    public void GoToMainmenu()
+    {
+        Navigation.NavigateTo(prefix + "banner" + $"?token={shortToken}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bannerDataTCheck = await bannerService.GetBannersT();
+        CheckBanner3 = (from x in bannerDataTCheck where x.StatusAnnounce == 1 select x).ToList();
+
+        prefix = ConfigureCore.redirectsPortalAdmin;
+
+        int id = Int32.Parse(getId);
+
+        if (getId != null)
+        {
+            bannerDataT = await bannerService.GetBannerT(id);
+            StateHasChanged();
+        }
+
+        if (bannerDataT.StatusAnnounce == 1)
+        {
+
+            await IsRadiobutton1Checked();
+        }
+        else if (bannerDataT.StatusAnnounce == 0 || bannerDataT.StatusAnnounce == null)
+        {
+            await IsRadiobutton2Checked();
+
+        }
+        
+    }
+
+    private async Task HandleRadiobuttonChange(ChangeEventArgs e)
+    {
+        if (e.Value.ToString() == "1")
+        {
+            await IsRadiobutton1Checked();
+
+            StateHasChanged();
+        }
+        else
+        {
+                await IsRadiobutton2Checked();
+         
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnUpdate()
+    {
+
+      
+        if (radioButtonAnnouce2 == true && CheckBanner3.Count == 1)
+        {
+            await Swal.FireAsync(
+           "ไม่สามารถบันทึกได้เนื่องจากมีประกาศน้อยกว่ากำหนด",
+           null,
+           SweetAlertIcon.Error
+             );
+           
+            Navigation.NavigateTo(prefix + "banner" + $"?token={shortToken}");
+        }
+        else if (radioButtonAnnouce1 == true && CheckBanner3.Count >= 999  )
+        {
+            await Swal.FireAsync(
+           "ไม่สามารถบันทึกได้เนื่องจากมีประกาศเกินกว่ากำหนด",
+           null,
+           SweetAlertIcon.Error
+             );
+            Navigation.NavigateTo(prefix + "banner" + $"?token={shortToken}");
+        }
+        else
+        {
+
+            RequestBannerT requestBannerT = new RequestBannerT()
+                {
+                    Id = Int32.Parse(getId),
+                    StatusAnnounce = StatusAnnounce
+                };
+
+            ResponseModel response = await bannerService.EditBannerT(requestBannerT);
+
+            if (response.issucessStatus == true)
+            {
+                await Swal.FireAsync(
+                     "บันทึกข้อมูลสำเร็จ",
+                     null,
+                     SweetAlertIcon.Success
+            );
+                Navigation.NavigateTo(prefix + "banner" + $"?token={shortToken}");
+            }
+            else
+            {
+                await Swal.FireAsync(
+                 "บันทึกข้อมูลไม่สำเร็จ",
+                 null,
+                 SweetAlertIcon.Error
+         );
+                Navigation.NavigateTo(prefix + "banner" + $"?token={shortToken}");
+            }
+        }
+    }
+
+
+
+
+    private async Task IsRadiobutton1Checked()
+    {
+        radioButtonAnnouce1 = true;
+        radioButtonAnnouce2 = false;
+        StatusAnnounce = 1;
+
+    }
+
+    private async Task IsRadiobutton2Checked()
+    {
+
+        radioButtonAnnouce1 = false;
+        radioButtonAnnouce2 = true;
+        StatusAnnounce = 0;
+
+    }
+
+}

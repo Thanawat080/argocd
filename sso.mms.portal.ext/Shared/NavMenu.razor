@@ -1,0 +1,83 @@
+﻿
+<style>
+    .c-style-content {
+        padding-left: 75px;
+        padding-right: 75px;
+    }
+
+    .navbar-style {
+        height: 80px;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-logo {
+        position: absolute;
+        left: 5.21%;
+        right: 74.93%;
+        top: 7.95%;
+        bottom: 62.33%;
+    }
+
+    .nav-font {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 36px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #909399;
+    }
+
+    .nav-user-font {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+</style>
+@*Navbar goes here.*@
+<div class="">
+
+
+    <nav class="navbar sticky-top navbar-expand-lg navbar-style c-style-content">
+        <div class="container-fluid">
+            <img src="Data/Assets/Images/mms-logo.png" style="width:286px;height:52.3px;" />
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse position-absolute end-0" id="navbarSupportedContent">
+                <form class="d-flex" style="float:right;">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active nav-font" aria-current="page" href="#">ระบบการให้บริการทางการแพทย์</a>
+                        </li>
+                        <li class="nav-item">
+                            <hr style="margin-top:25px;Width:51px;border: 1px solid #C5CBE6;transform: rotate(90deg);" />
+                        </li>
+                        <li class="nav-item" style="margin-right:10px">
+                            <a class="nav-link nav-user-font" href="#">เดือนเพ็ญ ใจดี</a>
+                        </li>
+                        <li class="nav-item">
+                            <div class="row" style="padding-top:5px">
+                                <div class="col" style="padding-right:0px"> <img src="Data/Assets/Images/user-nav.png" style="width:32px" /></div>
+                                <div class="col" style="padding-top:5px"><img src="Data/Assets/Images/arrwo-user.png" style="width:11.15px" /></div>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+
+
+
+@code {
+
+}

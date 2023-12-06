@@ -1,0 +1,119 @@
+﻿@using AntDesign.TableModels;
+@using System.Text.Json;
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">บำรุงรักษาอวัยวะสภากาชาดไทย</div>
+    </div>
+    <div class="container py-4">
+        @* p-2 p-md-5*@
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการรับเเจ้ง</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เลือกงวด</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-md-6"></div>
+            <div class="col-sm-12 col-md-6">
+                <div class="mms-media-end py-4">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-75">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="ItemData" Bordered ScrollX="1000" @bind-PageSize="pageSize" @bind-SelectedRows="selectedRows">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="10%" Align="ColumnAlign.Center">
+                    @String.Format("{0:d}", listOfData.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="งวด" Width="90%" Align="ColumnAlign.Center">
+                    <a class="txtA-style" @onclick="@(() => {completedmodal=true;getPeriodNo = data.identificationNumber;})">@data.identificationNumber</a>
+                </Column>
+            </ChildContent>
+        </Table>
+
+        <div class="pt-4 mms-media-start">
+            <span class="mms-txt-require">หมายเหตุ: กรุณาเลือกรายการบันทึกที่สำเร็จเพื่อส่งเบิก</span>
+        </div>
+    </div>
+</div>
+
+
+@using sso.mms.fees.admin.Shared.OrganMaintenance.Notificationlist.Modals
+<NotiCompleted _visible=@completedmodal OnClose="@NotiCompleted" />
+
+@code {
+    /*-- CallbackModel --*/
+    bool completedmodal { get; set; }
+    public int page;
+    string getPeriodNo;
+
+    public void NotiCompleted(bool value)
+    {
+        completedmodal = value;
+        if (!value)
+        {
+            PeriodNo.InvokeAsync(getPeriodNo);
+            IndexPage.InvokeAsync(2);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    [Parameter]
+    public EventCallback<string> PeriodNo { get; set; }
+
+    IEnumerable<ItemData> selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string identificationNumber { get; set; }
+
+    };
+
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 5).Select(i => new ItemData
+            {
+                Id = i,
+                identificationNumber = $"xxxxxxx{i}",
+            }).ToList();
+
+
+    }
+
+    private void OnBlur()
+    {
+        Console.WriteLine("blur");
+    }
+
+    private void OnFocus()
+    {
+        Console.WriteLine("focus");
+    }
+
+    private void OnSearch(string value)
+    {
+        Console.WriteLine($"search: {value}");
+    }
+
+}

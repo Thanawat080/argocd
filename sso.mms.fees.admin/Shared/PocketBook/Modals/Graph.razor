@@ -1,0 +1,159 @@
+﻿@using ChartJs.Blazor.Common;
+@using ChartJs.Blazor.Common.Axes;
+@using ChartJs.Blazor.Common.Enums;
+@using ChartJs.Blazor.LineChart;
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util;
+@using NuGet.Packaging;
+@using ChartJs.Blazor.Interop;
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Axes.Ticks
+
+@inject IJSRuntime JSRuntime
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <style>
+        .mms-nav-title {
+            border-top: 2px solid #ddd;
+            border-bottom: 2px solid #ddd; /* Add a border to create a separation line */
+            height: 40px; /* Adjust the height to make it thin */
+            border-radius: 10px;
+        }
+
+        .mms-text-title {
+            padding: 10px; /* Adjust the padding for better spacing */
+            padding-bottom: 40px;
+            font-size: 16px; /* Adjust the font size if needed */
+            font-weight: bold; /* Make the text bold if desired */
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+    </style>
+
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">รายละเอียดผลการตรวจระดับน้ำตาลในเลือด</div>
+    </div>
+
+    <canvas id="myChart1" height="300" width="500"></canvas>
+
+</Modal>
+
+
+
+@code {
+    string title = "สถิติย้อนหลัง";
+    [Parameter]
+    public bool _visible { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private System.Timers.Timer timer;
+    private double elapsedSeconds;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_visible)
+        {
+            await StartTimer();
+        }
+    }
+    // InitialiGraph
+    public async Task InitialGraph()
+    {
+        await JSRuntime.InvokeVoidAsync("createChart", new
+        {
+            canvasId = "myChart1",
+            onAnimationComplete = "function1",
+            chartType = "line",
+            chartData = new
+            {
+                labels = new string[] { "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999" },
+                datasets = new object[]
+            {
+                     new
+                     {
+                         borderColor = "#000000",
+                         data = new int[] { 3, 4, 3, 5, 4, 6, 7, 9, 13 },
+                         fill = false,
+
+                     }
+                }
+            },
+            options = new
+            {
+                elements = new
+                {
+                    line = new
+                    {
+                        tension = 0 // Set tension to 0 for a straight line between points
+                    }
+                },
+                plugins = new
+                {
+                    datalabels = new
+                    {
+                        display = true,
+                        color = "#000000",
+                        align = "top",
+                        anchor = "end",
+                        formatter = "function(value, context) { return value; }", // Show the point value
+                        font = new { weight = "bold" }
+                    }
+                }
+            }
+
+        });
+        StateHasChanged(); // Trigger UI update
+    }
+
+    private async Task StartTimer()
+    {
+        if (timer == null)
+        {
+            timer = new System.Timers.Timer(1000); // 1000 milliseconds = 1 second
+            timer.Elapsed += TimerElapsed;
+            timer.Start();
+        }
+    }
+
+    private async Task StopTimer()
+    {
+        if (timer != null)
+        {
+            timer.Stop();
+            timer.Elapsed -= TimerElapsed;
+            timer.Dispose();
+            timer = null;
+        }
+    }
+
+    private void TimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        elapsedSeconds += 1;
+        if (elapsedSeconds == 1)
+        {
+            InitialGraph();
+            StopTimer();
+        }
+        //StateHasChanged(); // อัปเดต UI
+    }
+
+
+    public void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+    public void HandleCancel(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+}
+
+

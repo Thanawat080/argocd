@@ -1,0 +1,87 @@
+﻿@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel
+@inject IJSRuntime JSRuntime
+
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 3s ease-out;
+        transform: translate(0,50px);
+    }
+
+    .fade {
+        transition: opacity .105s linear;
+    }
+
+    @@media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 600px;
+            margin: 1.75rem auto;
+        }
+    }
+
+    .modal-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 600px;
+        pointer-events: auto;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 0px solid rgba(0,0,0,.2);
+        border-radius: 16px;
+        outline: 0;
+    }
+
+</style>
+@if (IsActive)
+{
+    <div class="modal fade show shadow-sm" id="myModal" style="display:block;" tabindex="-1" aria-labelledby="exampleModalLabel" role="dialog" aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="" style="border-top-left-radius:16px;border-top-right-radius:16px;display: flex;justify-content: flex-end;border-bottom:0px solid;background:#F56C6C;">
+                    <div class="btn" style="color:#FFFFFF;font-size:24" type="button" data-bs-dismiss="modal" aria-label="Close" @onclick="Hide">
+                        <i class="fa-regular fa-circle-xmark"></i>
+                    </div>
+                </div>
+                <div class="modal-body w-100 h-100" align="center">
+                    <img class="w-100 rounded-3" src="@SendAnnounce.ImagePath" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public bool IsActive { get; set; }
+    [Parameter]
+    public AnnounceT SendAnnounce { get; set; }
+
+    private string ImagePath;
+
+    public void Show()
+    {
+        IsActive = true;
+        StateHasChanged();
+        Console.WriteLine(IsActive);
+    }
+
+    public void Hide()
+    {
+        IsActive = false;
+        StateHasChanged();
+        Console.WriteLine(IsActive);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(300);
+            Show();
+
+        }
+    }
+
+
+}

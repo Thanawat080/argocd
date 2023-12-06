@@ -1,0 +1,88 @@
+﻿@page "/promoteHealthExt/recordChecklistIndividual"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+<LayoutIndex ShortToken="@ShortToken" Page="promoteHealthExt">
+    @if (usepageRecordChecklistIndividual == 1)
+    {
+        <RecordChecklistIndividualIndex IndexPage="@((args)=>onCallId(args.Item1, args.Item2, args.Item3))" />
+    }
+    else if (usepageRecordChecklistIndividual == 2)
+    {
+        <RecordChecklistAuthenticate  IndexPage="@((args)=>oncall(args.Item1, args.Item2))" Type="@type"/>
+    }
+    else if (usepageRecordChecklistIndividual == 3 || usepageRecordChecklistIndividual == 4)
+    {
+        <RecordChecklistIndividualDetail IndexPage="@Indexpage" Checktype="@usepageRecordChecklistIndividual" Persons="@person" AdminUsername="@adminusername" Type="@type" CheckupId="@checkupId" />
+    }
+
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? ShortToken { get; set; } = "";
+
+
+    public int usepageRecordChecklistIndividual = 1;
+    public string? adminusername;
+    public person? person;
+    public decimal checkupId;
+    public string type;
+    public async Task Indexpage(int usepage)
+    {
+        this.usepageRecordChecklistIndividual = usepage;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+    public void oncall(int usepage, AuthenPerson person)
+    {
+        this.usepageRecordChecklistIndividual = usepage;
+        this.adminusername = person == null ? null : person.Adminusername;
+        this.person = person == null ? null : person.Persons;
+        this.type = person == null ? null : person.Type;
+
+    }
+
+    public void onCallId(int usepage, decimal checkupId, string type){
+        this.usepageRecordChecklistIndividual = usepage;
+        this.checkupId = checkupId;
+        this.type = type;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(ShortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            //userRole = await userRoleService.GetRoleByUserName(username);
+            //await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+
+}

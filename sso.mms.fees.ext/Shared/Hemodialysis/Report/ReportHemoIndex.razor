@@ -1,0 +1,139 @@
+﻿@using MatBlazor
+
+<style>
+
+    .mdc-table td {
+        padding: 20px !important;
+    }
+
+    .mdc-table th {
+        padding: 20px !important;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีฟอกเลือดด้วยเครื่องไตเทียม และกรณีการให้ยา Erythropoietin</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายงาน</span>
+                </li>
+
+            </ol>
+        </nav>
+        <div class="mms-media-end">
+            <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch">
+                <SpaceItem>
+                    <Search Placeholder="ชื่อรายงาน" EnterButton="true" />
+                </SpaceItem>
+            </Space>
+        </div>
+        <Table DataSource="@todos" TItem="Todo" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="8%" Style="text-align:center;">
+                    @String.Format("{0:d}", @todos.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="หัวข้อรายงาน" Width="82%" Style="text-align:center;">
+                    @data.report
+                </Column>
+                <Column TData="string" Width="10%" Style="text-align:center; border-top-right-radius:8px;">
+                    <img title="ดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" />
+                    <img title="ดาวน์โหลด" src="helper_shared/PortalAdminImage/download.png" style="width:24px;height:24px; cursor:pointer;" />
+                </Column>
+            </ChildContent>
+        </Table>
+
+    </div>
+</div>
+
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading = false;
+    string txtValue { get; set; }
+    List<Todo> todos = new List<Todo>();
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        todos = new List<Todo>()
+        {
+        new Todo() {
+                Id = 1,
+                report = "รายงาน........................"
+            },
+        new Todo() {
+                Id = 1,
+                report = "รายงาน........................"
+            },
+        new Todo() {
+                Id = 1,
+                report = "รายงาน........................"
+            },
+        new Todo() {
+                Id = 1,
+                report = "รายงาน........................"
+            },
+        };
+
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+    public class Todo
+    {
+        public int Id { get; set; }
+        public string report { get; set; }
+
+
+    }
+
+
+}

@@ -1,0 +1,127 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ประสบอันตรายหรือเจ็บป่วยฉุกเฉิน 72 ชั่วโมง</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-title py-2">สืบค้นข้อมูลผู้ประกันตน</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="cursor:pointer;" @onclick="()=> Back(1)">
+                    <span class="breadcum-sucress py-2">ค้นหา</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงรายละเอียดการค้นหา</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4">
+            <div class="col-sm-12 col-md-9"></div>
+            <div class="col-sm-12 col-md-3">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ค้นหารายละเอียดผู้ประกันตน" EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="Data" RowClassName="@(_=>"editable-row")" Bordered>
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Align="ColumnAlign.Center">@(String.Format("{0:d}", listOfData.IndexOf(data) + 1)) </Column>
+                <Column TData="string" Title="เลขที่รับเเจ้ง" Align="ColumnAlign.Center">@data.Key</Column>
+                <Column TData="string" Title="เลขใบคำสั่งจ่าย" Align="ColumnAlign.Center">@data.Key</Column>
+                <Column TData="string" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center">@data.CardId</Column>
+                <Column TData="string" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center">@data.Name</Column>
+                <Column TData="string" Title="สถานพยาบาล" Align="ColumnAlign.Center">@data.Address</Column>
+                <Column TData="string" Title="วันทส่งเบิก" Align="ColumnAlign.Center">@data.Date</Column>
+                <Column TData="string" Title="จำนวนเงินที่จ่าย(บาท)" Align="ColumnAlign.Center">@data.Price</Column>
+                <Column TData="string" Title="สถานะ" Align="ColumnAlign.Center">
+                    @if (data.Status)
+                    {
+                        <span style="color:green"><span class="status-color-green me-2"></span>จ่ายเเล้ว</span>
+                    }
+                    else
+                    {
+                        <span style="color:orangered"><span class="status-color-orangered me-2"></span>รอจ่าย</span>
+                    }
+
+                </Column>
+                <Column TData="string" Title="" Align="ColumnAlign.Center">
+                    @*<a @onclick="() => startEdit(data.Id)">Edit</a>*@
+                    <img src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;"
+                         @onclick=@(()=>OpenViewDataModal(true)) />
+                </Column>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+            </Table>
+        </div>
+
+
+    </div>
+    @using sso.mms.fees.admin.Shared._72Hours.IndexSearchInformation.Modals
+    <ViewDataModal _visible=@openViewDataModal OnClose="@OpenViewDataModal"></ViewDataModal>
+    @code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    List<Data> listOfData;
+    bool _visible = false;
+    bool openViewDataModal { get; set; }
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+        public string Id { get; set; }
+        public string Key { get; set; }
+        public string CardId { get; set; }
+        public string Name { get; set; }
+        public int Price { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+        public string Address { get; set; }
+        public bool Status { get; set; }
+        public List<Data> Children { get; set; }
+    }
+
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 10).Select(i => new Data
+            {
+                Id = $"{i}",
+                Key = $"1110214{i}",
+                CardId = $"123467890xx{i}",
+                Name = $"นายอภิรักษ์ สำรวม",
+                Date = $"23 มิ.ย 67",
+                Price = 900,
+
+                Address = $"โรงพยาบาลลานนา1",
+                Status = true,
+            }).ToList();
+    }
+    public async Task OnSearch()
+    {
+        await IndexPage.InvokeAsync(2);
+
+    }
+    public async Task Back(int page)
+    {
+        await IndexPage.InvokeAsync(page);
+
+    }
+    private async Task OnEnter(KeyboardEventArgs e)
+    {
+        await IndexPage.InvokeAsync(2);
+
+    }
+}

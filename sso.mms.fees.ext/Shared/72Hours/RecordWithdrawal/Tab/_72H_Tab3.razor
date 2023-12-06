@@ -1,0 +1,147 @@
+﻿@using sso.mms.fees.ext.Shared._72Hours.RecordWithdrawal.Modals
+
+<style>
+    .table-modal-custom .ant-table-thead > tr > th {
+        position: relative;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        background: #3B6C43 !important;
+        border-bottom: 1px solid #ffffff !important;
+        transition: background 0.3s ease;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12 col-lg-8 mms-media-start align-items-end">
+        <div class="mms-txt-headdetail">ค่ารถพยาบาล / ค่าเรือพยาบาล</div>
+    </div>
+    <div class="col-sm-12 col-lg-4 mms-media-end">
+        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+            <SpaceItem>
+                <Search Placeholder="ข้อมูลที่ต้องการค้นหา..." EnterButton="true" />
+            </SpaceItem>
+        </Space>
+    </div>
+</div>
+<hr />
+<div class="row py-2">
+    <div class="col-sm-12 col-md-6 pLayers-2">
+        <div class="row align-items-center">
+            <div class="col-6 mms-txt-headdetail text-end">สถานพยาบาลที่ส่งต่อ<span class="star-comment">*</span></div>
+            <div class="col-6 d-flex align-items-center">
+                <select class="form-select" aria-label="Default select example">
+                    <option selected>-กรุณากรอกรหัสสถานพยาบาล-</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 pLayers-2">
+        <div class="row align-items-center">
+            <div class="col-6 mms-txt-headdetail text-end">ชื่อสถานพยาบาล</div>
+            <div class="col-6 d-flex align-items-center">
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col-sm-12 col-md-6 pLayers-2">
+        <div class="row align-items-center">
+            <div class="col-6 mms-txt-headdetail text-end">รวมจำนวนเงินที่เบิกได้ (ตามประกาศ)</div>
+            <div class="col-6 d-flex align-items-center">
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                <div class=" mms-text-gray text-start ps-4 w-auto">บาท</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 pLayers-2">
+        <div class="row align-items-center">
+            <div class="col-6 mms-txt-headdetail text-end">รวมจำนวนเงิน (ตามค่ารักษาจริง)</div>
+            <div class="col-6 d-flex align-items-center">
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                <div class=" mms-text-gray text-start ps-4 w-auto">บาท</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <Table Class="table-modal-custom" DataSource="GetData" @bind-SelectedRows="selectedRows" Bordered HidePagination="false" ScrollX="1000">
+        <ColumnDefinitions>
+            <Selection Width="5%" Key="@context.Id" Align="@ColumnAlign.Center" />
+            <PropertyColumn Title="ลำดับ" Property="c=>c.Id" Width="5%" Align="@ColumnAlign.Left" />
+            <PropertyColumn Title="รหัสการรักษา" Property="c=>c.ServeName" Align="@ColumnAlign.Center" />
+            <PropertyColumn Title="ชื่อการรักษา" Property="c=>c.ServeName" Align="@ColumnAlign.Center" />
+            <PropertyColumn Title="หน่วย" Property="c=>c.ServeName" Align="@ColumnAlign.Center" />
+            <PropertyColumn Title="จำนวนเงิน (ตามประกาศ)" Property="c=>c.ServeName" Align="@ColumnAlign.Center" />
+            <PropertyColumn Title="จำนวนเงิน(ตามค่ารักษาจริง)" Property="c=>c.BudjetPay" Align="@ColumnAlign.Center">
+                <Input Placeholder="0.00" @bind-Value="@txtValue" />
+            </PropertyColumn>
+        </ColumnDefinitions>
+        <PaginationTemplate>
+            <Pagination Class="pt-2"
+                        Total="context.Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                            ShowSizeChanger
+                        OnChange="context.HandlePageChange" />
+        </PaginationTemplate>
+            </Table>
+        </div>
+
+        @code {
+    public string txtValue;
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    /*-- Table --*/
+    [Parameter]
+    public List<AddListModel.Data> GetData { get; set; }
+    [Parameter]
+    public EventCallback<List<AddListModel.Data>> CallBack { get; set; }
+
+    IEnumerable<AddListModel.Data> selectedRows;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await Task.Delay(500);
+
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(500);
+    }
+
+    private int GetColSpan(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return 7;
+            else
+                return 0;
+        else
+            return 1;
+    }
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+
+    private async void clickCheck()
+    {
+        List<AddListModel.Data> ListData = new List<AddListModel.Data>();
+        if (selectedRows != null)
+        {
+            ListData = selectedRows.ToList();
+            await CallBack.InvokeAsync(ListData);
+        }
+    }
+}

@@ -1,0 +1,179 @@
+﻿@using sso.mms.fees.ext.Shared._72Hours.RecordWithdrawal.Tab
+
+<style>
+    .xmark .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+</style>
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+
+<Modal Title="@("เพิ่มรายการรักษา")"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       WrapClassName="xmark"
+       Width="1300">
+    <div class="container">
+        <div class="mms-media-start">
+            <RadioGroup @bind-Value="value">
+                <Radio RadioButton Value="@("A")">ค่าห้อง - ค่าอาหาร / ค่าบริการทางการเเพทย์</Radio>
+                <Radio RadioButton Value="@("B")">ค่าอุปกรณ์</Radio>
+                <Radio RadioButton Value="@("C")">ค่ารถ / ค่าเรือ</Radio>
+                <Radio RadioButton Value="@("D")">ค่ารักษาอื่นๆ</Radio>
+                    </RadioGroup>
+                </div>
+        @if (value == "A")
+        {
+            <_72H_Tab1 GetData="@data" CallBack="@resive"></_72H_Tab1>
+        }
+        else if (value == "B")
+        {
+            <_72H_Tab2 GetData="@data" CallBack="@resive"></_72H_Tab2>
+        }
+        else if (value == "C")
+        {
+            <_72H_Tab3 GetData="@data" CallBack="@resive"></_72H_Tab3>
+        }
+        else if (value == "D")
+        {
+            <_72H_Tab4 GetData="@data" CallBack="@resive"></_72H_Tab4>
+        }
+        <div class="mms-media-end pt-5">
+            <Button Type="@ButtonType.Dashed" Class="ant-btn-distable" OnClick="HandleCancel"><i class="fa-solid fa-circle-xmark"></i> &nbsp;ยกเลิก</Button>&nbsp;&nbsp;
+            <Button Type="@ButtonType.Primary" OnClick="HandleOk"><i class="fa-solid fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+        </div>
+    </div>
+    @foreach (var item in data)
+    {
+        @item.Id
+    }
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; } 
+    [Parameter]
+    public EventCallback<List<Data>> CallBack { get; set; }
+
+    string value = "A";
+
+    List<AddListModel.Data> ListData = new List<AddListModel.Data>();
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    public async Task resive(List<Data> data)
+    {
+        ListData = data; 
+    }
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        await CallBack.InvokeAsync(ListData);
+        await Task.Delay(1000);
+        await OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+    public class HelthDay
+    {
+        public string day { get; set; }
+        public string value { get; set; }
+    }
+    List<Data> data = new List<Data>()
+    {
+        new Data() {
+            HosStauts  = true,
+            ServeName  = "ค่าห้อง - ค่าอาหาร",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    BudjetPay = 750,
+                    MedCode = "20001",
+                    MedType = "ค่าห้อง เเละ  ค่าอหาร",
+                    Budjet = 800,
+                    BudjetReq = 750,
+
+                },
+    },
+        },
+        new Data() {
+            HosStauts  = true,
+            ServeName  = "ค่าบริการทางการเเพทย์",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    BudjetPay = 500,
+                    MedCode = "20002",
+                    MedType = "การได้รับเลือดหรือส่วนประกอบของเลือด",
+                    Budjet = 500,
+                    BudjetReq = 600,
+
+                },
+    },
+        },
+         new Data() {
+            HosStauts  = true,
+            ServeName  = "ค่าบริการทางการเเพทย์",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    BudjetPay = 400,
+                    MedCode = "20003",
+                    MedType = "สารต่อต้านพิษจากเชื้อบาดทะยัก",
+                    Budjet = 750,
+                    BudjetReq = 500,
+
+                },
+    },
+        },
+    };
+    public class Data
+    {
+        public bool HosStauts { get; set; }
+
+        public string MedCode { get; set; }
+
+        public string ServeName { get; set; }
+
+        public string Id { get; set; }
+
+        public int BudjetPay { get; set; }
+
+        public string MedType { get; set; }
+
+        public int Budjet { get; set; }
+
+        public int BudjetReq { get; set; }
+
+        public int Count { get; set; }
+
+        public Data[] Children { get; set; }
+    }
+}

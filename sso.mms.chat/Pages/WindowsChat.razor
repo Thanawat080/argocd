@@ -1,0 +1,586 @@
+﻿@using CurrieTechnologies.Razor.SweetAlert2
+@using sso.mms.chat.ViewModels;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.chat.Services
+@using Blazored.LocalStorage
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JSRuntime
+@inject ChatService ChatService;
+@inject ChatRoomService ChatRoomService;
+@inject SweetAlertService Swal;
+@using Microsoft.AspNetCore.Components
+@using System.Globalization
+@using sso.mms.helper.ViewModels;
+
+<style>
+
+    .windowws-chat-s1 {
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px 10px 0px 0px;
+        height: 74px;
+        padding-bottom: 2px;
+    }
+
+    .windowws-chat-s2 {
+        background: #FFFFFF;
+        border-radius: 0px 0px 8px 8px;
+        height: 759px;
+        margin-top: 5px;
+        overflow-y: scroll;
+    }
+
+        .windowws-chat-s2::-webkit-scrollbar {
+            display: none;
+        }
+
+    .scrollbar {
+        /* margin-left: 30px; */
+        float: left;
+        height: 650px;
+        width: 100%;
+        background: #fff;
+        overflow-y: scroll;
+        margin-bottom: 25px;
+    }
+
+    .scrollbar-chat {
+        float: left;
+        height: 636px;
+        width: 100%;
+        background: #fff;
+        overflow-y: scroll;
+        padding: 1rem 0 0 1rem;
+    }
+
+    .force-overflow {
+        min-height: 0px;
+    }
+
+    .scrollbar-primary::-webkit-scrollbar {
+        width: 12px;
+        background-color: #F5F5F5;
+    }
+
+    .scrollbar-primary::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgb(255 255 255 / 0%);
+        background-color: #ffffff;
+    }
+
+    .scrollbar-primary::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 0px rgb(0 0 0 / 0%);
+        background-color: #ffffff;
+        border-radius: 10px;
+    }
+
+    .btn-message {
+        width: 3.188rem;
+        height: 3.188rem;
+        background: #C5CBE6;
+        border-radius: 8px;
+        border: 0px;
+    }
+
+    .input-message {
+        height: 3.188rem;
+        border: 1px solid #D4D2D5;
+    }
+
+    .fa-solid {
+        color: #334396;
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x) * -.5);
+        margin-left: calc(var(--bs-gutter-x) * -.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .today-date {
+        color: #909399;
+    }
+
+    .card-chat-u {
+        background: #FFCC41;
+        border-radius: 16px;
+        max-width: 300px;
+    }
+
+    .card-chat-au {
+        background: #D4D2D5;
+        border-radius: 16px;
+        max-width: 300px;
+    }
+
+    .txt-warp {
+        overflow-wrap: break-word;
+    }
+
+    .div-file-upload {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 55px;
+        height: 55px;
+        border-radius: 10px;
+        background: #C5CBE673;
+    }
+
+    .custom-input-file {
+        position: absolute;
+        background: white;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .btn-send {
+        width: 6.29rem;
+        height: 3.188rem;
+        background: #C5CBE673;
+        border-radius: 8px;
+        border: 0px;
+    }
+
+    .windowws-chat-s2::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
+<div class="windowws-chat-s1">
+    <div class="row">
+        <div class="col-1">
+            <div class="m-1 px-3">
+                <img src="Assets/Images/img-user-1.png" style="height:64px;" />
+            </div>
+        </div>
+        <div class="col">
+            <div class="px-4 py-2">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1 user-font">@ChatRoomName</h5>
+                    @*<h5 class="mb-1 user-font">@ChatRoomM.HospitalName</h5>*@
+                </div>
+                <div class="col">
+                    @*<p class="mb-1 txt-detail">@ChatRoomM.StatusChat</p>*@
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="float-end" style="margin-right:24px;" @onclick="@(()=>ClickCloseChat(true))">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.56 19.1067L19.1067 11.56M19.1067 19.1067L11.56 11.56M15.3333 28.6667C22.6667 28.6667 28.6667 22.6667 28.6667 15.3333C28.6667 8 22.6667 2 15.3333 2C8 2 2 8 2 15.3333C2 22.6667 8 28.6667 15.3333 28.6667Z" stroke="#224183" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-column">
+    <div class="container" align="center" style="background: #ffffff;margin-top: 3px;">
+        <span class="today-date">@DateTime.Now.ToString("d MMMM yyyy", new CultureInfo("th-TH"))</span>
+    </div>
+    <div class="scrollbar-chat scrollbar-primary" id="scroll" @ref="scrollableElement" @onscroll="LoadHistoryChat">
+        <div class="force-overflow"></div>
+        @foreach (var item in ChatTRoom)
+        {
+            @if (Username == item.SenderName)
+            {
+                @if (item.UserType == 2)
+                {
+                    <p style="text-align: right;">สถานพยาบาล</p>
+                }
+                @if (item.UserType == 1)
+                {
+                    <p style="text-align: right;">เจ้าหน้าที่ สปส.</p>
+                }
+                @if (item.UserType == 3)
+                {
+                    <p style="text-align: right;">แพทย์ audit</p>
+                }
+                <div class="row">
+                    <ul class="list-unstyled">
+                        <li class="float-end d-flex mb-4 w-75" style="justify-content: flex-end;">
+                            <p class="text-muted small mb-0" style="display: flex!important;align-content: stretch;align-items: flex-end;">@item.CreateDate?.ToString("HH:mm", new CultureInfo("th-TH"))</p>
+                            <div class="card-body card-chat-u d-flex align-items-center justify-content-start shadow-sm px-4">
+                                @if (item.TextMessage != null)
+                                {
+                                    <p class="text-md mb-0" style="overflow: hidden; word-wrap: break-word;">@item.TextMessage</p>
+                                }
+                                @if (item.UploadImagePath != null)
+                                {
+                                    <a href="@item.UploadImagePath" target="_blank">
+                                        <img class="p-2 shardow" style="width:90%;border-radius:18px" src="@item.UploadImagePath" />
+                                    </a>
+                                }
+                                @*File*@
+                                @if (item.UploadFilePath != null)
+                                {
+                                    <a href="@item.UploadFilePath" target="_blank">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <img class="rounded p-2" style="width:40%" src="helper_shared/icon_sso/doc.png" />
+                                            <div class="container-class">@item.UploadFileName</div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                            <img src="helper_shared/PortalAdminImage/img-user-2.png" alt="avatar"
+                                 class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                @if (item.UserType == 2)
+                {
+                    <p>สถานพยาบาล</p>
+                }
+                @if (item.UserType == 1)
+                {
+                    <p>เจ้าหน้าที่ สปส.</p>
+                }
+                @if (item.UserType == 3)
+                {
+                    <p>แพทย์ audit</p>
+                }
+                <div class="row">
+                    <ul class="list-unstyled">
+
+                        <li class="float-start d-flex mb-4 w-75" style="">
+                            <img src="helper_shared/PortalAdminImage/img-user-1.png" alt="avatar"
+                                 class="rounded-circle d-flex align-self-start mr-3 shadow-1-strong" width="60" style="margin-right: 1rem;">
+                            <div class="card-body card-chat-au d-flex align-items-center justify-content-start shadow-sm px-4">
+                                @if (item.TextMessage != null)
+                                {
+                                    <p class="text-md mb-0" style="overflow: hidden; word-wrap: break-word;">@item.TextMessage</p>
+                                }
+                                @if (item.UploadImagePath != null)
+                                {
+                                    <a href="@item.UploadImagePath" target="_blank">
+                                        <img class="p-2 shardow" style="width:90%;border-radius:18px" src="@item.UploadImagePath" />
+                                    </a>
+                                }
+                                @*File*@
+                                @if (item.UploadFilePath != null)
+                                {
+                                    <a href="@item.UploadFilePath" target="_blank">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <img class="rounded p-2" style="width:40%" src="helper_shared/icon_sso/doc.png" />
+                                            <div class="container-class">@item.UploadFileName</div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                            <p class="text-muted small mb-0" style="display: flex!important;align-content: stretch;align-items: flex-start;">@item.CreateDate?.ToString("HH:mm", new CultureInfo("th-TH"))</p>
+                        </li>
+                    </ul>
+                </div>
+            }
+        }
+    </div>
+
+    <div style="background:#ffffff;border-radius: 0 0 8px 8px;">
+        <div class="d-flex pb-4 pt-1">
+                <div class="col-sm-6 col-md-3">
+                    <div class="row justify-content-end">
+                    <div class="col-6 d-flex justify-content-end ">
+                            <button class="btn div-file-upload">
+                                <InputFile class="custom-input-file" style="cursor:pointer;" OnChange=@SendImage accept="image/png, image/jpeg" />
+                                <i class="fa-regular fa-solid fa-image fa-xl"></i>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn div-file-upload">
+                                <InputFile class="custom-input-file" style="cursor:pointer;" OnChange=@SendFile accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf," />
+                                <i class="fa-sharp fa-solid fa-paperclip fa-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9 col-md-6">
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="ขอสอบถามเรื่องการ..." @bind=TextMessage style="min-height:50px;max-height:90px;height:50px;"></textarea>
+                </div>
+                <div class="col-sm-3 col-md-3">
+                    <button type="button" class="btn btn-send mx-2" @onclick=SendMessage>
+                        <i class="fa-solid fa-paper-plane fa-2x"></i>
+                    </button>
+                </div>
+            </div>
+       </div>
+</div>
+
+@code {
+
+
+    public bool OpenChat;
+
+    [Parameter]
+    public List<ChatT> ChatTRoom { get; set; }
+
+    [Parameter]
+    public int ChatRoomId { get; set; }
+
+    [Parameter]
+    public string ChatRoomName { get; set; } = "";
+
+    [Parameter]
+    public string Username { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> CloseChat { get; set; }
+
+    public string TextMessage = "";
+    //public string Username = "ggwp";
+
+    private CancellationTokenSource cancellationTokenSource;
+    private bool isContinuousWorkRunning;
+    public string userType;
+    private ElementReference scrollableElement;
+    public bool isEndTopScroll { get; set; }
+    public int pageSize = 10;
+    private DateTime lastSentTime;
+    private DateTime SentTime = DateTime.Now;
+
+    //private const int maxSize = 10 * 1024 * 1024; //10mb
+    //private List<string> imageData = new List<string>();
+
+    private async Task StartContinuousWork()
+    {
+        if (!isContinuousWorkRunning)
+        {
+            isContinuousWorkRunning = true;
+            cancellationTokenSource = new CancellationTokenSource();
+
+            await Task.Run(async () =>
+            {
+                while (!cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await InvokeAsync(GetChatTRoom);
+                    //StateHasChanged();
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                }
+            });
+        }
+    }
+
+    private void StopContinuousWork()
+    {
+        if (isContinuousWorkRunning)
+        {
+            cancellationTokenSource.Cancel();
+            isContinuousWorkRunning = false;
+        }
+    }
+
+
+    private async Task GetChatTRoom()
+    {
+        ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, pageSize);
+        StateHasChanged();
+        await Task.Delay(3000);
+    }
+
+    protected override async void OnParametersSet()
+    {
+        pageSize = 10;
+        await ScrollToBottom();
+        base.OnParametersSet();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Username = await localStorage.GetItemAsync<string>("username");
+        if (firstRender)
+        {
+            await ScrollToBottom();
+        }
+        await StartContinuousWork();
+    }
+
+    public async void SendMessage()
+    {
+        if (String.IsNullOrEmpty(TextMessage.Trim()))
+        {
+            await Swal.FireAsync(
+               "ไม่สามารถส่งข้อความว่างเปล่าได้ !!",
+               null,
+               SweetAlertIcon.Warning
+               );
+            TextMessage = "";
+            return;
+        }
+        userType = await localStorage.GetItemAsync<string>("userType");
+        var usetypeInt = 0;
+        if (userType == "sso-mms-hospital")
+
+        {
+            usetypeInt = 2;
+        }
+        else if (userType == "sso-mms-admin")
+        {
+            usetypeInt = 1;
+        }
+        else
+        {
+            usetypeInt = 3;
+        }
+
+        ChatT value = new ChatT();
+        value.ChatRoomId = ChatRoomId;
+        value.TextMessage = TextMessage;
+        value.UserType = usetypeInt;
+        value.SenderName = Username;
+        value.CreateBy = Username;
+        value.UpdateBy = Username;
+
+
+        var sendMessage = await ChatService.AddChatTransaction(value);
+        ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, pageSize);
+        StateHasChanged();
+        TextMessage = "";
+        await ScrollToBottom();
+
+        lastSentTime = DateTime.Now;
+    }
+
+    public async void SendImage(InputFileChangeEventArgs file)
+    {
+        var checkSize = file.File.Size;
+        var checkTypeFile = file.File.ContentType;
+        if (checkTypeFile != "image/png" && checkTypeFile != "image/jpeg" && checkTypeFile != "image/jpg")
+        {
+            await Swal.FireAsync(
+               "สามารถอัพโหลดได้เฉพาะไฟล์ .png/.jpeg/.jpg เท่านั้น !!",
+               null,
+               SweetAlertIcon.Warning
+               );
+            return;
+        }
+        if (checkSize > 5242880)
+        {
+            await Swal.FireAsync(
+               "ไม่สามารถอัพโหลดไฟล์ที่มีขนาดเกิน 5 MB !!",
+               null,
+               SweetAlertIcon.Warning
+               );
+            return;
+        }
+        userType = await localStorage.GetItemAsync<string>("userType");
+        var usetypeInt = 0;
+        if (userType == "sso-mms-hospital")
+
+        {
+            usetypeInt = 2;
+        }
+        else if (userType == "sso-mms-admin")
+        {
+            usetypeInt = 1;
+        }
+        else
+        {
+            usetypeInt = 3;
+        }
+        ResponseUpload responseUpload = await ChatService.UploadFile(file.File);
+      
+        ChatT value = new ChatT();
+        value.ChatRoomId = ChatRoomId;
+        value.UploadImagePath = responseUpload.Path_Url;
+        value.UploadImageName = file.File.Name;
+        value.UserType = usetypeInt;
+        value.SenderName = Username;
+        value.CreateBy = Username;
+        value.UpdateBy = Username;
+
+        var sendMessage = await ChatService.AddChatTransaction(value);
+
+        ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, pageSize);
+        StateHasChanged();
+        TextMessage = "";
+        await ScrollToBottom();
+
+        lastSentTime = DateTime.Now;
+    }
+
+    public async void SendFile(InputFileChangeEventArgs file)
+    {
+        var checkSize = file.File.Size;
+        if (checkSize > 5242880)
+        {
+            await Swal.FireAsync(
+               "ไม่สามารถอัพโหลดไฟล์ที่มีขนาดเกิน 5 MB !!",
+               null,
+               SweetAlertIcon.Warning
+               );
+            return;
+        }
+        userType = await localStorage.GetItemAsync<string>("userType");
+        var usetypeInt = 0;
+        if (userType == "sso-mms-hospital")
+
+        {
+            usetypeInt = 2;
+        }
+        else if (userType == "sso-mms-admin")
+        {
+            usetypeInt = 1;
+        }
+        else
+        {
+            usetypeInt = 3;
+        }
+        ResponseUpload responseUpload = await ChatService.UploadFile(file.File);
+
+        ChatT value = new ChatT();
+        value.ChatRoomId = ChatRoomId;
+        value.UploadFileName = file.File.Name;
+        value.UploadFilePath = responseUpload.Path_Url;
+        value.UserType = usetypeInt;
+        value.SenderName = Username;
+        value.CreateBy = Username;
+        value.UpdateBy = Username;
+
+        var sendMessage = await ChatService.AddChatTransaction(value);
+
+        ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, pageSize);
+        StateHasChanged();
+        TextMessage = "";
+        await ScrollToBottom();
+
+        lastSentTime = DateTime.Now;
+    }
+
+    private async Task ScrollToBottom()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollableElement);
+    }
+
+    private async Task LoadHistoryChat()
+    {
+        isEndTopScroll = await JSRuntime.InvokeAsync<bool>("getOldHistoryChat", scrollableElement);
+
+        if (isEndTopScroll)
+        {
+            pageSize = pageSize + 10;
+            ChatTRoom = await ChatService.GetChatHistory(ChatRoomId, 1, pageSize);
+            StateHasChanged();
+
+        }
+    }
+    async void ClickCloseChat(bool stat)
+    {
+        if (stat)
+        {
+            await CloseChat.InvokeAsync(stat);
+        }
+    }
+
+}

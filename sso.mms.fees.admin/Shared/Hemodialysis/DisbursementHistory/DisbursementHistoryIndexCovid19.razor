@@ -1,0 +1,377 @@
+﻿
+<style>
+    .bg-color-gray {
+        background-color: #D8D6D6;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3" style="color : black"> ค่าบริการทางการแพทย์ กรณีประสบอันตรายหรือเจ็บป่วยฉุกเฉินวิกฤต (UCEP)</div>
+    </div>
+ 
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">ประวัติการเบิกจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงรายการประวัติเบิกจ่าย</span>
+                </li>
+
+            </ol>
+        </nav>
+        <div style="padding-top:15px;">
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="d-flex col-8">
+                        <div class="mms-txt-headdetail col-2">งวดที่ : &nbsp;</div>
+                        <div class="col-4">
+
+                            <select class="form-select" @bind=select
+                                    aria-label="Default select example">
+
+                                <option>6704</option>
+                                <option>6705</option>
+                                <option>6706</option>
+                                <option>6707</option>
+
+                            </select>
+                        </div>
+                        <div class="col-2 mx-3">
+                            <Button Type="@ButtonType.Primary">ค้นหา</Button>
+                        </div>
+                    </div>
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+            </div>
+
+
+            <hr />
+            <Table DefaultExpandAllRows DataSource="data" DefaultExpandMaxLevel="1" TreeChildren="item=>item.Children" Bordered>
+
+                
+                @if (context.HosStatus == true)
+                {
+                       
+                    <PropertyColumn Property="c=>c.Name" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Left" ColSpan="@GetColSpan(context.HosStatus,"name",context.Key)" Width="10%" Style="@GetColColor(context.HosStatus, "name")" />
+                }
+                else if (context.HosStatus == false)
+                {
+
+                    <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Align="ColumnAlign.Center" ColSpan="1" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.Name" Title="เลขที่คำสั่งจ่าย" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.Name" Title="เลขที่คำสั่งจ่าย" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                   
+                    <PropertyColumn Property="c=>c.CardId" Title="เลขที่เอกสาร EMCO" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus )" />
+                    <PropertyColumn Property="c=>c.CardId" Title="เลขที่งวด" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus )" />
+
+                    <PropertyColumn Property="c=>c.Date" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus )" />
+                    <PropertyColumn Property="c=>c.Date" Title="ประเภท" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.Age" Title="HN/AN" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn Property="c=>c.Age" Title="สถานะ" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    
+                
+                }
+              
+
+                
+                @{
+                    var sum = 0;
+                    foreach (var item in data)
+                    {
+                        sum += CalculateTotalChildrenAge(item.Children.ToList());
+
+                    }
+
+                }
+                <SummaryRow>
+                    <SummaryCell ColSpan="7 " Align="ColumnAlign.Right">รวมทั้งหมด</SummaryCell>
+                    <SummaryCell ColSpan="2">
+                        <Text>@sum</Text>
+                    </SummaryCell>
+                </SummaryRow>
+            </Table>
+          
+        </div>
+    </div>
+</div>
+<ViewDataModal _visible=@openViewDataModal OnClose="@OpenViewDataModal"></ViewDataModal>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+@using sso.mms.fees.admin.Shared.UCEP.DisbursementHistory.Modals;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    IEnumerable<Data> selectedRows;
+    int page;
+    bool openConfirmModal { get; set; }
+    bool openViewDataModal { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+    bool isloading = false;
+    string select { get; set; }
+    List<Data> _data;
+
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+        public string CardId { get; set; }
+
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+
+        public string Address { get; set; }
+
+        public List<Data> Children { get; set; }
+    }
+
+    List<Data> data = new List<Data>();
+
+    private int CalculateTotalChildrenAge(List<Data> children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.Age;
+        }
+        return totalAge;
+    }
+
+
+
+    string _selectedValue;
+
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+
+                columnAlign = ColumnAlign.Left;
+                return 15;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            columnAlign = ColumnAlign.Center;
+            return 1;
+        }
+
+    }
+
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    int totalAge;
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        data = new List<Data>
+    {
+        new Data {
+            HosStatus  = true,
+            Id = "1",
+            Key = "1",
+            Name = "โรงพยาบาลลานนา1",
+            Address = "New York No. 1 Lake Park",
+            Children = new List<Data> {
+                new Data {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                    HosStatus  = false
+                },
+                new Data {
+                    Id = "2",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+                 new Data {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+                new Data {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+                 new Data {
+                    Id = "5",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+            }
+        },
+        new Data {
+              HosStatus  = true,
+            Id = "1",
+            Key = "2",
+            Name = "โรงพยาบาลลานนา2",
+            Address = "Sidney No. 1 Lake Park",
+             Children = new List<Data>  {
+                 new Data {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                     HosStatus  = false
+                },
+                new Data {
+                    Id = "2",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+                 new Data {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                },
+                 new Data {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                     HosStatus  = false
+
+                }
+
+            }
+        }
+    };
+        foreach (var item in data)
+        {
+
+            totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+
+
+        }
+
+        isloading = false;
+        StateHasChanged();
+    }
+
+
+
+
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    public async Task Indexpage(int usepage)
+    {
+        this.page = usepage;
+        if (this.page == 2)
+        {
+            IndexPage.InvokeAsync(2);
+        }
+    }
+}

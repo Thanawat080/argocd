@@ -1,0 +1,379 @@
+﻿<style>
+   .bg-color-gray{
+        background-color: #D8D6D6;
+   }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3"> ค่าบริการทางการแพทย์ทันตกรรม   </div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2"> รายการรับเเจ้ง  </span>
+                </li>         
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2"> ประมวลผลรายการรับเเจ้ง  </span>
+                </li>
+               
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+       
+        <div class="row">
+            
+                <div class="col-md-12 mms-media-end">
+                  
+                    <Button Type="@ButtonType.Primary" Class="mms-text-header" Style="font-size:16px;" @onclick=@(()=>OpenConfirmModal(true)) Disabled="@(selectedRows == null || selectedRows.Count() == 0 ? true:false)">
+                        <i class="fa-regular fa-square-caret-right"></i>
+                        ประมวลผลรายการรับเเจ้ง
+                    </Button>
+
+               &nbsp;
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-4">
+                        <SpaceItem>
+                            <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+        </div>
+        <br />
+        <Table DefaultExpandAllRows DataSource="data" RowSelectable="@(x =>x.HosStatus == false ? false : true)" @bind-SelectedRows="selectedRows" TreeChildren="item=>item.Children" Bordered ScrollY="750" ScrollX="1000">
+           
+            <Selection Key="@context.Id" CheckStrictly Disabled="@(context.HosStatus == false ? true : false)" Class="bg-color-gray" />
+            @if(context.HosStatus == false)
+            {
+                <PropertyColumn Property="c=>c.Id" Title="ลำดับ" ColSpan="@GetColSpan(context.HosStatus)" Style="@GetColColor(context.HosStatus)" />
+            }
+            <PropertyColumn Property="c=>c.Name" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Left" ColSpan="@GetColSpan(context.HosStatus,"name",context.Key)"  Style="@GetColColor(context.HosStatus, "name")" />
+            <PropertyColumn Property="c=>c.CardId" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)"  Style="@GetColColor(context.HosStatus )" />
+            <PropertyColumn Property="c=>c.Date" Title="วันที่ตรวจ" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)"  Style="@GetColColor(context.HosStatus )" />
+            <PropertyColumn Property="c=>c.Date" Title="รับบริการ" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)"  Style="@GetColColor(context.HosStatus)" />
+            <PropertyColumn Property="c=>c.Age" Title="ค่าบริการ" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)"  Style="@GetColColor(context.HosStatus)" />
+            @*<PropertyColumn Property="c=>c.Age" Title="ค่าบริการ" ColSpan="@GetColSpan(context.HosStatus)" Width="10%" Style="@GetColColor(context.HosStatus)" />*@
+            <PropertyColumn Property="c=>c.Id" Title=""  Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus,context.Key)" Style="@GetColColor(context.HosStatus)">
+                <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                     style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OpenViewDataModal(true)) />
+            </PropertyColumn>
+            @{
+                var sum=0;
+                foreach (var item in data)
+                {
+                    sum += CalculateTotalChildrenAge(item.Children.ToList());
+
+                }
+
+            }
+            <SummaryRow>
+                <SummaryCell ColSpan="6 " Align="ColumnAlign.Right">รวมทั้งหมด</SummaryCell>
+                <SummaryCell Align="ColumnAlign.Center">
+                    <Text >@sum</Text>
+                </SummaryCell>
+                <SummaryCell >
+                    
+                </SummaryCell>
+                </SummaryRow>
+        </Table>
+        
+        <div class="container d-flex flex-column py-2">
+            <div class="mms-media-start">
+                <h6>วันที่ :</h6>&nbsp;
+                <h6>30 เม.ย 2566</h6>
+            </div>
+            <div class="mms-media-start">
+                <h6>จำนวนสถานพยาบาลทั้งหมด :</h6>&nbsp;
+                <h6>30 สถานพยาบาล</h6>
+            </div>
+            <div class="mms-media-start">
+                <h6>เจ้าหน้าที่ผู้ประมวลผล :</h6>&nbsp;
+                <h6>นายวงศ์ สว่าง</h6>
+            </div>
+        </div>
+    </div>
+</div>
+<ConfirmModal _visible=@openConfirmModal OnClose="@OpenConfirmModal" IndexPage="@Indexpage"></ConfirmModal>
+<ViewDataModal _visible=@openViewDataModal OnClose="@OpenViewDataModal"></ViewDataModal>
+@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.NotificationList.Modals
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    IEnumerable<Data> selectedRows;
+    int page;
+    bool openConfirmModal { get; set; }
+    bool openViewDataModal { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+
+    List<Data> _data;
+
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+        public string CardId { get; set; }
+
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+
+        public string Address { get; set; }
+
+        public List<Data> Children { get; set; }
+    }
+
+    List<Data> data = new List<Data>
+    {
+        new Data {
+            HosStatus  = true,
+            Id = "1",
+            Key = "1",
+            Name = "โรงพยาบาลลานนา1",
+            Address = "New York No. 1 Lake Park",
+            Children = new List<Data> {
+                new Data {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                },
+                new Data {
+                    Id = "2",
+                    Key= "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new Data {
+                    Id = "3",
+                    Key= "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                }, 
+                new Data {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new Data {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+            }
+        },
+        new Data {
+              HosStatus  = true,
+            Id = "1",
+            Key = "2",
+            Name = "โรงพยาบาลลานนา2",
+            Address = "Sidney No. 1 Lake Park",
+             Children = new List<Data>  {
+                 new Data {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                },
+                new Data {
+                    Id = "2",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new Data {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new Data {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+
+            }
+        },
+    };
+
+    private int CalculateTotalChildrenAge(List<Data> children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.Age;
+        }
+        return totalAge;
+    }
+
+    //public class Todo
+    //{
+    //    public int UserId { get; set; }
+    //    public int Id { get; set; }
+    //    public string Title { get; set; }
+    //    public bool Completed { get; set; }
+
+    //    public Todo()
+    //    {
+    //    }
+    //}
+    //public class ItemData
+    //{
+    //    public int Id { get; set; }
+    //    public string Name { get; set; }
+    //    public int Age { get; set; }
+    //    public int count { get; set; }
+    //    public string Address { get; set; }
+    //};
+
+    //Todo[] todos;
+
+    //List<ItemData> listOfData = new List<ItemData>();
+
+    string _selectedValue;
+
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return 7;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else{
+            return 1;
+        }
+    }
+
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    int totalAge;
+    protected override async Task OnInitializedAsync()
+    {
+        
+        foreach (var item in data)
+        {
+
+             totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+
+            //Data total = new Data()
+            //    {
+            //        Id = "",
+            //        Key = "total",
+            //        Name = "รวม Total",
+            //        Age = totalAge,
+            //        Address = "",
+            //    };
+            //item.Children.Add(total);
+        }
+        //_data = data;
+       await Task.Delay(3000);
+        StateHasChanged();
+    }
+
+    //protected override async void OnInitialized()
+    //{
+
+
+    //listOfData = Enumerable.Range(0, 3).Select(i => new ItemData { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+
+    //}
+
+
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    public async Task Indexpage(int usepage)
+    {
+        this.page = usepage;
+        if (this.page == 2)
+        {
+          await  IndexPage.InvokeAsync(2);
+        }
+    }
+   
+}

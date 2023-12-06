@@ -1,0 +1,202 @@
+﻿@using sso.mms.fees.admin.Shared.OrganTransplantation.Payrate.Modals
+<div class="text-title-payrate">ตั้งค่า OTP01 เซลล์ต้นกำเนิดเม็ดโลหิต</div>
+<hr>
+<div class="row mt-2 align-items-center" style="margin-bottom:38px">
+    <div class="col-md-12 col-lg-6 col-xl-6">
+        <Button Style="width: 151px; height: 51px; flex-shrink: 0;" Type="@ButtonType.Primary" OnClick="@(() => OpenAddData(true))">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;เพิ่ม
+        </Button>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-6 text-end">
+        <Space Direction="@DirectionVHType.Vertical" Style="width:370px;height: 48px">
+            <SpaceItem>
+                <Search Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" AllowClear />
+             </SpaceItem>
+         </Space>
+     </div>
+ </div>
+
+<Table DataSource="@childData" Bordered TreeChildren="item=>item.Children" DefaultExpandAllRows>
+    <PropertyColumn Property="c=>c.Key" Title="ลำดับ" ColSpan=@GetColSpan(@context.TitleStatus,"name") Class="@ColColor(@context.TitleStatus,"name")"></PropertyColumn>
+    <PropertyColumn Property="c=>c.ClaimNumber" Title="รหัส claim" ColSpan=@GetColSpan(@context.TitleStatus) Class="@ColColor(@context.TitleStatus)"></PropertyColumn>
+    <PropertyColumn Property="c=>c.ClaimName" Title="ชื่อ claim" ColSpan=@GetColSpan(@context.TitleStatus) Class="@ColColor(@context.TitleStatus)"></PropertyColumn>
+    <PropertyColumn Property="c=>c.Amount" Title="จำนวน" ColSpan=@GetColSpan(@context.TitleStatus) Class="@ColColor(@context.TitleStatus)"></PropertyColumn>
+    <PropertyColumn Property="c=>c.FinancialAmount" Title="วงเงิน" ColSpan=@GetColSpan(@context.TitleStatus) Class="@ColColor(@context.TitleStatus)"></PropertyColumn>
+    <PropertyColumn Title="" Property="c=>c!.NoContent" Width="150px" ColSpan=@GetColSpan(@context.TitleStatus) Class="@ColColor(@context.TitleStatus)">
+        <img class="mx-2" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px;" @onclick="@(() => SendPropData(@context))" />
+        <img class="mx-2" src="helper_shared/PortalAdminImage/delete.png" style="width:24px;height:24px;" />
+    </PropertyColumn>
+</Table>
+<AddPayrate OnClose="@OpenAddData" _visible="@openAddData" _title="กำหนดอัตราจ่าย OTP01 เซลล์ต้นกำเนิดเม็ดโลหิต" />
+
+
+<EditPayrateChildren OnClose="@OpenEditData" _visible="@openEditData" _title="แก้ไขอัตราจ่าย" data="@dataPayrate" />
+
+@code {
+
+    public bool openAddData { get; set; }
+
+    public bool openEditData { get; set; }
+
+    public MockPayrateChildren dataPayrate { get; set; }
+
+
+    public async Task OpenEditData(bool value)
+    {
+        openEditData = value;
+    }
+
+    public async Task SendPropData(MockPayrateChildren value)
+    {
+        dataPayrate = value;
+        await OpenEditData(true);
+    }
+
+    public async Task OpenAddData(bool value)
+    {
+        openAddData = value;
+    }
+
+    List<MockPayrateChildren> childData = new List<MockPayrateChildren>()
+    {
+          new MockPayrateChildren
+          {
+               Key = "1100 Autologous",
+               TitleStatus = true,
+               Children = new List<MockPayrateChildren>()
+               {
+                      new MockPayrateChildren
+                   {
+                       Key = "1",
+                       ClaimNumber = "3101",
+                       ClaimName = "ค่าเก็บ stem cell ของผู้ประกันตน ",
+                       Amount = "1",
+                       FinancialAmount = "250,000.00",
+                       NoContent = "",
+                   },
+                     new MockPayrateChildren
+                   {
+                       Key = "2",
+                       ClaimNumber = "3102",
+                       ClaimName = "ค่าทำ stem cell transfusion ",
+                       Amount = "1",
+                       FinancialAmount = "500,000.00 ",
+                       NoContent = "",
+                   },
+               }
+          },
+          new MockPayrateChildren
+          {
+               Key = "2200 Allogeneic  related",
+               TitleStatus = true,
+               Children = new List<MockPayrateChildren>()
+               {
+                     new MockPayrateChildren
+                   {
+                       Key = "1",
+                       ClaimNumber = "3201",
+                       ClaimName = "วันเข้ารับการรักษาพยาบาลครั้งแรก(admission) และได้รับ stem cell transfusion",
+                       Amount = "1",
+                       FinancialAmount = "500,000.00 ",
+                       NoContent = "",
+                   },
+                    new MockPayrateChildren
+                   {
+                       Key = "2",
+                       ClaimNumber = "3202",
+                       ClaimName = "วันจำหน่ายจากโรงพยาบาล (discharge) จำนวนเงินที่เหลือหลังจากหักค่าตรวจเนื้อเยื่อเข้าได้กับพี่น้องร่วมบิดามารดาเดียวกัน",
+                       Amount = "1",
+                       FinancialAmount = "800,000.000",
+                       NoContent = "",
+                   },
+               }
+          },
+           new MockPayrateChildren
+          {
+               Key = "3300 Allogeneic  unrelated",
+               TitleStatus = true,
+               Children = new List<MockPayrateChildren>()
+               {
+                     new MockPayrateChildren
+                   {
+                       Key = "1",
+                       ClaimNumber = "3301",
+                       ClaimName = "วันเข้ารับการรักษาพยาบาลครั้งแรก(admission) stem cell transfusion ",
+                       Amount = "1",
+                       FinancialAmount = "500,000.00 ",
+                       NoContent = "",
+                   },
+                    new MockPayrateChildren
+                   {
+                       Key = "2",
+                       ClaimNumber = "3302",
+                       ClaimName = "วันจำหน่ายจากโรงพยาบาล (discharge)",
+                       Amount = "1",
+                       FinancialAmount = "800,000.000",
+                       NoContent = "",
+                   },
+               }
+          },
+            new MockPayrateChildren
+          {
+               Key = "4400 การตรวจเนื้อเยื่อจากพี่น้องร่วมบิดา มารดาเดียวกัน (รวมทั้งผู้ประกันตน)",
+               TitleStatus = true,
+               Children = new List<MockPayrateChildren>()
+               {
+                     new MockPayrateChildren
+                   {
+                       Key = "1",
+                       ClaimNumber = "3401",
+                       ClaimName = "ค่าตรวจเนื้อเยื่อจากพี่น้องร่วมบิดา มารดาเดียวกันกับผู้ประกันตน",
+                       Amount = "1",
+                       FinancialAmount = "500,000.00",
+                       NoContent = "",
+                   }
+               }
+          }
+    };
+
+
+
+    private int GetColSpan(bool TitleStatus, string columnTitle = "")
+    {
+        if (TitleStatus == true)
+            if (columnTitle == "name")
+                return 10;
+            else
+                return 0;
+        else
+            return 1;
+    }
+
+    private string ColColor(bool TitleStatus, string columnTitle = "")
+    {
+        if (TitleStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return "text-title-payrate background-title";
+            }
+            else
+            {
+                return "";
+            }
+        }
+        else if (TitleStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return "text-title-payrate background-title";
+            }
+            else
+            {
+                return "";
+            }
+        }
+        else
+        {
+
+            return "";
+        }
+    }
+}

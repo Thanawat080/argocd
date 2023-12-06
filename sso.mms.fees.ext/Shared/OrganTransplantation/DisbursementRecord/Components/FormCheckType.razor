@@ -1,0 +1,18 @@
+﻿
+<div class="d-flex">
+    <div class="me-3">ประเภทการปลูกถ่าย*</div>
+        <RadioGroup @bind-Value="@_value" Class="d-flex flex-column">
+        <Radio Value="1">ปลูกถ่ายด้วยวิธี Autologous ใช้เนื้อเยื่อตนเอง</Radio>
+        <Radio Value="2">
+            ปลูกถ่ายด้วยวิธี Allogeneic related ที่ใช้เนื้อเยื่อ
+            ของพี่น้องรวมบิดา มารดาเดียวกัน
+        </Radio>
+        <Radio Value="3">ปลูกถ่ายด้วยวิธี Allogeneic related ที่ใช้เนื้อเยื่อผู้บริจาค</Radio>
+        <Radio Value="4">ตรวจเนื้อเยื่อ</Radio>
+        </RadioGroup>
+</div>
+
+
+@code {
+    int _value = 1;
+}

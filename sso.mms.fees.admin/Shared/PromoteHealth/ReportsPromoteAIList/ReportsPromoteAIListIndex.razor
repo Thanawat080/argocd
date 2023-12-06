@@ -1,0 +1,140 @@
+﻿@using MatBlazor
+@using sso.mms.fees.admin.Providers.PromoteHealth.ReportsPromoteAIList
+@using sso.mms.fees.admin.ViewModels.Responses;
+
+@inject ReportsPromoteAIListServices reportsPromoteAIListServices
+<style>
+
+    .mdc-table td {
+        padding: 20px !important;
+    }
+
+    .mdc-table th {
+        padding: 20px !important;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ผลการประมวลผลด้วย AI</span>
+                </li>
+            </ol>
+        </nav>
+        
+        <hr />
+        @if (listWithdrawal.ResultList != null)
+        
+        {
+            <Table DataSource="@listWithdrawal.ResultList.Where(x => x.SuggestionStatus > 0)" TItem="AaiHealthWithdrawalHViewForAi" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="20%" Style="text-align:center;">
+                    @String.Format("{0:d}", listWithdrawal.ResultList.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="งวดที่" Width="44%" Style="text-align:center;">
+                    @data.WithdrawalNo
+                </Column>
+                <Column TData="string" Title="วันที่นำเข้าข้อมูล" Width="44%" Style="text-align:center;">
+                    @data.CreateDate.AddYears(543).ToString("dd/MM/yyyy")
+                </Column>
+                <Column TData="int" Title="วันที่ประมวลผล" Width="44%" Style="text-align:center;">
+                    @if (data.SuggestionStatus != null)
+                        {
+                            @data.UpdateDate?.AddYears(543).ToString("dd/MM/yyyy")
+                        }
+                    </Column>
+                    <Column TData="string" Title="สถานะ" Width="40%" Style="text-align:center;">
+                        @if (data.SuggestionStatus == null)
+                        {
+                            <span style="color:#7B89C4;">รอประมวลผล</span>
+                        }
+                        else
+                        {
+                            <span style="color:#59AD46;">ประมวลผลแล้ว</span>
+                        }
+                    </Column>
+                    <Column TData="string" Width="18%" Style="text-align:center; border-top-right-radius:8px;">
+                        @if (data.SuggestionStatus != null)
+                        {
+                            <img title="ดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(() => goEdit(data.WithdrawalNo))" />
+                        }
+                    </Column>
+                </ChildContent>
+            </Table>
+        }
+
+    </div>
+</div>
+
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<(int, string)> IndexPage { get; set; }
+
+    
+    string desAi = "";
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading = false;
+    string txtValue { get; set; }
+    ResponseList<AaiHealthWithdrawalHViewForAi> listWithdrawal = new ResponseList<AaiHealthWithdrawalHViewForAi>();
+    public async Task goEdit(string withdraw)
+    {
+        await IndexPage.InvokeAsync((2, withdraw));
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+    public async void CsvAi(string? desAii)
+    {
+        desAi = desAii;
+        _visible1 = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        listWithdrawal = await reportsPromoteAIListServices.GetWithdrawalForAi();
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+
+}

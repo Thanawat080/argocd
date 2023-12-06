@@ -1,0 +1,267 @@
+﻿ @using System.ComponentModel.DataAnnotations;
+@using static sso.mms.fees.ext.Shared.Dental.TreatmentRecord.AddTreatmentIndex_3;
+@using sso.mms.fees.api.ViewModels.Dental;
+@using sso.mms.fees.api.ViewModels.Responses;
+
+ @using sso.mms.fees.ext.Providers.Dental.TreatmentRecord
+@inject TreatmentRecordServices treatmentRecordServices
+@{
+
+    RenderFragment canclebutton =@<div>
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+    </div>;
+}
+<style>
+    .text-title {
+        color: #334396;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+    }
+</style>
+<Modal Title="@title"
+       Visible="@_visible"
+       OnCancel="@HandleCancel"
+       CancelText="@canclebutton"
+       Class="mms-media-center mms-text-title"
+       Width="1300"
+       Footer="null">
+
+    <Body>
+
+        <div class="container py-4">
+            <div class="row my-3">
+                <div class="d-flex  col-lg-3 sm-2">
+                    <div class="text-title">เลขฟัน<span style="color: red">*</span></div>
+                    <div class="d-flex flex-column" style="margin-left: 50px">
+
+                    <div class="my-2">
+                        <div style="display:inline-block ; font-size : 16px; color : #6A6A6A" class="mms-txt-headdetail ">
+                            <CheckboxGroup Style="width:100%">
+                                <Checkbox OnChange="ChangeTooth" @bind-Checked=@checklabel1> </Checkbox>
+                                <span>ฟันแท้</span>
+                            </CheckboxGroup>
+                        </div>
+
+                    </div><div class="my-2">
+                        <div style="display:inline-block ; font-size : 16px; color : #6A6A6A" class="mms-txt-headdetail ">
+                            <CheckboxGroup Style="width:100%">
+                                <Checkbox OnChange="ChangeTooth" @bind-Checked=@checklabel2> </Checkbox>
+                                <span>ฟันน้ำนม</span>
+                            </CheckboxGroup>
+                        </div>
+
+                    </div>
+                    <div class="my-2">
+                        <div style="display:inline-block ; font-size : 16px; color : #6A6A6A" class="mms-txt-headdetail ">
+                            <CheckboxGroup Style="width:100%">
+                                <Checkbox OnChange="ChangeTooth" @bind-Checked=@checklabel3> </Checkbox>
+                                <span>ฟันเกิน</span>
+                            </CheckboxGroup>
+                        </div>
+
+                    </div>
+                        <div class="my-2">
+                            <div style="display:inline-block ; font-size : 16px; color : #6A6A6A" class="mms-txt-headdetail ">
+                                <CheckboxGroup Style="width:100%">
+                                    <Checkbox OnChange="ChangeTooth" @bind-Checked=@checklabel4> </Checkbox>
+                                    <span>ขูดหินปูน</span>
+                                </CheckboxGroup>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <div class="my-2">
+                        <select @bind="@data.ToothTypeId" class="form-select"
+                                aria-label="Default select example">
+                            <option disabled selected value="">--ระบุเลขฟัน--</option>
+                            @foreach (var item in ListTooth.ResultList)
+                            {
+                                
+                            <option value= "@item.ToothTypeId" >@item.ToothNo : @item.ToothName</option>
+                       
+                            }
+                        </select>
+
+                    </div>
+                    
+                   
+
+                </div>
+                <div class="col-lg-1 sm-2"></div>
+
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title">คำวินิจฉัย<span style="color: red">*</span></div>
+                    <textarea id="w3review" @bind="@data.Decision" name="w3review" rows="4" cols="50"></textarea>
+                </div>
+                <div class="col-lg-3 sm-2"></div>
+
+            </div>
+            <div class="row my-3">
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title">รหัสโรค<span style="color: red">*</span></div>
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <select @bind="@data.Icd10Id" class="form-select"
+                            aria-label="Default select example">
+                        <option disabled selected value="">-- รหัสโรค --</option>
+                        <option value="#โรค1">โรค 1</option>
+                        <option value="#โรค2">โรค 2</option>
+                        <option value="#โรค3">โรค 3</option>
+                        <option value="#โรค4">โรค 4</option>
+                        <option value="#โรค5">โรค 5</option>
+
+                    </select>
+                </div>
+                <div class="col-lg-2 sm-2"></div>
+
+                <div class="col-lg-2 sm-2">
+                   
+                </div>
+                <div class="col-lg-3 sm-2"></div>
+
+            </div>
+            <div class="row my-3">
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title">เเพทย์ผู้ตรวจ<span style="color: red">*</span></div>
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <select  class="form-select" @bind="@data.DoctorName"
+                            aria-label="Default select example">
+                        <option disabled selected value="">-- เเพทย์ผู้ตรวจ --</option>
+                       <option value="1">รหัสหัตถการ 1</option>
+                        <option value="2">รหัสหัตถการ 2</option>
+                        <option value="3">รหัสหัตถการ 3</option>
+                        <option value="4">รหัสหัตถการ 4</option>
+
+                    </select>
+                </div>
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title" style="font-size: 16px;">: (เเสดงเลข ท. / ตำเเหน่ง)</div>
+                </div>
+
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title" style="text-align : right">รหัสหัตถการ</div>
+
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <select  class="form-select" @bind="@data.Icd9Id"
+                            aria-label="Default select example">
+                        <option disabled selected value="">-- รหัสหัตถการ --</option>
+                        <option value="1">รหัสหัตถการ 1</option>
+                        <option value="2">รหัสหัตถการ 2</option>
+                        <option value="3">รหัสหัตถการ 3</option>
+                        <option value="4">รหัสหัตถการ 4</option>
+
+                    </select>
+                </div>
+
+            </div>
+            <div class="row my-3">
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title">เเพทย์ผู้ตรวจ<span style="color: red">*</span></div>
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <div class="text-title" style="color : black">นายสามารถ สะอาด</div>
+                </div>
+                <div class="col-lg-2 sm-2"></div>
+
+                <div class="col-lg-2 sm-2">
+                    <div class="text-title" style="text-align : right">วันที่ตรวจ</div>
+                </div>
+                <div class="col-lg-3 sm-2">
+                    <div class="text-title" style="color : black">19 ก.ค 2567</div>
+                </div>
+
+            </div>
+            
+            <div class="mms-media-center">
+
+                <Button Type="@ButtonType.Primary" Class="mms-text-header" style="background : #59AD46 !important ; border-color: #59AD46 !important;" @onclick=Submit>
+                    ยืนยันการเบิก
+                </Button>
+
+            </div>
+        </div>
+    </Body>
+
+
+
+</Modal>
+
+@code {
+    string title = "บันทึกตรวจสุขภาพฟัน";
+    private string selectedFruit = "apple";
+    private string milktooth { get; set; }
+    private string toothcode { get; set; }
+    bool loading = false;
+    string txtValue = "";
+    bool checklabel1 ;
+    bool checklabel2 ;
+    bool checklabel3 ;
+    bool checklabel4 ;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public int checkHid { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<AaiDentalCheckDView> ModalData { get; set; }
+
+    ResponseList<AaiDentalToothTypeMView> ListTooth = new ResponseList<AaiDentalToothTypeMView>();
+
+    AaiDentalCheckDView data = new AaiDentalCheckDView();
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine("e");
+        _visible = false;
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private  void Submit()
+    {
+     
+        data.DentListId = 1;
+        data.CheckHId = checkHid;
+        ModalData.InvokeAsync(data);
+        OnClose.InvokeAsync(false);
+        data = new AaiDentalCheckDView();
+    }
+    private void ChangeTooth()
+    {
+        if (!checklabel1)
+        {
+
+        }
+        if (!checklabel2)
+        {
+
+        }
+        if (!checklabel3)
+        {
+
+        }
+        if (!checklabel4)
+        {
+
+        }
+    }
+    protected override async void OnInitialized()
+    {
+        ListTooth = await treatmentRecordServices.ToothList();
+    }
+   
+}

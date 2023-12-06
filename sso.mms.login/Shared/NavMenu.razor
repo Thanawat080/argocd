@@ -1,0 +1,53 @@
+﻿@using sso.mms.helper.Configs;
+@inject NavigationManager NavigationManager
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-style c-style-content">
+    <div class="row w-100 m-2">
+        <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 pb-2 d-flex align-items-center">
+            <img class="wid-banner" src="helper_shared/icon_sso/mms-logo.png" @onclick="OnToRegisterPage" />
+
+            <div style="color: #f0f2f9;font-size: 29px;padding-left: 1rem;">
+                |
+            </div>
+            <div style="color: #909399bd;font-size:16px;">
+                @PageCode
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
+            <form class="float-end">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li>
+                        <a style="color:rgb(205 205 205);" class="nav-link active nav-font" aria-current="page" @onclick="OnToRegisterPage">ระบบการให้บริการทางการแพทย์</a>
+                    </li>
+                    <li class="nav-item">
+                        <hr class="hr-nav" style="margin-top:25px;Width:51px;border: 1px solid #C5CBE6;transform: rotate(90deg);" />
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-primary btn-menu" @onclick="OnToRegisterPage">
+                            <div class="btn-font"><i class="fa-solid fa-house-chimney"></i>&nbsp;กลับสู่หน้าหลัก</div>
+                        </button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+</nav>
+
+@code {
+    [Parameter]
+    public string PageCode { get; set; }
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url;
+
+    protected override void OnInitialized()
+    {
+        url = ConfigureCore.redirectPortalExt;
+    }
+
+    public void OnToRegisterPage()
+    {
+        NavigationManager.NavigateTo(url);
+    }
+
+    }
+

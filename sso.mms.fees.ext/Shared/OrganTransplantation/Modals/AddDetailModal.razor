@@ -1,0 +1,113 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using sso.mms.fees.ext.Shared.OrganTransplantation.DisbursementRecord.Components
+
+<style>
+
+    .modalStyle .ant-modal-header {
+        background: #334396 !important;
+    }
+
+    .text-select-servicetype{
+        color: #6A6A6A;
+        font-family: Inter;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 150%; /* 30px */
+        letter-spacing: -0.44px;
+    }
+
+</style>
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       WrapClassName="modalStyle"
+       Width="1180"
+       Footer=null>
+
+    <div class="d-flex justify-content-end ">
+        สถานะ : -
+    </div>
+
+    <div class="d-flex justify-content-around">
+        <div class="d-flex">
+            <div style="width:160px">
+                ประเภทบริการ :
+            </div>
+            <InputGroup Compact>
+                <SimpleSelect DefaultValue="@("Option1-1")" Style="width: auto;" OnSelectedItemChanged="@OnOptionChange">
+                    <SelectOptions>
+                        <SimpleSelectOption Value="OTP10" Label="OTP10 กระจกตา"></SimpleSelectOption>
+                        <SimpleSelectOption Value="OTP11" Label="OTP11 เซลล์ต้นกำเนิดเม็ดโลหิต"></SimpleSelectOption>
+                    </SelectOptions>
+                </SimpleSelect>
+            </InputGroup>
+        </div>
+        <div>
+            สถานพยาบาล : โรงพยาบาลล้านนา
+        </div>
+    </div>
+
+    <div>
+        @if (valueChange == "OTP10")
+        {
+            <FormAddDetail></FormAddDetail>
+
+        }
+        else if (valueChange == "OTP11")
+        {
+            <FormCheckType></FormCheckType>
+            <FormAddDetail></FormAddDetail>
+        }
+        else
+        {
+            <div>ค่าเริ่มต้น</div>
+        }
+    </div>
+
+    <hr>
+    <div>
+
+        
+    </div>
+
+</Modal>
+
+@code {
+    string title = "\0";
+
+    bool loading = false;
+
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public string valueChange { get; set; }
+
+    private void OnOptionChange(string value)
+    {
+        valueChange = value;
+    }
+
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine("e");
+        _visible = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+
+}

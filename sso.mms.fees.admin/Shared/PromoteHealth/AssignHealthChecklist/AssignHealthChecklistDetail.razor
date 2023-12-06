@@ -1,0 +1,197 @@
+﻿@using MatBlazor
+@inject HttpClient httpClient
+@using sso.mms.fees.admin.Providers.PromoteHealth.AssignHealthChecklist;
+@inject AssignHealthChecklistServices AssignHealthChecklistServices;
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page" @onclick="()=> goBack(1)">
+                    <span class="breadcum-sucress py-2">กำหนดรายการตรวจสุขภาพ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ปี @Year</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        @*<div class="row pb-3">
+            <div class="col-xl-3 mms-media-start">
+                <div class="mms-txt-headdetail w-50">ปีงบประมาณ</div>&nbsp;
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+            <div class="col-xl-4 mms-media-center">
+                <div class="mms-txt-headdetail w-50">วันที่แก้ไขล่าสุด</div>&nbsp;
+                <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" />
+            </div>
+            <div class="col-xl-5 mms-media-end">
+                <div class="mms-txt-headdetail w-50">แก้ไขล่าสุดโดย</div>&nbsp;
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+        </div>*@
+        <div class="row py-4 align-items-center">
+            <div class="col-sm-12 col-md-9 mms-media-start">
+                @if (Edit)
+
+                {
+                    <div class="mms-media-end">
+                        <Button Type="@ButtonType.Primary" @onclick=@(() => goEdit(3, "add", Year, null))><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+                    </div>
+                }
+            </div>
+            <div class="col-sm-12 col-md-3">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="todos" TItem="AaiHealthChecklistM" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="7%" Style="text-align:center;">
+                    @String.Format("{0:d}", todos.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="รายการตรวจ" Width="48%" Style="text-align:start;">
+                    @data.ChecklistName
+                </Column>
+                <Column TData="string" Title="อัตราค่าบริการ" Width="17%" Style="text-align:center;">
+                    @data.ChecklistPrice.ToString("N0")
+                </Column>
+                <Column TData="string" Width="13%" Style="text-align:start;" Title="สถานะการใช้งาน">
+                    @if (data.ChecklistStatus == "A")
+                    {
+                         <span style="color:green"><span class="status-color-green me-2"></span>ใช้งาน</span>
+                    }
+                    else
+                    {
+                       <span style="color:orangered"><span class="status-color-orangered me-2"></span>ไม่ใช้งาน</span>
+                    }
+                </Column>
+                <Column TData="string" Width="6%" Style="text-align:center;">
+
+                    @if (Edit)
+                    {
+                        <img title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => goEdit(3, "edit", data.BudgetYear, data.ChecklistId)) />
+                    }
+                    else
+                    {
+                        <img title="ดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => goEdit(3, "view", data.BudgetYear, data.ChecklistId)) />
+                    }
+                </Column>
+            </ChildContent>
+        </Table>
+        <div class="mms-media-end">
+            <div>
+                <Button Class="ant-btn-distable" @onclick=@(() => goBack(1))><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<Modal Visible="@_visible1"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       OkText="@_okText"
+       CancelText="@_cancelText">
+    <div>
+        <div class="row">
+            <div class="mms-txt-headdetail w-50">รายการตรวจ</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+        </div>
+        <br />
+        <div class="row">
+            <div class="mms-txt-headdetail w-50">อัตราค่าบริการ</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-7">
+                <div class="mms-txt-headdetail w-50">สถานะการใช้งาน</div>&nbsp;
+            </div>
+            <div class="col">
+                <Switch @bind-Checked="@active" />
+                <label>@(active == true ? "เปิด" : "ปิด")</label>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<(int, string, string?, decimal?)> IndexPage { get; set; }
+
+    [Parameter]
+    public bool Edit { get; set; }
+    [Parameter]
+    public string Year { get; set; }
+
+
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading = false;
+    string txtValue { get; set; }
+    List<AaiHealthChecklistM> todos = new List<AaiHealthChecklistM>();
+    public async Task goEdit(int item, string type, string? year, decimal? checklistid)
+    {
+        await IndexPage.InvokeAsync((item, type, year, checklistid));
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        //todos = await AssignHealthChecklistServices.GetAllCheckListM();
+        todos = await AssignHealthChecklistServices.GetByYear(Year);
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+    public async Task goBack(int item)
+    {
+        await IndexPage.InvokeAsync((item, "view", null, null));
+    }
+
+
+
+}

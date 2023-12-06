@@ -1,0 +1,116 @@
+﻿<style>
+    .table-modal-custom .ant-table-thead > tr > th {
+        position: relative;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        background: #3B6C43 !important;
+        border-bottom: 1px solid #ffffff !important;
+        transition: background 0.3s ease;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12 col-lg-8 mms-media-start align-items-end">
+        <div class="mms-txt-headdetail">ค่ารถ / ค่าเรือ</div>
+    </div>
+    <div class="col-sm-12 col-lg-4 mms-media-end">
+        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+            <SpaceItem>
+                <Search Placeholder="ข้อมูลที่ต้องการค้นหา..." EnterButton="true" />
+            </SpaceItem>
+        </Space>
+    </div>
+</div>
+<hr />
+<div>
+    <Table Class="table-modal-custom" DataSource="listOfData" TItem="ItemData" Bordered @bind-SelectedRows="selectedRows" ScrollX="1000">
+        <ChildContent Context="data">
+            <Selection Width="3%" Key="@data.Id.ToString()" />
+            <Column TData="string" Title="ลำดับ" Style="text-align:center;">
+                @String.Format("{0:d}", listOfData.IndexOf(data) + 1)
+            </Column>
+            <Column TData="string" Title="รหัสการรักษา" Style="text-align:center;">
+                @data.OrderNumber
+            </Column>
+            <Column TData="string" Title="ชื่อการรักษา" Style="text-align:center;">
+                @data.HosCount
+            </Column>
+            <Column TData="string" Title="หน่วย" Style="text-align:center;">
+                @data.Unit
+            </Column>
+            <Column TData="string" Title="จำนวนเงิน (ตามประกาศ)" Style="text-align:center;">
+                @String.Format("{0:n0}", data.PayAmount)
+            </Column>
+            <Column TData="string" Style="text-align:center;">
+                <img class="mx-1" title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" />
+                <img class="mx-1" title="ลบ" src="helper_shared/PortalAdminImage/delete.png" style="width:24px;height:24px; cursor:pointer;" />
+            </Column>
+        </ChildContent>
+        <PaginationTemplate>
+            <Pagination Class="pt-2"
+                        Total="context.Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                        ShowSizeChanger
+                        OnChange="context.HandlePageChange" />
+        </PaginationTemplate>
+        </Table>
+
+        <div class="mms-media-end mt-4">
+            <Button Type="@ButtonType.Primary"><i class="fa-solid fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+        </div>
+</div>
+
+@code {
+    public string txtValue;
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    /*-- Table --*/
+    IEnumerable<ItemData> selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    private int total => listOfData.Count();
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string StatusType { get; set; }
+        public string OrderNumber { get; set; }
+        public string HosCount { get; set; }
+        public string Unit { get; set; }
+        public int PayAmount { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>()
+            {
+                new ItemData{
+                Id = 1,
+                OrderNumber = "10001",
+                HosCount = "4",
+                Unit = "ครั้งละ",
+                PayAmount = 100000,
+                StatusType = "1",
+            },
+              new ItemData{
+                Id = 2,
+                OrderNumber = "10002",
+                HosCount = "3",
+                Unit = "ครั้งละ",
+                PayAmount = 200000,
+                StatusType = "2",
+            },
+              new ItemData{
+                Id = 3,
+                OrderNumber = "10003",
+                HosCount = "5",
+                Unit = "ครั้งละ",
+                PayAmount = 1000000,
+                StatusType = "3",
+            }
+        };
+    }
+}

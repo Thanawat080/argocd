@@ -1,0 +1,176 @@
+﻿@using sso.mms.fees.admin.Shared.MedicalSpeciaList.NotificationListMedical.Modals
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การรักษาโดยแพทย์ผู้เชี่ยวชาญพิเศษเฉพาะทางและการทำหมัน</div>
+    </div>
+    <div class="p-2 p-md-5 ">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">สืบค้นข้อมูลผู้ประกันตน</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">ค้นหา</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงรายละเอียดการค้นหา</span>
+                </li>
+            </ol>
+        </nav>
+        <div class="container">
+            <div class="row " style="padding-bottom:1rem;">
+                <div class="col-xl-3 mms-media-start">
+                    <div class="mms-txt-headdetail w-50">งวด</div>:&nbsp;
+                    <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled="true" />
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-3" style="align-items:center;display: flex;justify-content: flex-end;">
+                    <Button Type="@ButtonType.Primary" Class=" w-50"><i class="fa-solid fa-arrow-down"></i> &nbsp; ใบขอเบิก</Button>
+                </div>
+            </div>
+
+            <div class="row"  style="padding-bottom:1rem;">
+                <div class="col-3">
+                    <Button Class="ant-btn-distable w-50" @onclick=@(() => goBack(4)) Style="width:15%;"><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col-3">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+
+            @foreach (var item in listOfData)
+            {
+                <h2 class="mms-text-title ">@item.title</h2>
+                <hr />
+
+                <Table DataSource="item.data" TItem="DropdownData" RowClassName="@(_=>"editable-row")" Bordered>
+                <ChildContent Context="data">
+                    <Column TData="string" Title="ลำดับ" Align="ColumnAlign.Center" Style="width:4%;">@(String.Format("{0:d}", item.data.IndexOf(data) + 1)) </Column>
+                        <Column TData="string" Title="เลขที่คำสั่งจ่าย" Align="ColumnAlign.Center" Style="width:15%;">@data.idpayment</Column>
+
+                        <Column TData="string" Title="HN" Align="ColumnAlign.Center" Style="width:15%;">@data.hn</Column>
+                        <Column TData="string" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center" Style="width:15%;">@data.cardId</Column>
+                        <Column TData="string" Title="ชื่อนามสกุล" Align="ColumnAlign.Center" Style="width:15%;">@data.Name</Column>
+                        <Column TData="string" Title="วันที่เข้ารักษา" Align="ColumnAlign.Center" Style="width:10%;">@data.Datein</Column>
+                        <Column TData="string" Title="วันที่ออกจาก รพ." Align="ColumnAlign.Center" Style="width:10%;">@data.Dateout</Column>
+                        <Column TData="string" Title="จำนวนเงิน" Align="ColumnAlign.Center" Style="width:10%;">
+                            @data.price
+                        </Column>
+                        <ActionColumn Title="" Align="ColumnAlign.Center" Style="width:4%;">
+
+                            @*<a @onclick="() => startEdit(data.Id)">Edit</a>*@
+                            <img src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;"
+                             @onclick=@(()=>OpenViewDataModal(true)) />
+
+
+                        </ActionColumn>
+                    </ChildContent>
+                </Table>
+
+            }
+        </div>
+    </div>
+</div>
+
+<ViewDataModal _visible=@openViewDataModal OnClose="@OpenViewDataModal"></ViewDataModal>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    bool openViewDataModal { get; set; }
+    string? txtValue = "dsad";
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+    public async Task goNext()
+    {
+        await IndexPage.InvokeAsync(3);
+    }
+ 
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string? date { get; set; }
+
+    };
+    public class Data
+    {
+        public List<DropdownData> data { get; set; }
+        public string title { get; set; }
+
+    }
+
+    public class DropdownData
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string idpayment { get; set; }
+        public string hn { get; set; }
+        public string cardId { get; set; }
+        public string Name { get; set; }
+
+
+        public string Datein { get; set; }
+        public string Dateout { get; set; }
+
+        public int price { get; set; }
+
+    };
+
+    List<DropdownData> dropdownlist = new List<DropdownData>();
+    List<Data> listOfData = new List<Data>();
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    public async Task goDetail()
+    {
+        await IndexPage.InvokeAsync(2);
+    }
+
+    public async Task goBack(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 10).Select(i => new Data
+            {
+                title = "ไตวาย",
+                data = Enumerable.Range(0, 10).Select(y => new DropdownData
+                {
+                    Id = $"{i}",
+                    idpayment = $"1110214{i}",
+                    hn = $"123467890xx{i}",
+                    Name = $"นายอภิรักษ์ สำรวม",
+                    cardId = $"123467890xx{i}",
+                    Datein = $"23 มิ.ย 67",
+                    Dateout = $"24 มิ.ย 67",
+                    price = 900
+
+                }).ToList()
+            }).ToList();
+
+    }
+
+}

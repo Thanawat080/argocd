@@ -1,0 +1,76 @@
+﻿@inject SweetAlertService Swal;
+
+<style>
+    .xmark .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+</style>
+@{
+    RenderFragment footer = @<Template>
+        <div>
+            <Button Type="@ButtonType.Default" @onclick="HandleCancel" Class="ant-btn-default"><i class="fa-solid fa-circle-chevron-left"></i>&nbsp;ยกเลิก</Button>
+            &nbsp;
+            <Button Type="@ButtonType.Primary" @onclick="HandleOk"><i class="fa-solid fa-circle-check"></i>&nbsp;ยืนยัน</Button>
+        </div>
+    </Template>;
+}
+
+<Modal Title="@("บันทึกข้อมูล")"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       WrapClassName="xmark">
+    <div class="mms-media-center flex-column pt-4">
+        <div><i class="fa-solid fa-floppy-disk" style="font-size:60px; color:#334396;"></i></div>
+        <div class="pt-3 mms-txt-modal">
+            ท่านต้องการบันทึกข้อมูลใช่หรือไม่
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+
+        await Swal.FireAsync(
+        "บันทึกข้อมูลสำเร็จ",
+        null,
+        SweetAlertIcon.Success
+        );
+        _loading = false;
+        StateHasChanged();
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+}

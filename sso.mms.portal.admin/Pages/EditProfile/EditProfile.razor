@@ -1,0 +1,423 @@
+﻿@page "/EditProfile"
+@using Blazored.LocalStorage;
+@using sso.mms.helper.Configs;
+@using sso.mms.login.Services;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.helper.Utility
+@using sso.mms.helper.Data
+@using sso.mms.helper.Components.Footer
+@using sso.mms.portal.admin.Services;
+@inject NavigationManager NavigationManager
+@inject UserService userService
+@inject AdminService adminService
+@inject ILocalStorageService _localstorage;
+
+<style>
+    :root {
+        --mdc-theme-primary: #334396;
+    }
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+</style>
+
+    <NavbarLoginAdmin ShortToken=@shortToken PageCode="@codeName"></NavbarLoginAdmin>
+
+
+
+<MediaStyle></MediaStyle>
+@if (userType == "sso-mms-admin")
+{
+    
+
+@if (ssoUser.UserName != null)
+{
+    <div class="bg-color pt-5 pb-5">
+        <div class="container ">
+            <div class="card-main">
+                <div class="card-title">
+                    <div class="f-title px-4 py-2">ข้อมูลผู้ใช้งาน</div>
+                </div>
+                <div class="row pt-5 txth-from-reg px-5">
+                    <div class="col-md-12 col-lg-4 col-xl-4">
+                        <div class="d-flex justify-content-center">
+                            <img class="edit-img-user" src="helper_shared/icon_sso/Edit_user.png" />
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-8 col-xl-8">
+                        <form class="container">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">ตำแหน่ง</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoPosition.Name readonly disabled />
+
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">หน่วยงาน</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoDept.Name readonly disabled />
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">เลขบัตรประจำตัวประชาชน</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoUser.IdentificationNumber readonly disabled />
+
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">วัน/เดือน/ปีเกิด</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" readonly disabled />
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-4">
+                                    <label class="form-label">คำนำหน้า</label>
+                                    <select class="form-select form-select-lg custom-select" @bind="@ssoUser.PrefixMCode" readonly disabled
+                                            oninvalid="this.setCustomValidity('โปรดเลือกข้อมูล !')" oninput="this.setCustomValidity('')">
+                                        <option value="" selected disabled>เลือกคำนำหน้า</option>
+                                        @if (PrefixMs != null)
+                                        {
+                                            @foreach (var item in PrefixMs)
+                                            {
+                                                <option value="@item.Code">@item.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    @* <input class="form-control form-control-lg" list="datalistOptions" id="exampleDataList" placeholder="Type to search..." @onchange=@((item) => selectPrefixM(item.Value.ToString()))>
+                                <datalist id="datalistOptions">
+                                <option selected>โปรดเลือกคำนำหน้าชื่อ</option>
+                                @if (PrefixMs != null)
+                                {
+                                @foreach (var item in PrefixMs)
+                                {
+                                <option value="@item.Name"></option>
+                                }
+                                }
+                                </datalist>*@
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <label class="form-label">ชื่อ</label>
+                                    <input type="text" id="lastName" class="form-control form-control-lg" @bind=ssoUser.FirstName readonly disabled />
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <label class="form-label">ชื่อ กลาง</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoUser.MiddleName readonly disabled />
+
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <label class="form-label">นามสกุล</label>
+                                    <input type="text" id="lastName" class="form-control form-control-lg" @bind=ssoUser.LastName readonly disabled />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoUser.Email readonly disabled />
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <label class="form-label">เบอร์โทรศัพท์</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoUser.Mobile readonly disabled />
+
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-end align-items-center mb-4">
+                                    <button type="button" class="btn btn-backm txt-close btn-outline-secondary" @onclick=GoToMainPage>
+                                        <i class="fa-regular fa-circle-xmark"></i>&nbsp; ย้อนกลับ
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+}
+else if (userType == "sso-mms-auditor")
+{
+    @if (auditUser.UserName != null)
+    {
+        <div class="bg-color pt-5 pb-5">
+            <div class="container ">
+                <div class="card-main">
+                    <div class="card-title">
+                        <div class="f-title px-4 py-2">ข้อมูลผู้ใช้งาน</div>
+                    </div>
+                    <div class="row pt-5 txth-from-reg px-5">
+                        <div class="col-md-12 col-lg-4 col-xl-4">
+                            <div class="d-flex justify-content-center">
+                                <img class="edit-img-user" src="helper_shared/icon_sso/Edit_user.png" />
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-8 col-xl-8">
+                            <form class="container">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">ตำแหน่ง</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoPosition.Name readonly disabled />
+
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">หน่วยงาน</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=ssoDept.Name readonly disabled />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">เลขบัตรประจำตัวประชาชน</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=auditUser.IdenficationNumber readonly disabled />
+
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">วัน/เดือน/ปีเกิด</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" readonly disabled />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">คำนำหน้า</label>
+                                        <select class="form-select form-select-lg custom-select" @bind="@auditUser.PrefixMCode" readonly disabled
+                                                oninvalid="this.setCustomValidity('โปรดเลือกข้อมูล !')" oninput="this.setCustomValidity('')">
+                                            <option value="" selected disabled>เลือกคำนำหน้า</option>
+                                            @if (PrefixMs != null)
+                                            {
+                                                @foreach (var item in PrefixMs)
+                                                {
+                                                    <option value="@item.Code">@item.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        @* <input class="form-control form-control-lg" list="datalistOptions" id="exampleDataList" placeholder="Type to search..." @onchange=@((item) => selectPrefixM(item.Value.ToString()))>
+                                <datalist id="datalistOptions">
+                                <option selected>โปรดเลือกคำนำหน้าชื่อ</option>
+                                @if (PrefixMs != null)
+                                {
+                                @foreach (var item in PrefixMs)
+                                {
+                                <option value="@item.Name"></option>
+                                }
+                                }
+                                </datalist>*@
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ</label>
+                                        <input type="text" id="lastName" class="form-control form-control-lg" @bind=auditUser.FirstName readonly disabled />
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ กลาง</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=auditUser.MiddleName readonly disabled />
+
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">นามสกุล</label>
+                                        <input type="text" id="lastName" class="form-control form-control-lg" @bind=auditUser.LastName readonly disabled />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">E-mail</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=auditUser.Email readonly disabled />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">เบอร์โทรศัพท์</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind=auditUser.Mobile readonly disabled />
+
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-end align-items-center mb-4">
+                                        <button type="button" class="btn btn-backm txt-close btn-outline-secondary" @onclick=GoToMainPage>
+                                            <i class="fa-regular fa-circle-xmark"></i>&nbsp; ย้อนกลับ
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<Footer></Footer>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width: 621px;">
+            <div class="modal-header">
+                <button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.227 19.7727L19.7737 12.226M19.7737 19.7727L12.227 12.226M16.0003 29.3327C23.3337 29.3327 29.3337 23.3327 29.3337 15.9993C29.3337 8.66602 23.3337 2.66602 16.0003 2.66602C8.66699 2.66602 2.66699 8.66602 2.66699 15.9993C2.66699 23.3327 8.66699 29.3327 16.0003 29.3327Z" stroke="#224183" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" align="center">
+                <img src="helper_shared/icon_sso/key.png" style="height:96px;width:96px;" />
+            </div>
+            <div class="container p-5">
+                <div>
+                    <p class="text-login-title m-1">เปลี่ยนรหัสผ่าน</p>
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">รหัสผ่านปัจจุบัน</label>
+                    <input type="password" id="password" class="form-control form-control-lg" />
+
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">รหัสผ่านใหม่</label>
+                    <input type="password" id="password" class="form-control form-control-lg" />
+
+                </div>
+                <div class="col-md-12 mb-4">
+                    <label class="form-label modal-txt">ยืนยันรหัสผ่านใหม่</label>
+                    <input type="password" id="password" class="form-control form-control-lg" />
+
+                </div>
+                <div class="container" align="center">
+                    <button type="button" class="btn btn-primary btn-login mb-4" style="width:325px;">
+                        ยืนยันการเปลี่ยนรหัสผ่าน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url;
+    public string? prefix = "";
+    public string? PrefixMCode = "";
+    private List<PrefixM?> PrefixMs;
+    private SsoUserM? ssoUser = new SsoUserM();
+    private AuditorUserM? auditUser = new AuditorUserM();
+    private PositionM? ssoPosition = new PositionM();
+    private DepartmentM? ssoDept = new DepartmentM();
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+    public string? codeName = "DSP0801";
+
+    public string userType = "";
+    protected override async Task OnInitializedAsync()
+    {
+        userType = await _localstorage.GetItemAsync<string>("userType");
+
+        if (ConfigureCore.SiteName == "SSO" && userType == "sso-mms-admin")
+        {
+            ssoPosition.Name = await _localstorage.GetItemAsync<string>("adminPos");
+            ssoPosition.Name = (ssoPosition.Name is null) ? "-" : ssoPosition.Name;
+            ssoDept.Name = await _localstorage.GetItemAsync<string>("adminWork");
+            ssoDept.Name = (ssoDept.Name is null) ? "-" : ssoDept.Name;
+        }
+        prefix = ConfigureCore.redirectsPortalAdmin;
+
+        PrefixMs = await userService.getPrefix();
+
+        if (userType == "sso-mms-admin")
+        {
+            var response = await adminService.GetSsoUser(userType);
+            List<SsoUserM> getUser = response.ResultList;
+            if (response.StatusCode == 200)
+            {
+                var ssouserId = await _localstorage.GetItemAsync<SsoUserM>("userdata");
+                ssoUser = getUser?.FirstOrDefault(f => f.Id == ssouserId.Id);
+                //var response1 = await adminService.GetSsoPosition(ssoUser.SsoPositionId);
+                //if (response1.StatusCode == 200)
+                //{
+                //    ssoPosition = response1.Result;
+                //}
+                //var response2 = await adminService.GetSsoDepartMent(ssoUser.SsoDeptId);
+                //if (response2.StatusCode == 200)
+                //{
+                //    ssoDept = response2.Result;
+                //}
+            }
+
+            StateHasChanged();
+
+        }
+        else if (userType == "sso-mms-auditor")
+        {
+            var response = await adminService.GetSsoUser(userType);
+            List<AuditorUserM> getUser = response.ResultList;
+            if (response.StatusCode == 200)
+            {
+                var audituserId = await _localstorage.GetItemAsync<AuditorUserM>("userdata");
+                auditUser = getUser?.FirstOrDefault(f => f.Id == audituserId.Id);
+                Console.WriteLine(auditUser);
+                //var response1 = await adminService.GetSsoPosition(ssoUser.SsoPositionId);
+                //if (response1.StatusCode == 200)
+                //{
+                //    ssoPosition = response1.Result;
+                //}
+                //var response2 = await adminService.GetSsoDepartMent(ssoUser.SsoDeptId);
+                //if (response2.StatusCode == 200)
+                //{
+                //    ssoDept = response2.Result;
+                //}
+            }
+
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+
+
+    }
+    public void GoToMainPage()
+    {
+        NavigationManager.NavigateTo(prefix + "mainmenu/" + $"?token={shortToken}");
+    }
+    public async void selectPrefixM(string name)
+    {
+        var prefixselect = PrefixMs.Find(f => f.Name == name);
+        PrefixMCode = prefixselect.Code;
+    }
+}

@@ -1,0 +1,228 @@
+﻿@using MatBlazor
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
+@using sso.mms.fees.admin.Providers.PromoteHealth.PaymentOrderList;
+@using Blazored.LocalStorage;
+@inject PaymentOrderListService PaymentOrderListService;
+@inject ILocalStorageService _localstorage;
+@inject SweetAlertService Swal;
+@inject IJSRuntime JsRuntime
+
+
+<style>
+
+    .mdc-table td {
+        padding: 20px !important;
+    }
+
+    .mdc-table th {
+        padding: 20px !important;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการใบขอเบิก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+
+        <Table DataSource="@dataOrder" TItem="GetPayOrderListT" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="" Width="5%" Align="ColumnAlign.Center">
+                    <Checkbox Style="border-block-color:#334396;" @bind-Value="@data.ischeck" Disabled='data.PayOrderStatus == "A" ? true : false'></Checkbox>
+                </Column>
+                <Column TData="string" Title="ลำดับ" Width="10%" Style="text-align:center;">
+                    @String.Format("{0:d}", @dataOrder.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="งวดที่" Width="10%" Style="text-align:center;">
+                    @data.WithdrawalNo
+                </Column>
+                <Column TData="string" Title="เลขชุดคำสั่งจ่าย" Width="15%" Style="text-align:center;">
+                    @data.PayOrderSetNo
+                </Column>
+                <Column TData="int" Title="จำนวนสถานพยาบาล" Width="15%" Style="text-align:center;">
+                    @data.CountHos
+                </Column>
+                <Column TData="string" Title="วันที่อนุมัติ" Width="15%" Style="text-align:center;">
+                    @data.ApproveDate?.AddYears(543).ToString("dd/MM/yyyy")
+                </Column>
+                <Column TData="string" Title="ยอดการเบิกรวม (บาท)" Width="15%" Style="text-align:center;">
+                    @data.Allprice.ToString("N0")
+                </Column>
+                <Column TData="string" Title="สถานะ" Width="10%" Style="text-align:center;">
+                    @if (@data.PayOrderStatus == "B")
+                    {
+                        <span style="color:#59AD46;">ลงรายมือชื่อแล้ว</span>
+                    }
+                    else
+                    {
+                        <span style="color:#F56C6C;">รอลงลายมือชื่อ</span>
+                    }
+                </Column>
+                <Column TData="string" Width="5%" Style="text-align:center; border-top-right-radius:8px;">
+                    <img  title="ดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="() => goEdit(data.PayOrderSetNo)"/>
+                </Column>
+            </ChildContent>
+        </Table>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <Button Type="@ButtonType.Primary" @onclick=@(() => save()) Style="width: 60%; margin-left:16%;"><i class="fa-solid fa-floppy-disk"></i> &nbsp; อนุมัติรายการจ่าย</Button>
+            </div>
+            <div class="col-4"></div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<Modal Visible="@_visible1"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       OkText="@_okText"
+       CancelText="@_cancelText">
+    <div>
+        <div class="row">
+            <div class="mms-txt-headdetail w-50">รายการตรวจ</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+        </div>
+        <br />
+        <div class="row">
+            <div class="mms-txt-headdetail w-50">อัตราค่าบริการ</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-7">
+                <div class="mms-txt-headdetail w-50">สถานะการใช้งาน</div>&nbsp;
+            </div>
+            <div class="col">
+                <Switch @bind-Checked="@active" />
+                <label>@(active == true ? "เปิด" : "ปิด")</label>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<(int, string)> IndexPage { get; set; }
+
+    List<GetPayOrderListT> dataOrder = new List<GetPayOrderListT>();
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    public string username;
+    bool _visible1 = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading = false;
+    string txtValue { get; set; }
+    List<Todo> todos = new List<Todo>();
+    public async Task goEdit(string payordersetno)
+    {
+        await IndexPage.InvokeAsync((2,payordersetno));
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        dataOrder = await PaymentOrderListService.GetPayOrder();
+        username = await _localstorage.GetItemAsync<string>("username");
+        //username = "system";
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+    
+    public async void save()
+    {
+        isloading = true;
+        StateHasChanged();
+        foreach (var item in dataOrder)
+        {
+            item.updateBy = username;
+
+        }
+        var res = await PaymentOrderListService.UpdatePayOrder(dataOrder);
+
+        if (res == "success")
+        {
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                  "บันทึกข้อมูลสำเร็จ",
+                  null,
+                  SweetAlertIcon.Success
+                  );
+
+        }
+        else
+        {
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                  "บันทึกข้อมูลไม่สำเร็จ",
+                  null,
+                  SweetAlertIcon.Error
+                  );
+
+        }
+
+        Console.WriteLine("save");
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+    public class Todo
+    {
+        public int Id { get; set; }
+        public string roundpayment { get; set; }
+        public string idpayment { get; set; }
+        public int hoscount { get; set; }
+        public string datecommit { get; set; }
+        public int price { get; set; }
+        public bool status { get; set; }
+
+    }
+
+
+}

@@ -1,0 +1,45 @@
+﻿<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk">
+    <p>ระบบได้ทำการเลือกข้อมูลที่มีค่า RW สู
+        สุดเสร็จสิ้น
+    </p>
+
+    <div class="row pb-3">
+         <div class="col-xl-10 mms-media-center" >
+         <Button Class="me-2" Type="@ButtonType.Primary" @onclick=@(() => goEdit(3))></Button>
+    </div>
+    </div>
+</Modal>
+@code {
+    string title = "BasicModal";
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        _visible = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _visible = false;
+        OnClose.InvokeAsync(false);
+    }
+
+
+}

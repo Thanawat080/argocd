@@ -1,0 +1,110 @@
+﻿
+.bordcase-body {
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.txt-title {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+}
+
+.btn-add-data {
+    background: #334396;
+    border-radius: 4px;
+    Width: auto;
+    color: white;
+}
+
+.txt-add-data {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 150%;
+}
+
+.margin-tb {
+    margin-bottom: 10%;
+    margin-top: 2%;
+}
+
+.container-class {
+    padding-left: 7%;
+    padding-right: 7%;
+    padding-top: 3%;
+    padding-bottom: 7%;
+    min-height: 900px;
+}
+
+.from-style {
+    background: #FFFFFF;
+    border-radius: 8px;
+}
+
+.serch-bg {
+    background: #334396;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    height: 36px;
+    color: white;
+}
+
+body {
+    background: #F5F3F7;
+}
+
+.text-title {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+}
+
+.text-btn-nc {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+}
+
+.text-detail {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+}
+
+.btn-close {
+    background: #FFFFFF;
+    border: 2px solid #334396;
+    border-radius: 4px;
+    Width: 129px;
+    Height: 31px;
+    color: #334396;
+}
+.btn-bo-main {
+    border-radius: 4px;
+    border: 2px solid #334396;
+    background: #FFF;
+    color: #334396;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 600;
+}

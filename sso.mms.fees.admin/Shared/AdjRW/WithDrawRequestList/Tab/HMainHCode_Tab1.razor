@@ -1,0 +1,178 @@
+﻿
+<div class="p-2">
+    <div class="row mms-txt-headdetail">
+        <div class="col-md-12 col-lg-2">
+            <div class="mms-media-start align-items-start">ค้นหาด้วย :</div>
+        </div>
+        <div class="col-md-12 col-lg-10">
+            <div class="row  align-items-center py-2">
+                <div class="col-md-12 col-lg-2">
+                    <label class="col-form-label">Statement</label>
+                </div>
+                <div class="col-md-12 col-lg-10">
+                    <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                </div>
+            </div>
+            <div class="row  align-items-center py-2">
+                <div class="col-md-12 col-lg-2">
+                    <label class="col-form-label">สถานพยาบาล</label>
+                </div>
+                <div class="col-md-12 col-lg-10">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-4"><DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" /></div>
+                        <div class="col-md-12 col-lg-1 mms-media-center align-items-center">ถึง</div>
+                        <div class="col-md-12 col-lg-4"><DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" /></div>
+                        <div class="col-md-12 col-lg-3">
+                            <Button Type="@ButtonType.Primary" Style="width:100%"><i class="fa-solid fa-magnifying-glass"></i>&nbsp;ค้นหา</Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center py-2">
+                <div class="col-md-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <label class="col-form-label">จำนวนผู้ประกันตนทั้งหมด</label>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <label class="col-form-label">ค่า AdjRW ทั้งหมด</label>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center py-2">
+                <div class="col-md-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <label class="col-form-label">จำนวนรายการทั้งหมด</label>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <label class="col-form-label">จำนวนเงินทั้งหมด</label>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-6"></div>
+                <div class="mms-media-end col-sm-12 col-md-6">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-75">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+    </div>
+    <Table DataSource="listOfData" Bordered ScrollX="800" @bind-SelectedRows="selectedRows">
+        <ColumnDefinitions>
+            <Selection Width="5%" Key="@context.Number" Type="@selectionType" Disabled="@(context.Number == "Disabled User")" />
+            <PropertyColumn Width="7%" Align="ColumnAlign.Center" Property="c=>c.Id" Title="ลำดับ">@context.Id</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Number" Title="รหัสสถานพยาบาล">@context.Number</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Count" Title="สถานพยาบาล"> @context.Count</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.CountRecord" Title="ผู้ประกันตน"> @context.CountRecord</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.CountRecord" Title="รายการ"> @context.CountRecord</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Price" Title="AdjRW"> @context.Price</PropertyColumn>
+            <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Price" Title="จำนวนเงิน"> @context.Price</PropertyColumn>
+            <PropertyColumn Width="10%" Align="ColumnAlign.Center" Property="c=>c.Price" Title="">
+                <img class="mx-2" title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => TabView(2)) />
+            </PropertyColumn>
+        </ColumnDefinitions>
+@*         <PaginationTemplate>
+        <Pagination Class="pt-2"
+                        Total="context.Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                            ShowSizeChanger
+                        OnChange="context.HandlePageChange" />
+        </PaginationTemplate> *@
+            </Table>
+            <div class="pt-5 mms-media-end">
+                <Button Type="@ButtonType.Primary"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;ส่งรายการที่เลือกเพื่อออกใบคำสั่งจ่าย</Button>
+            </div>
+        </div>
+        @code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    [Parameter]
+    public EventCallback<int> UseTab { get; set; }
+
+    string txtValue { get; set; }
+    string selectionType = "checkbox";
+    IEnumerable<ItemData> selectedRows;
+
+    public async Task TabView(int item)
+    {
+        await UseTab.InvokeAsync(item);
+    }
+    List<ItemData> listOfData = new List<ItemData>
+    {
+        new ItemData
+        {
+            Id = 1,
+            Number ="10001",
+            Count = 3,
+            CountRecord = 5,
+            Price = 4500,
+            Status ="รอส่งลงลายมือชื่อ"
+
+        },
+         new ItemData
+        {
+            Id = 1,
+            Number ="10002",
+            Count = 3,
+            CountRecord = 6,
+            Price = 5400,
+            Status ="รอลงลายมือชื่อ"
+
+        }, new ItemData
+        {
+            Id = 1,
+            Number ="10003",
+            Count = 5,
+            CountRecord = 15,
+            Price = 13500,
+            Status ="ลงลายมือชื่อสำเร็จ"
+
+        },
+
+    };
+    string _selectedValue;
+    protected override void OnInitialized()
+    {
+
+
+    }
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Number { get; set; }
+
+        public int Count { get; set; }
+        public int CountRecord { get; set; }
+        public double Price { get; set; }
+        public string Status { get; set; }
+    };
+}

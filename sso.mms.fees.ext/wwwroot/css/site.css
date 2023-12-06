@@ -1,0 +1,830 @@
+@font-face {
+    font-family: 'Noto Sans Thai';
+    src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+html, body {
+    font-family: 'Noto Sans Thai';
+    background-color: #f4f2f6;
+}
+
+img {
+    cursor: pointer;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.flatpickr-calendar.static.open {
+    z-index: 999;
+    display: block;
+    position: absolute;
+    top: auto;
+}
+/*------------------------------- BOOTSTRAP CUSTOM LAYOUT -------------------------------------*/
+
+.w-30 {
+    width: 30% !important;
+}
+
+.col {
+    margin-bottom: 1rem;
+}
+
+.site-layout-background {
+    border-radius: 8px;
+    background: #FFF;
+    padding: 0px !important;
+    width: 100% !important;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin-left: 0.7rem;
+    min-height: 900px !important;
+}
+
+.pLayers-2 > div {
+    margin-bottom: 1rem;
+}
+
+.site-end-colum > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.mbsite-cloum > div {
+    margin-bottom: 0.7rem;
+}
+/*------------------------------- MAIN CSS MMS FREESADMIN LAYOUT -------------------------------------*/
+.ant-layout.ant-layout-has-sider > .ant-layout, .ant-layout.ant-layout-has-sider > .ant-layout-content {
+    width: 0;
+    margin-right: 0.7rem !important;
+}
+
+.ant-card {
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid #d9d9d9 !important;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.navBack-type {
+    padding-top: 90px;
+    min-height: 100vh !important;
+    margin: 2.3% !important;
+}
+
+@media only screen and (max-width: 1199px) {
+
+    .navBack-type {
+        padding-top: 160px;
+        margin: 0.5% !important;
+    }
+
+    .ant-layout.ant-layout-has-sider {
+        flex-direction: row;
+        margin: 0.3rem 0.3rem 0.3rem 0;
+    }
+
+    .ant-layout-sider {
+        position: absolute !important;
+        height: -webkit-fill-available !important;
+        transition: all 0.1s !important;
+    }
+
+    .ant-layout-sider-trigger {
+        position: fixed !important;
+    }
+
+    .ant-menu {
+        z-index: 999;
+        transition: all 0.1s !important;
+    }
+}
+
+@media only screen and (min-width: 1199px) {
+
+    .ant-layout.ant-layout-has-sider {
+        flex-direction: row;
+        margin: 1rem;
+    }
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .ant-space-vertical {
+        flex-direction: column;
+        width: 100% !important;
+    }
+}
+
+.pm-xl {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.ant-space {
+    display: inline-flex;
+    justify-content: center;
+}
+
+.mms-nav-title {
+    border-radius: 10px 10px 0px 0px;
+    background: #3B6C43;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
+}
+
+.mms-text-title {
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%; /* 36px */
+    letter-spacing: -0.552px;
+}
+
+.mms-txt-modal {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.mms-txt-header {
+    color: #334396;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px; /* 100% */
+    letter-spacing: 0.2px;
+}
+
+.mms-txt-headerBlack {
+    color: #000;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px; /* 100% */
+    letter-spacing: 0.2px;
+}
+
+.mms-txt-headdetail {
+    color: #334396;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 100% */
+    letter-spacing: 0.2px;
+}
+
+.mms-text-gray {
+    color: #8f8f8f;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Noto Sans Thai;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; /* 24px */
+}
+
+.star-comment {
+    color: red;
+    font-size: 18px;
+}
+
+[type=button], [type=reset], [type=submit], button {
+    -webkit-appearance: button;
+    border: 0px solid;
+}
+
+.mms-media-start {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 5px;
+    height: auto;
+}
+
+    .mms-media-start > span {
+        color: gray;
+        font-size: 14px
+    }
+
+.input-width-20 > input {
+    width: 20% !important;
+}
+
+.mms-media-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 5px;
+    height: auto;
+}
+
+.mms-media-end {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 5px;
+    height: auto;
+}
+
+.mms-media-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 5px;
+    height: auto;
+}
+
+.mms-text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/*---------------- CSS SELECT -----------------*/
+.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    width: 100%;
+    height: 40px !important;
+    padding: 0 11px;
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+/*---------------- BTN CSS SUCRESS -----------------*/
+.mms-btn-sucress {
+    height: 40px !important;
+    border-radius: 6px !important;
+    background: #3B6C43 !important;
+    border: 2px solid #3B6C43 !important;
+    color: #ffffff !important;
+}
+
+/*---------------- BTN CSS mms-btn-green -----------------*/
+.mms-btn-green {
+    height: 40px !important;
+    border-radius: 6px !important;
+    border: 2px solid #59AD46 !important;
+    background: #59AD46 !important;
+    color: #FFF !important;
+    font-size: 18px !important;
+}
+/*---------------- BTN CSS PRIMARY -----------------*/
+.ant-btn {
+    height: 40px !important;
+    border-radius: 6px !important;
+}
+
+.button > span {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.ant-picker {
+    width: 100%;
+}
+
+.ant-input, .ant-picker {
+    height: 40px;
+    border-radius: 6px !important;
+}
+
+.ant-input-group > .ant-input:first-child, .ant-input-group-addon:first-child {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.ant-space-item {
+    margin-bottom: 0px !important;
+    display: flex;
+    justify-content: center;
+}
+/*---------------- BTN CSS DEFULT DISABLE -----------------*/
+.ant-btn-default {
+    border: 2px solid #334396 !important;
+    color: #334396 !important;
+}
+
+    .ant-btn-default:hover {
+        border: 2px solid #818181 !important;
+        color: #818181 !important;
+    }
+/*---------------- SWITCH CSS -----------------*/
+.ant-switch-checked {
+    background-color: #5aaf24 !important;
+}
+/*---------------- SERCH CSS -----------------*/
+.ant-btn-primary {
+    color: #fff;
+    border-color: #334396 !important;
+    background: #334396 !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+}
+
+    .ant-btn-primary[disabled] {
+        color: rgba(0, 0, 0, 0.25) !important;
+        border-color: #d9d9d9 !important;
+        background: #f5f5f5 !important;
+        box-shadow: none !important;
+    }
+/*   ---------------- BTN CSS DEFULT DISABLE -----------------*/
+.ant-btn-distable {
+    border: 2px solid #334396 !important;
+    color: #334396 !important;
+}
+
+    .ant-btn-distable:hover {
+        border: 2px solid #818181 !important;
+        color: #818181 !important;
+    }
+
+.mms-btn-serch {
+    border-radius: 0 4px 4px 0 !important;
+    width: 25%;
+    height: 52px;
+}
+
+.ant-input-group > .ant-input:first-child, .ant-input-group-addon:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    height: 40px;
+}
+
+.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button {
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 0 6px 6px 0 !important;
+    height: 40px;
+}
+
+.ant-btn-primary:hover {
+    color: #fff;
+    border-color: #0074d9 !important;
+    background: #0074d9 !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+}
+
+.mms-btn-red {
+    color: #D53D3D !important;
+    border: 2px solid #D53D3D !important;
+    background: #FFF !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+}
+
+.ant-btn-edit {
+    background: #FFC326 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    height: 40px !important;
+    border: 1px solid #ffc326 !important;
+}
+
+    .ant-btn-edit:hover {
+        background: #ffd975 !important;
+    }
+/*.mms-btn-serch {
+    background: #334396;
+    padding: 2px;
+    border-color: #334444;
+    height: 48px;
+    width: 48px;
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+    .mms-btn-serch:hover {
+        background: #2e46c3;
+        color: aliceblue;
+        border-color: aliceblue;
+    }
+
+        .mms-btn-serch:hover > i {
+            /
+
+
+.ant-space {
+    display: inline-flex !important;
+    justify-content: center !important;
+}
+/*---------------- CKECKBOX CSS -----------------*/
+.ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #334396 !important;
+    border-color: #334396 !important;
+}
+
+.ant-checkbox-wrapper {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 0px !important;
+    font-variant: tabular-nums;
+    line-height: 0;
+    list-style: none;
+    font-feature-settings: 'tnum';
+    display: inline-flex;
+    line-height: unset;
+    cursor: pointer;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+}
+/*---------------- RADIOBUTTON CSS -----------------*/
+
+.ant-radio-inner::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -8px;
+    background-color: #334396 !important;
+    border-top: 0;
+    border-left: 0;
+    border-radius: 16px;
+    transform: scale(0);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+    content: ' ';
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: #334396 !important;
+}
+/*---------------- MODAL CUSTOM CSS -----------------*/
+.ant-modal-content {
+    position: relative;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 0;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    pointer-events: auto;
+}
+
+.ant-modal-header {
+    padding: 16px 24px;
+    color: rgba(0, 0, 0, 0.85);
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 6px 6px 0 0;
+}
+
+.ant-modal-header {
+    padding: 16px 24px;
+    color: rgb(255 255 255) !important;
+    background: #334396 !important;
+    border-bottom: 1px solid #ffffff;
+    border-radius: 6px 6px 0 0 !important;
+}
+
+.ant-modal-title {
+    margin: 0;
+    color: rgb(255 255 255 / 85%) !important;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    word-wrap: break-word;
+}
+
+.anticon > .anticon {
+    line-height: 0;
+    vertical-align: 0;
+    color: white !important;
+}
+
+.ant-modal-footer {
+    padding: 10px 16px;
+    text-align: right;
+    background: transparent;
+    border-top: 0px solid #f0f0f0 !important;
+    border-radius: 0 0 2px 2px;
+}
+
+.ant-modal-max > .ant-modal-content {
+    width: 90% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: auto !important;
+    margin-top: 5% !important;
+}
+
+.ant-spin-nested-loading {
+}
+
+.sticky-top {
+    z-index: 1000 !important;
+}
+
+.ant-form-item-label > label {
+    color: #334396 !important;
+    text-align: start !important;
+    font-family: Noto Sans Thai;
+    font-size: 18px !important;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 100% */
+    letter-spacing: 0.2px;
+}
+/*---------------- TAB CUSTOM CSS -----------------*/
+.ant-tabs-tab-btn {
+    text-align: center;
+    color: #334396;
+    outline: none;
+    transition: all 0.3s;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 144%;
+    padding: 8px 60px;
+    border: 2px solid #C5CBE6;
+    border-radius: 16px 16px 0px 0px;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #334396 !important;
+    text-shadow: 0 0 0.25px currentcolor;
+    background: #C5CBE6 !important;
+    /* display: flex; */
+    /* align-items: center; */
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 144%;
+    border-radius: 16px 16px 0px 0px;
+    text-align: center;
+}
+
+.ant-tabs-ink-bar {
+    position: absolute;
+    background: #334396 !important;
+    pointer-events: none;
+}
+
+.ant-tabs-tab + .ant-tabs-tab {
+    margin: 0 0 0 0px !important;
+}
+
+.ant-tabs-content-holder {
+    flex: auto;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid #f0f0f0;
+    padding: 2rem;
+}
+/*-- UPLOAD  --*/
+.custom-input-file {
+    position: absolute;
+    background: white;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.div-file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.banner-box-upload {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    border: 2px dashed #C4C4C4;
+    background: #F6F7FC;
+}
+
+.upload-btn {
+    border-radius: 4px;
+    background: #334396;
+    width: 150px;
+    height: 48px;
+    color: #FFF;
+    text-align: center;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/*-- UPLOAD  --*/
+
+/*-- breadcum --*/
+.breadcum-title {
+    color: #ababab;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.2px;
+}
+
+.breadcum-sucress {
+    color: #ababab;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+}
+
+    .breadcum-sucress:hover {
+        color: #393E55;
+    }
+
+.breadcum-process {
+    color: #334396;
+    text-align: start;
+    font-family: Noto Sans Thai;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+}
+
+.progress, .progress-stacked {
+    --bs-progress-bar-color: #fff;
+    --bs-progress-bar-bg: #3B6C43 !important;
+    background-color: #d1d1d1;
+}
+
+.step-img {
+    width: 77px;
+    height: 77px;
+}
+
+.step-tag {
+    padding-top: 100px !important;
+    font-size: 16px;
+    line-height: 20px;
+    padding-top: 0.8rem;
+    font-weight: 600;
+}
+
+.start-25 {
+    left: 25% !important;
+}
+
+.start-75 {
+    left: 75% !important;
+}
+
+.active {
+    color: #005C9E;
+}
+
+.noneactive {
+    color: #C4C4C4;
+}
+
+.txtarea-from {
+    border: 1.8px dashed #d9d9d9 !important;
+}
+/*table color custom*/
+.table-row-color-custom > td {
+    background-color: #EAE8EC !important;
+}
+
+.table-row-color-custom:hover, .table-row-color-custom:hover > td {
+    background-color: #D9D9D9 !important;
+}
+
+/*---- status-color ----*/
+.status-color-black {
+    background: black;
+    padding-right: 0.6rem;
+}
+
+.status-color-orangered {
+    background: orange;
+    padding-right: 0.6rem;
+}
+
+.status-color-green {
+    background: green;
+    padding-right: 0.6rem;
+}
+
+.status-color-darkblue {
+    background: darkblue;
+    padding-right: 0.6rem;
+}
+
+.status-color-palevioletred {
+    background: palevioletred;
+    padding-right: 0.6rem;
+}
+
+.status-color-red {
+    background: red;
+    padding-right: 0.6rem;
+}
+
+.status-color-gray {
+    background: #999292;
+    padding-right: 0.6rem;
+}
+
+.status-color-lightblue {
+    background: lightblue;
+    padding-right: 0.6rem;
+}
+/*---- sweetAlert Main */
+.swal2-styled.swal2-confirm {
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    background-color: #334396 !important;
+    color: #fff;
+    font-size: 1em;
+    width: 150px;
+}
+
+.swal2-title {
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.8em 1em 0;
+    color: inherit;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    text-align: center;
+    text-transform: none;
+    word-wrap: break-word;
+}
+
+/*------ pointer-hover*/
+.pointer-hover:hover {
+    color: #165EF8;
+    cursor: pointer;
+}
+
+.ant-pagination {
+    text-align: end;
+}
+
+.ant-pagination-options {
+    float: left;
+}

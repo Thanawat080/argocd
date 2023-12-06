@@ -1,0 +1,56 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+<style>
+
+/*    .modalStyle .ant-modal-header {
+        background: #F56C6C !important;
+    }*/
+</style>
+<Modal Title=""
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       WrapClassName="modalStyle"
+       Footer="@footer">
+
+    <div class="container" align="center">
+        <div class="p-3">
+            <img class="mx-2" title="แก้ไข" src="helper_shared/FeesAdminImage/serch.png"
+                 style="width:74px;height:74px;" />
+        </div>
+        <h4 class="pb-2">
+            กำลังเรียกข้อมูลงวด 6704 <br/>
+            กรุณารอสักครู่
+        </h4>
+        <div class="pt-2">
+            <Button OnClick="@HandleOk" Type="@ButtonType.Primary">ดูรายการข้อมูล</Button>
+        </div>
+    </div>
+</Modal>
+@code {
+    bool loading = false;
+ 
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }  
+    [Parameter]
+    public EventCallback<bool> NewModal { get; set; }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private async void HandleOk(MouseEventArgs e)
+    {
+        await OnClose.InvokeAsync(false);
+
+        //await Task.Delay(300);
+        //await NewModal.InvokeAsync(true);
+    }
+
+}

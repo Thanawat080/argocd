@@ -1,0 +1,774 @@
+﻿@page "/editnounce"
+@using sso.mms.helper.Components.Footer
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.helper.Utility
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.portal.admin.Services
+@using sso.mms.portal.admin.ViewModels
+
+@inject SweetAlertService Swal;
+@inject NavigationManager NavigationManager
+@inject AnnounceService AnnounceService
+
+<style>
+    
+    .ant-picker {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
+        font-variant: tabular-nums;
+        line-height: 1.5715;
+        list-style: none;
+        font-feature-settings: 'tnum';
+        padding: 4px 11px 4px;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #9e9e9e;
+        border-radius: 4px;
+        transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+    .swal2-container.swal2-center > .swal2-popup {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        border-radius: 16px;
+    }
+
+    .swal2-title {
+        position: relative;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.8em 1em 0;
+        color: inherit;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        text-transform: none;
+        word-wrap: break-word;
+        color: #334396;
+        font-family: Noto Sans Thai;
+    }
+
+    .swal2-styled.swal2-confirm {
+        border: 0;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        background: #334396;
+        width: 150px;
+    }
+
+    .txt-upload {
+        color: #334396;
+        font-size: 20px;
+        font-family: Noto Sans Thai;
+        font-weight: 500;
+        line-height: 150%;
+    }
+
+    .btn-edit {
+        background: #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #FFFFFF;
+        Width: 182.5px;
+        Height: 52.63px;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .custom-input-file {
+        position: absolute;
+        background: white;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .btn-file-input {
+        padding: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border-radius: 10px;
+        background: #334396;
+    }
+
+    .img-upload {
+        border-radius: 8px;
+        width: inherit;
+        height: 96%;
+    }
+
+    .col-bg {
+        border-radius: 8px;
+        background: #F5F3F7;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.05);
+    }
+
+    .div-file-input {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border-radius: 10px;
+        width: 100%;
+        height: 538px;
+    }
+</style>
+
+<NavbarLoginAdmin ShortToken=@shortToken PageCode="@codeName"></NavbarLoginAdmin>
+
+
+<MediaStyle></MediaStyle>
+<div class="bg-color pt-5 pb-5 ">
+    <div class="container">
+        <div class="card-main">
+            <div class="card-title px-4 py-2">
+                <div class="f-title">เพิ่มประกาศ</div>
+            </div>
+            <div class="row pt-5 txth-from-reg">
+                <div class="col-12">
+                    @if (viewannounce == 1) @*view*@
+                    {
+                        <div class="container">
+                            <div class="row justify-content-start mx-4">
+                                <div class="col-sm-1 col-md-4 mb-4 mx-4">
+                                    <label class="form-label">ชื่อประกาศ</label>
+                                    <input type="text" id="firstName" class="form-control form-control-lg" @bind="AnTitle" readonly />
+                                </div>
+                                <div class="col-sm-1 col-md-4 mb-3">
+                                    <label class="form-label">สถานะประกาศ</label>
+                                    <div class="mt-2 mx-2">
+                                        @if (ActiveStat == true)
+                                        {
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked disabled>
+                                            <label class="form-check-label" for="flexRadioDefault1" style="margin-right: 2rem">
+                                                ลงประกาศ
+                                            </label>
+
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" disabled>
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                ไม่ลงประกาศ
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" disabled>
+                                            <label class="form-check-label" for="flexRadioDefault1" style="margin-right: 2rem">
+                                                ลงประกาศ
+                                            </label>
+
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked disabled>
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                ไม่ลงประกาศ
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="d-flex align-items-center justify-content-start">
+                                <div class="col-sm-1 col-md-12 mb-3">
+                                    <div class="row mx-4">
+                                        <div class="col-sm-1 col-md-4 mb-3 mx-4">
+                                            <label class="form-label">วันที่เริ่มต้นประกาศ</label>
+                                            <AntDesign.DatePicker @bind-Value="@StartDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" Disabled="true"/>
+                                        </div>
+                                        <div class="col-sm-1 col-md-4 mb-3">
+                                            <label class="form-label">วันที่สิ้นสุดประกาศ</label>
+                                            <AntDesign.DatePicker @bind-Value="@EndDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" Disabled="true" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="container px-4">
+                                    <div class="div-file-input">
+                                        <img class="img-upload" src="@AnnounceById.ImagePath" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end my-4 mx-4">
+                                <div class="mt-4 pt-2">
+                                    <button class="btn btn-secondary btn-r-s btn-bo-main" @onclick=goback>
+                                        <i class="fa-regular fa-circle-xmark"></i> &nbsp;ย้อนกลับ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (viewannounce == 2) @*edit*@
+                    {
+                        <form @onsubmit=SaveEdit>
+                            <div class="container">
+                                <div class="row justify-content-start mx-4">
+                                    <div class="col-sm-1 col-md-4 mb-4 mx-4">
+                                        <label class="form-label">ชื่อประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind="AnTitle" required />
+                                    </div>
+                                    <div class="col-sm-1 col-md-4 mb-3">
+                                        <label class="form-label">สถานะประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                        <div class="mt-2 mx-2 ">
+                                            @if (ActiveStat == true)
+                                            {
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onclick="@(()=>ChangeActiveStatus(true))" checked>
+                                                <label class="form-check-label" for="flexRadioDefault1" style="margin-right: 2rem">
+                                                    ลงประกาศ
+                                                </label>
+
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" @onclick="@(()=>ChangeActiveStatus(false))">
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                    ไม่ลงประกาศ
+                                                </label>
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onclick="@(()=>ChangeActiveStatus(true))">
+                                                <label class="form-check-label" for="flexRadioDefault1" style="margin-right: 2rem">
+                                                    ลงประกาศ
+                                                </label>
+
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" @onclick="@(()=>ChangeActiveStatus(false))" checked>
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                    ไม่ลงประกาศ
+                                                </label>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-start">
+                                    <div class="col-sm-1 col-md-12 mb-3">
+                                        <div class="row mx-4">
+                                            <div class="col-sm-1 col-md-4 mb-3 mx-4">
+                                                <label class="form-label">วันที่เริ่มต้นประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                                <AntDesign.DatePicker @bind-Value="@StartDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                                            </div>
+                                            <div class="col-sm-1 col-md-4 mb-3">
+                                                <label class="form-label">วันที่สิ้นสุดประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                                <AntDesign.DatePicker @bind-Value="@EndDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mx-5 px-3">
+                                    @if (FileName != "")
+                                    {
+                                        <a href="@ImageUri" @onclick="@(() => IsAlert(ImageUri.Contains("https:")?false : true))" target="@(ImageUri.Contains("https:")?"_blank" : "")">@FileName</a>
+                                        @if (xmark == true)
+                                        {
+                                            <div @onclick="@isClose" class="px-2" style="color:red;cursor:pointer"><i class="fa-solid fa-circle-xmark"></i></div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div></div>
+                                    }
+                                </div>
+                                <div class="row">
+                                    <div class="container px-4">
+                                        <div class="div-file-input">
+                                            <InputFile class="custom-input-file" style="cursor:pointer;" OnChange="@LoadImage" multiple />
+                                            @if (FileName != "")
+                                            {
+                                                <img class="img-upload" src="@ImageUri" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <div style="font-size: 40px;text-align:center;">
+                                                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                                    </div>
+                                                    <div class="m-2">
+                                                        <p class="txt-upload m-1">วางไฟล์ที่นี่เพื่ออัปโหลด</p>
+                                                    </div>
+                                                    <button class="btn btn-primary btn-edit m-1">
+                                                        <i class="fa-regular fa-floppy-disk"></i> อัปโหลด
+                                                    </button>
+                                                    <div class="m-2" style="font-size: 30px;">
+                                                        <p class="txt-upload m-1">(อัพโหลดไฟล์ ได้เฉพาะ .jpg และ .png เท่านั้น ขนาดไฟล์ 5 MB)</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end my-4 mx-4">
+                                    <div class="mt-4 pt-2">
+                                        <button type="button" class="btn btn-secondary btn-r-s btn-bo-main" @onclick=goback>
+                                            <i class="fa-regular fa-circle-xmark"></i> &nbsp;ย้อนกลับ
+                                        </button>
+                                    </div>
+                                    &nbsp;&nbsp;
+                                    <div class="mt-4 pt-2">
+                                        <button class="btn btn-primary btn-l-s" type="submit">
+                                            <i class="fa-regular fa-floppy-disk"></i>&nbsp; บันทึก
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    }
+
+                    @if (viewannounce == 3) @*add*@
+                    {
+                        <form @onsubmit=ClickSave>
+                            <div class="container">
+                                <div class="row justify-content-start mx-4">
+                                    <div class="col-sm-1 col-md-4 mb-4 mx-4">
+                                        <label class="form-label">ชื่อประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                        <input type="text" class="form-control form-control-lg" @bind="AnTitle" />
+                                    </div>
+                                    <div class="col-sm-1 col-md-4 mb-3">
+                                        <label class="form-label">สถานะประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                        <div class="mt-2 mx-2">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onclick="@(()=>ChangeActiveStatus(true))">
+                                            <label class="form-check-label" for="flexRadioDefault1" style="margin-right: 2rem">
+                                                ลงประกาศ
+                                            </label>
+
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked @onclick="@(()=>ChangeActiveStatus(false))">
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                ไม่ลงประกาศ
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-start">
+                                    <div class="col-sm-1 col-md-12 mb-3">
+                                        <div class="row mx-4">
+                                            <div class="col-sm-1 col-md-4 mb-3 mx-4">
+                                                <label class="form-label">วันที่เริ่มต้นประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                                <div>
+                                                    <AntDesign.DatePicker @bind-Value="@StartDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                                                </div>
+                                                @*<MatDatePicker value="@StartDate" Outlined=true AllowInput="false" Maximum="@EndDate" Format="dd/MM/yyyy"
+                                            ValueChanged=@(async (DateTime value) => await OnStartDateSelected(value)) Style="width: 100%; height: 3rem;" Required></MatDatePicker>*@
+                                            </div>
+                                            <div class="col-sm-1 col-md-4 mb-3">
+                                                <label class="form-label">วันที่สิ้นสุดประกาศ<div class="float-end" style="color:red;">*</div></label>
+                                                <div>
+                                                    <AntDesign.DatePicker @bind-Value="@EndDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                                                </div>
+                                                @*<MatDatePicker value="@EndDate" Outlined=true AllowInput="false" Minimum="@StartDate" Format="dd/MM/yyyy"
+                                            ValueChanged=@(async (DateTime value) => await OnEndDateSelected(value)) Style="width: 100%; height: 3rem;" Required></MatDatePicker>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mx-5 px-3">
+                                    @if (FileName != "")
+                                    {
+                                        <a href="@ImageUri" @onclick="@(() => IsAlert(ImageUri.Contains("https:")?false : true))" target="@(ImageUri.Contains("https:")?"_blank" : "")">@FileName</a>
+                                        @if (xmark == true)
+                                        {
+                                            <div @onclick="@isClose" class="px-2" style="color:red;cursor:pointer"><i class="fa-solid fa-circle-xmark"></i></div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div></div>
+                                    }
+                                </div>
+                                <div class="row">
+                                    <div class="container px-4">
+                                        <div class="div-file-input">
+                                            <InputFile class="custom-input-file" style="cursor:pointer;" OnChange="@LoadImage" multiple />
+                                            @if (FileName != "")
+                                            {
+                                                <img class="img-upload" src="@ImageUri" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <div style="font-size: 40px;text-align:center;">
+                                                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                                    </div>
+                                                    <div class="m-2" style="font-size: 40px;">
+                                                        <p class="txt-upload m-1">วางไฟล์ที่นี่เพื่ออัปโหลด</p>
+                                                    </div>
+                                                    <button class="btn btn-primary btn-edit m-1">
+                                                        <i class="fa-regular fa-floppy-disk"></i> อัปโหลด
+                                                    </button>
+                                                    <p class="txt-upload m-1">(อัพโหลดไฟล์ ได้เฉพาะ .jpg และ .png เท่านั้น ขนาดไฟล์ 5 MB)</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end my-4 mx-4">
+                                    <div class="mt-4 pt-2">
+                                        <button type="button" class="btn btn-secondary btn-r-s btn-bo-main" @onclick=goback>
+                                            <i class="fa-regular fa-circle-xmark"></i> &nbsp;ย้อนกลับ
+                                        </button>
+                                    </div>
+                                    &nbsp;&nbsp;
+                                    <div class="mt-4 pt-2">
+                                        <button class="btn btn-primary btn-l-s" type="submit">
+                                            <i class="fa-regular fa-floppy-disk"></i>&nbsp; บันทึก
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<Footer></Footer>
+@code {
+    public DateTime? StartDate = null;
+    public DateTime? EndDate = null;
+    public string? AnTitle = null;
+    public bool? ActiveStat = false;
+    public int OpenAnnounce;
+    public int? CheckId;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "Id")]
+    public int Id { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "viewannounce")]
+    public int viewannounce { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url;
+
+    public IBrowserFile ImageFile;
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+
+    public List<AnnounceT>? Announce = new List<AnnounceT>();
+    public AnnounceT AnnounceById = new AnnounceT();
+
+    public List<AnnounceService>? GetAnnounceServices = new List<AnnounceService>();
+    public string? codeName = "DSP0702";
+    protected override async Task OnInitializedAsync()
+    {
+
+        Announce = await AnnounceService.GetAnnounceT();
+        //Id
+        AnnounceById = Announce.FirstOrDefault(x => x.Id == Id);
+        if (Id != 0)
+        {
+            xmark = true;
+            AnTitle = AnnounceById.Title;
+            ImageUri = AnnounceById.ImagePath;
+            FileName = AnnounceById.ImageFile;
+            StartDate = AnnounceById.StartDate;
+            EndDate = AnnounceById.EndDate;
+            ActiveStat = AnnounceById.ActiveStatus;
+        }
+        OpenAnnounce = Announce.Where(y => y.ActiveStatus == true).Count();
+        CheckId = Announce.Where(w => w.ActiveStatus == true).Select(q => q.Id).FirstOrDefault();
+
+        if (env == "Development")
+        {
+            url = "";
+        }
+        else
+        {
+            url = "/admin";
+        }
+
+    }
+    public void goback()
+    {
+        NavigationManager.NavigateTo(url + "/nnnounce" + $"?token={shortToken}");
+    }
+    public async void ClickSave()
+    {
+        if (OpenAnnounce > 0 && ActiveStat == true)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถลงประกาศได้เกิน 1 รายการ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (AnTitle == null)
+        {
+            await Swal.FireAsync(
+                  "กรุณากรอกชื่อประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+
+        else if (StartDate == null)
+        {
+            await Swal.FireAsync(
+                  "กรุณาเลือกวันเริ่มต้นประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (EndDate == null)
+        {
+            await Swal.FireAsync(
+                  "กรุณาเลือกวันสิ้นสุดประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (String.IsNullOrEmpty(ImageUri))
+        {
+            await Swal.FireAsync(
+                  "กรุณาเพิ่มรูปที่จะประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+
+        else if(StartDate > EndDate)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถเลือกวันเริ่มต้นประกาศได้มากกว่าวันสิ้นสุดประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (StartDate == EndDate && StartDate != null && EndDate != null)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถเลือกวันเริ่มต้นประกาศได้เท่ากับวันสิ้นสุดประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else
+        {
+            var data = new AnnounceModel
+                {
+                    Title = AnTitle,
+                    StartDate = StartDate,
+                    EndDate = EndDate,
+                    File = ImageFile,
+                    ActiveStatus = ActiveStat,
+                };
+            var Response = await AnnounceService.INsertAnnounceT(data);
+            if (Response.issucessStatus == true)
+            {
+                await Swal.FireAsync(
+                       "บันทึกข้อมูลสำเร็จ",
+                       null,
+                       SweetAlertIcon.Success
+                       );
+                NavigationManager.NavigateTo(url + "/nnnounce" + $"?token={shortToken}");
+            }
+            else
+            {
+                await Swal.FireAsync(
+                      "บันทึกไม่สำเร็จ" + Response.statusMessage,
+                      null,
+                      SweetAlertIcon.Error
+                      );
+            }
+        }
+    }
+
+    public async void SaveEdit()
+    {
+        if (OpenAnnounce > 0 && ActiveStat == true && CheckId != Id)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถลงประกาศได้เกิน 1 รายการ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (StartDate > EndDate)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถเลือกวันเริ่มต้นประกาศได้มากกว่าวันสิ้นสุดประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else if (StartDate == EndDate)
+        {
+            await Swal.FireAsync(
+                  "ไม่สามารถเลือกวันเริ่มต้นประกาศได้เท่ากับวันสิ้นสุดประกาศ",
+                  null,
+                  SweetAlertIcon.Warning
+                  );
+        }
+        else
+        {
+            Console.WriteLine(AnnounceById);
+            var data = new AnnounceModel();
+            if (ImageFile != null)
+            {
+                data = new AnnounceModel
+                    {
+                        Id = Id,
+                        Title = AnTitle,
+                        StartDate = StartDate,
+                        EndDate = EndDate,
+                        CreateDate = AnnounceById.CreateDate,
+                        File = ImageFile,
+                        ActiveStatus = ActiveStat,
+
+                    };
+            }
+            else
+            {
+                data = new AnnounceModel
+                    {
+                        Id = Id,
+                        Title = AnTitle,
+                        StartDate = StartDate,
+                        EndDate = EndDate,
+                        CreateDate = AnnounceById.CreateDate,
+                        ImageFile = AnnounceById.ImageFile,
+                        ImagePath = AnnounceById.ImagePath,
+                        ActiveStatus = ActiveStat,
+
+                    };
+            }
+
+            var Response = await AnnounceService.EditAnnounceT(data);
+            if (Response.issucessStatus == true)
+            {
+                await Swal.FireAsync(
+                       "บันทึกข้อมูลสำเร็จ",
+                       null,
+                       SweetAlertIcon.Success
+                       );
+                NavigationManager.NavigateTo(url + "/nnnounce" + $"?token={shortToken}");
+            }
+            else
+            {
+                await Swal.FireAsync(
+                      "บันทึกไม่สำเร็จ" + Response.statusMessage,
+                      null,
+                      SweetAlertIcon.Error
+                      );
+            }
+        }
+
+
+    }
+    public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+
+        if (inputFileChangeEventArgs.File.Size > 5242880)
+        {
+            await Swal.FireAsync(
+                  "ไฟล์ใหญ่เกินไป !!",
+                  null,
+                  SweetAlertIcon.Error
+                  );
+        }
+        else if (inputFileChangeEventArgs.File.ContentType != "image/jpeg" && inputFileChangeEventArgs.File.ContentType != "image/jpg" && inputFileChangeEventArgs.File.ContentType != "image/png")
+        {
+            await Swal.FireAsync(
+               "สามารถอัพโหลดไฟล์ ได้เฉพาะ .jpg และ .png เท่านั้น",
+               null,
+               SweetAlertIcon.Warning
+               );
+        }
+        else
+        {
+            xmark = true;
+            FileName = inputFileChangeEventArgs.File.Name;
+            ImageFile = inputFileChangeEventArgs.File;
+            var image = await inputFileChangeEventArgs.File.RequestImageFileAsync("image/png", 600, 600);
+            using Stream imageStream = image.OpenReadStream(1024 * 1024 * 10);
+            using MemoryStream ms = new();
+            await imageStream.CopyToAsync(ms);
+            ImageUri = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+            StateHasChanged();
+        }
+    }
+    private async Task OnStartDateSelected(DateTime e)
+    {
+        StartDate = e.ToLocalTime();
+
+    }
+
+    private async Task OnEndDateSelected(DateTime e)
+    {
+        EndDate = e.ToLocalTime();
+
+    }
+
+    public void ChangeActiveStatus(Boolean status)
+    {
+        ActiveStat = status;
+    }
+    private bool xmark;
+    public void isClose()
+    {
+        xmark = false;
+        FileName = "";
+        StateHasChanged();
+    }
+    public async void IsAlert(bool status)
+    {
+        if (status)
+        {
+            await Swal.FireAsync(
+               " ไม่สามารถคลิกดูรายละเอียด เนื้อไฟล์ได้ เนื่องจากยังไม่ได้บันทึกข้อมูล !",
+               null,
+               SweetAlertIcon.Warning
+               );
+        }
+    }
+
+}

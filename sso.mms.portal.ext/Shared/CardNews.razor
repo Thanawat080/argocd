@@ -1,0 +1,332 @@
+﻿@using System.Globalization;
+@using Microsoft.EntityFrameworkCore.Metadata.Internal;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.news.Services;
+@inject NewsService newsService
+@inject NavigationManager Navigation;
+@inject IJSRuntime JSRuntime;
+
+
+@foreach (var titleNewsM in ResponseNews?.Select((value, i) => (value, i)).Take(2))
+{
+    <div class="col col-sm-12 col-lg-12 col-xl-6" style="padding-bottom:2%">
+        <div class="card w-100" style="box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);min-height: 714px;border-radius: 10px 10px 10px 10px;">
+            <div class="card-header-m">
+                <h3 class="text-header-m">@titleNewsM.value.Name</h3>
+            </div>
+            <div class="card-body-m-w">
+                <div class="row mt-2 m-3">
+                    <div class="modal-body">
+                        @if (String.IsNullOrEmpty(shortToken))
+                        {
+                            @foreach (var listPin1 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                           .Where(o => o.value.PinStatus == 1 && o.value.PrivilegePublic == true)
+                           .OrderByDescending(o => o.value.CreateDate).Take(2))
+                            {
+                                <div class="div-hover p-2 d-flex justify-content-between" @onclick="()=> titleNewsM.value.Id == 1 ? toPDFPreview(listPin1.value.UploadPath)
+                                   : ShowNewsDetailById(listPin1.value.Id , listPin1.value.NewsMId) ">
+                                    <div class="d-flex">
+                                        @if (titleNewsM.value.Id == 1)
+                                        {
+                                            <i class="fa-solid fa-thumbtack" style="width:35px;height:35px;margin:5px;color:#ff0000"></i>
+                                        }
+                                        else if (titleNewsM.value.Id == 2)
+                                        {
+
+                                            <i class="fa-solid fa-thumbtack" style="width:35px;height:35px;margin:5px;color:#ff0000"></i>
+                                        }
+
+                                        <div class="m-2">
+                                            <div class="text-color-custom fw-bold txt-overflow text-truncate">@listPin1.value.Title</div>
+                                            <div class="text-datetimes fw-bold">@ThaiDateFormat.FormattedDate(listPin1.value.CreateDate)</div>
+                                        </div>
+                                    </div>
+                                    @if (itemTypeOne is not null)
+                                    {
+                                        @if (itemTypeOne.Id == listPin1.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                    @if (itemTypeTwo is not null)
+                                    {
+                                        @if (itemTypeTwo.Id == listPin1.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                </div>
+                                <hr />
+                            }
+                            @foreach (var listPin0 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                           .Where(o => o.value.PinStatus == 0 && o.value.PrivilegePublic == true)
+                           .OrderByDescending(o => o.value.CreateDate).Take(3))
+                            {
+                                <div class="div-hover p-2 d-flex justify-content-between" @onclick="()=> titleNewsM.value.Id == 1 ? toPDFPreview(listPin0.value.UploadPath)
+                        : ShowNewsDetailById(listPin0.value.Id , listPin0.value.NewsMId) ">
+                                    <div class="d-flex">
+                                        @if (titleNewsM.value.Id == 1)
+                                        {
+                                            <img style="width:35px;height:35px;margin:5px;" src="Data/Assets/Images/echo.png" />
+                                        }
+                                        else if (titleNewsM.value.Id == 2)
+                                        {
+                                            <img style="width:35px;height:35px;margin:5px;" src="Data/Assets/Images/paper-news.png" />
+                                        }
+                                        <div class="m-2">
+                                            <div class="text-color-custom fw-bold txt-overflow text-truncate">@listPin0.value.Title</div>
+                                            <div class="text-datetimes fw-bold">@ThaiDateFormat.FormattedDate(listPin0.value.CreateDate)</div>
+                                        </div>
+                                    </div>
+                                    @if (itemTypeOne is not null)
+                                    {
+                                        @if (itemTypeOne.Id == listPin0.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                    @if (itemTypeTwo is not null)
+                                    {
+                                        @if (itemTypeTwo.Id == listPin0.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                </div>
+                                <hr />
+                            }
+                        }
+                        else
+                        {
+                            @foreach (var listPin1 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                           .Where(o => o.value.PinStatus == 1 && o.value.PrivilegePrivate == true || o.value.PinStatus == 1 && o.value.PrivilegePublic == true)
+                           .OrderByDescending(o => o.value.CreateDate).Take(2))
+                            {
+                                <div class="d-flex p-2 justify-content-between div-hover" @onclick="()=> titleNewsM.value.Id == 1 ? toPDFPreview(listPin1.value.UploadPath)
+                        : ShowNewsDetailById(listPin1.value.Id , listPin1.value.NewsMId) ">
+
+                                    <div class="d-flex">
+                                        @if (titleNewsM.value.Id == 1)
+                                        {
+                                            <i class="fa-solid fa-thumbtack" style="width:35px;height:35px;margin:5px;color:#ff0000"></i>
+
+                                        }
+                                        else if (titleNewsM.value.Id == 2)
+                                        {
+
+                                            <i class="fa-solid fa-thumbtack" style="width:35px;height:35px;margin:5px;color:#ff0000"></i>
+
+
+                                        }
+                                        <div class="m-2">
+                                            <div class="text-color-custom fw-bold txt-overflow text-truncate">@listPin1.value.Title</div>
+                                            <div class="text-datetimes fw-bold">@ThaiDateFormat.FormattedDate(listPin1.value.CreateDate)</div>
+                                        </div>
+                                    </div>
+                                    @if (itemTypeOne is not null)
+                                    {
+                                        @if (itemTypeOne.Id == listPin1.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                    @if (itemTypeTwo is not null)
+                                    {
+                                        @if (itemTypeTwo.Id == listPin1.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                </div>
+                                <hr />
+                            }
+                            @foreach (var listPin0 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                           .Where(o => o.value.PinStatus == 0 && o.value.PrivilegePrivate == true || o.value.PinStatus == 0 && o.value.PrivilegePublic == true)
+                           .OrderByDescending(o => o.value.CreateDate).Take(3))
+                            {
+                                <div class="d-flex p-2 justify-content-between div-hover" @onclick="()=> titleNewsM.value.Id == 1 ? toPDFPreview(listPin0.value.UploadPath)
+                        : ShowNewsDetailById(listPin0.value.Id , listPin0.value.NewsMId) ">
+                                    <div class="d-flex">
+                                        @if (titleNewsM.value.Id == 1)
+                                        {
+                                            <img style="width:35px;height:35px;margin:5px;" src="Data/Assets/Images/echo.png" />
+
+                                        }
+                                        else if (titleNewsM.value.Id == 2)
+                                        {
+
+
+                                            <img style="width:35px;height:35px;margin:5px;" src="Data/Assets/Images/paper-news.png" />
+
+
+                                        }
+                                        <div class="m-2">
+                                            <div class="text-color-custom fw-bold txt-overflow text-truncate">@listPin0.value.Title</div>
+                                            <div class="text-datetimes fw-bold">@ThaiDateFormat.FormattedDate(listPin0.value.CreateDate)</div>
+                                        </div>
+                                    </div>
+                                    @if (itemTypeOne is not null)
+                                    {
+                                        @if (itemTypeOne.Id == listPin0.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                    @if (itemTypeTwo is not null)
+                                    {
+                                        @if (itemTypeTwo.Id == listPin0.value.Id)
+                                        {
+                                            <div class="float-end echo-news">ล่าสุด!!</div>
+                                        }
+                                    }
+                                </div>
+                                <hr />
+                            }
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <div align="center">
+                            <button class="btn  btn-primary btn-select-all" @onclick="()=>GotoNewsPage(titleNewsM.value.Id)">
+                                ดูทั้งหมด
+                                <img src="Data/Assets/Images/next-btn.png" style="height:21px;width:21px" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<NewsT>? responseNewsT = new List<NewsT>();
+
+    private string urlNews = ConfigureCore.redirectsNews;
+    private string urlPortal = ConfigureCore.redirectPortalExt;
+    private bool checkLastestTypeOne = false;
+    private bool checkLastestTypeZero = false;
+
+    private NewsT? itemTypeTwo = null;
+    private NewsT? itemTypeOne = null;
+
+    [Parameter]
+    public string? shortToken { get; set; } = null;
+
+    [Parameter]
+    public string NewsMid { get; set; }
+
+    [Parameter]
+    public List<NewsM>? ResponseNews { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClickToNews { get; set; }
+
+    [Parameter]
+    public EventCallback<int> GetNewsMid { get; set; }
+
+    public async void GotoNewsPage(int newsmid)
+    {
+        await this.GetNewsMid.InvokeAsync(newsmid);
+        await this.OnClickToNews.InvokeAsync(true);
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        foreach (var titleNewsM in ResponseNews?.Select((value, i) => (value, i)).Take(2))
+        {
+            foreach (var listPin1 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                        .Where(o => o.value.PinStatus == 1 && o.value.PrivilegePrivate == true)
+                        .OrderByDescending(o => o.value.CreateDate).Take(2))
+            {
+                if (titleNewsM.value.Id == 2)
+                {
+                    if (itemTypeTwo == null)
+                    {
+                        itemTypeTwo = listPin1.value;
+                    }
+                    else
+                    {
+                        if (itemTypeTwo.CreateDate < listPin1.value.CreateDate)
+                        {
+                            itemTypeTwo = listPin1.value;
+                        }
+                    }
+                }
+                else
+                {
+                    if (itemTypeOne == null)
+                    {
+                        itemTypeOne = listPin1.value;
+                    }
+                    else
+                    {
+                        if (itemTypeOne.CreateDate < listPin1.value.CreateDate)
+                        {
+                            itemTypeOne = listPin1.value;
+                        }
+                    }
+                }
+            }
+            foreach (var listPin0 in ResponseNews![titleNewsM.i].NewsTs.Select((value, i) => (value, i))
+                       .Where(o => o.value.PinStatus == 0 && o.value.PrivilegePrivate == true)
+                        .OrderByDescending(o => o.value.CreateDate).Take(3))
+            {
+                if (titleNewsM.value.Id == 2)
+                {
+                    if (itemTypeTwo == null)
+                    {
+                        itemTypeTwo = listPin0.value;
+                    }
+                    else
+                    {
+                        if (itemTypeTwo.CreateDate < listPin0.value.CreateDate)
+                        {
+                            itemTypeTwo = listPin0.value;
+                        }
+                    }
+                }
+                else
+                {
+                    if (itemTypeOne == null)
+                    {
+                        itemTypeOne = listPin0.value;
+                    }
+                    else
+                    {
+                        if (itemTypeOne.CreateDate < listPin0.value.CreateDate)
+                        {
+                            itemTypeOne = listPin0.value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task ShowNewsDetailById(int? id, int? mid)
+    {
+
+        if (shortToken != null)
+        {
+            Navigation.NavigateTo($"{urlNews}detail?token={shortToken}&param={id}&newsmid={mid}");
+        }
+        else
+        {
+            Navigation.NavigateTo($"{urlNews}detail?param={id.ToString()}&newsmid={mid}");
+        }
+    }
+
+    public async Task toPDFPreview(string filePath)
+    {
+        if (filePath != null)
+        {
+            await JSRuntime.InvokeVoidAsync("open", $"{filePath}");
+
+        }
+
+    }
+
+}

@@ -1,0 +1,246 @@
+﻿@page "/chatadmin"
+@using sso.mms.chat;
+@using sso.mms.chat.Models.ChatUserDetailList;
+@using sso.mms.chat.Models;
+@using sso.mms.chat.ViewModels;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Chat;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.chat.Services
+@inject ChatRoomService ChatRoomService;
+@inject ChatService ChatService;
+@using Blazored.LocalStorage;
+@inject ILocalStorageService localStorage
+
+@using sso.mms.helper.Utility;
+
+<PageTitle>Index</PageTitle>
+
+<style>
+        :root {
+        --mdc-theme-primary: #334396;
+    }
+    
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+  /*  @@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap');*/
+
+    @@font-face {
+        font-family: 'Noto Sans Thai';
+        src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+    }
+    * {
+        font-family: 'Noto Sans Thai', sans-serif;
+    }
+
+    body {
+        background: #F5F3F7;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    @@media only screen and (max-width: 998px) {
+        .card-c-login {
+            margin-top: 10%;
+        }
+    }
+
+</style>
+
+    <NavbarLoginAdmin ShortToken=@shortToken PageCode="@pageCode"></NavbarLoginAdmin>
+
+<MediaStyle></MediaStyle>
+@*<img src="helper_shared/favicon.ico" height="50px" width="50px"/>*@
+
+<div >
+    <div class="container py-4" >
+        <div class="row ">
+            <div class="col-md-12 col-lg-5 col-xl-4 mb-4">
+                <OnlineChat 
+                    OnGetChatRoomMTitle="@GetNameChatRoomMTitle" 
+                    ChatRoomMList="@ChatRoomMList" 
+                    OnGetHospitalData="@GetHospitalData"
+                    OnSearchChatMList="@SearchChatMList" 
+                    searchChatRoomMList="searchChatRoomMList" />
+            </div>
+            <div class="col-md-12 col-lg-7 col-xl-8" style="height: 850px;
+">
+                @if (ChatTRoom == null)
+                {
+                    <ChatCategoryList 
+                        OnGetHospitalTitle="@GetNameHospitalTitle" 
+                        HospitalMList="@HospitalMList" 
+                        OnGetChatRoomById="@GetChatT"
+                        ChatRoomMTitle="@ChatRoomMTitle"></ChatCategoryList>
+                }
+                else if (ChatTRoom != null)
+                {
+                    <WindowsChat 
+                        HospitalNameTitle="@HospitalNameTitle" 
+                        ChatRoomMTitle="@ChatRoomMTitle" 
+                        ChatTRoom="@ChatTRoom" 
+                        ChatRoomId="@ChatRoomId" 
+                        GetCloseChat="@GetCloseChat" />
+                }
+                else if (HospitalMList == null)
+                {
+                    <WindowsStartChat />
+                }
+            </div>
+        </div>
+    </div>
+ 
+    <footer>
+        <sso.mms.login.Shared.Footer></sso.mms.login.Shared.Footer>
+    </footer>
+</div>
+
+
+@if(isloading == true)
+{
+   <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage> 
+}
+
+
+@code {
+    private bool isloading = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    public ChatRoomM ChatRoomM { get; set; } = null;
+
+    public List<ChatRoomMListModel> ChatRoomMList { get; set; }
+
+    public List<HospitalMListModel> HospitalMList { get; set; }
+
+    public List<ChatRoomMListModel> searchChatRoomMList { get; set; }
+
+    public List<ChatT> ChatTRoom { get; set; }
+
+    public ResponseLogin getUser;
+
+    public int ChatRoomId;
+
+    public string? HospitalNameTitle { get; set; } = null;
+    public string? ChatRoomMTitle { get; set; } = null;
+    private string pageCode { get; set; } = "HOP0803";
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+
+        getUser = await localStorage.GetItemAsync<ResponseLogin>("userdata");
+        if (ConfigureCore.ConfigENV == "Development")
+        {
+            ChatRoomMList = await ChatRoomService.GetChatRoomMaster("numberone");
+        }
+        else
+        {
+            var userName = await localStorage.GetItemAsync<string>("username");
+            ChatRoomMList = await ChatRoomService.GetChatRoomMaster(userName);
+        }
+
+        searchChatRoomMList = ChatRoomMList;
+
+        if (ChatTRoom == null)
+        {
+            this.pageCode = "HOP0803";
+
+        }
+        else if (ChatTRoom != null)
+        {
+            this.pageCode = "HOP0804";
+        }
+        else if (HospitalMList == null)
+        {
+            this.pageCode = "HOP0805";
+        }
+
+
+        //if(ChatRoomMList != null)
+        //{
+        isloading = false;
+        //}
+        StateHasChanged();
+    }
+
+    private async Task GetHospitalData(List<HospitalMListModel> item)
+    {
+        HospitalMList = item;
+        ChatTRoom = null;
+        StateHasChanged();
+    }
+
+    private async Task GetNameChatRoomMTitle(string Title)
+    {
+        ChatRoomMTitle = Title;
+    }
+
+    private async Task GetNameHospitalTitle(string Title)
+    {
+        HospitalNameTitle = Title;
+    }
+
+    private async Task GetChatT(int Id)
+    {
+        ChatRoomId = Id;
+        ChatTRoom = await ChatService.GetChatHistory(Id, 1,10);
+        StateHasChanged();
+    }
+
+    private async Task GetCloseChat(string name)
+    {
+        if(name == null)
+        {
+            ChatTRoom = null;
+           // HospitalMList = null;
+            StateHasChanged();
+        }
+        else if (ChatTRoom != null)
+        {
+            
+        }
+
+        
+    }
+
+    void SearchChatMList(string item)
+    {
+        searchChatRoomMList = ChatRoomMList.Where(obj => obj.Name.Contains(item.ToLower())).ToList();
+        StateHasChanged();
+    }
+}

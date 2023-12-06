@@ -1,0 +1,56 @@
+﻿@inject IJSRuntime JSRuntime
+<style>
+    .manual-echo {
+        position: relative;
+        width: auto;
+        height: auto;
+        background: #FFCC41;
+        border-radius: 20px;
+        padding-bottom: 2%;
+    }
+
+    .manual-echo-img {
+        position: absolute;
+        width: 267px;
+        height: 420px;
+        top: -120px;
+    }
+
+    .text-manual {
+        width: auto;
+        height: auto;
+        font-weight: 700;
+        line-height: 150%;
+        padding-left: 40%;
+        /* or 72px */
+
+        letter-spacing: -0.019em;
+        color: #334396;
+    }
+
+    .btn-select-all {
+        background: #334396;
+        color: #ffffff;
+    }
+
+</style>
+
+<div class="manual-echo my-3 mt-5">
+
+    <img class="manual-echo-img" src="Data/Assets/Images/nures-call.png" />
+    <p class="text-manual" style="font-size: 38px; padding-top:3%;">คู่มือการใช้งาน</p>
+    <p class="text-manual" style="font-size: 32px;">
+        ขั้นตอนวิธีการใช้เว็บไซต์<br /> ผ่านทางคอมพิวเตอร์
+    </p>
+    <div align="center">
+        <button class="btn btn-primary btn-select-all px-4" @onclick=toPDFPreview>
+            <img src="Data/Assets/Images/paper-page.png" style="height:20px;width:20px ;padding-right:4px;" /> วิธีการใช้งาน
+        </button>
+    </div>
+</div>
+@code {
+    public async Task toPDFPreview()
+    {
+        await JSRuntime.InvokeVoidAsync("open", "helper_shared/PortalExt/คู่มือ.pdf", "_blank");
+    }
+}

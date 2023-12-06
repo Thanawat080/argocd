@@ -1,0 +1,74 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การปลูกถ่ายอวัยวะ/ตรวจสอบสิทธิ์   </div>
+    </div>
+    <div class="container py-4">
+      <div class="justify-content-center align-content-center">
+          <div class="mms-media-center">
+                <img src="helper_shared/FeesExtImage/Iden.jpg" style="width:258px">
+          </div>
+         <div class="mms-media-center my-2">
+            <div class="col-4 col-ms-10">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                        <SpaceItem >
+                            <Search Placeholder="เลขประจำตัวประชาชน" EnterButton="true" @onclick=@(() => OpenViewModal(true)) />
+                    </SpaceItem>
+                </Space>
+                </div>
+          </div>
+      </div>
+    </div>
+</div>
+@* <Button @onclick=@(() => OpenViewModal(true))></Button>
+<Button @onclick=@(() => goPage(2))></Button> *@
+<ViewModal _visible="@openViewModal" OnClose="@OpenViewModal"></ViewModal>
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@using sso.mms.fees.ext.Shared.OrganTransplantation.Modals
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    bool openViewModal { get; set; }
+
+    bool ModalAlert = false;
+    string Placeholder = "วว/ดด/ปปปป";
+    string style = "height:30px;line-height:30px;";
+
+    bool loading = false;
+    public async Task goPage(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    List<ItemData> listOfData = new List<ItemData>
+    {
+        new ItemData
+        {
+           
+        }
+    };
+    string _selectedValue;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };     
+}

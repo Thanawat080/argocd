@@ -1,0 +1,335 @@
+﻿@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีทันตกรรม  </div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการขอใช้รถทันตกรรม</span>
+                </li>
+                
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="row">
+            <div class="d-flex  mms-media-center justify-content-between">
+                <div class="mms-media-center">
+                    <Button Type="@ButtonType.Primary" Class="mms-text-header" @onclick=@(() => goView(2))>
+                        <i class="fa-solid fa-circle-plus"></i>
+                        เพิ่ม
+                    </Button>
+                </div>
+                <div class="col-4 ">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" OnSearch="SearchData" @bind-value="searchText"/>
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="ListDataSearch" TItem="AaiDentalCarHView" RowClassName="@(_=>"table-row-color-custom")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="10%" Align="ColumnAlign.Center">
+                    @String.Format("{0:d}",ListDataSearch.IndexOf(data)+1)
+                </Column>
+                <Column TData="string" Title="ชื่อสถานที่" Width="15%" Align="ColumnAlign.Center">
+                    @data.PlaceName
+                </Column>
+                <Column TData="string" Title="วันที่ออกให้บริการ" Width="20%" Align="ColumnAlign.Center">
+                    @ThaiDateFormat.FormatShotMonth(data.ServiceStartDate) -  @ThaiDateFormat.FormatShotMonth(data.ServiceEndDate)
+                    
+                </Column>
+                <Column TData="string" Title="วันที่ทำรายการ" Width="15%" Align="ColumnAlign.Center">
+                    @ThaiDateFormat.FormatShotMonth(data.ServiceDate)
+                </Column>
+                <Column TData="string" Title="จำนวน (คัน)" Width="10%" Align="ColumnAlign.Center">
+                    @data.sumCar
+                </Column>
+                <Column TData="string" Title="ทะเบียนรถ" Width="10%" Align="ColumnAlign.Center">
+           
+                   @{
+                       var carlist = data.AllLicensePlate.Split(',');
+                   }
+                   @foreach(var item in carlist)
+                     {
+                          <div>@item,</div>
+                     }
+                </Column>
+                <Column TData="string" Title="สถานะ" Width="10%" Align="ColumnAlign.Center">
+                    @if (data.DantalCarStatus.Trim() == "1")
+                    {
+                        <div style=" color :#67C23A">
+                            อนุญาต
+                        </div>
+                    }
+                    else if (data.DantalCarStatus.Trim() == "0")
+                    {
+                        <div style=" color :#F89523">
+                            รออนุญาต
+                        </div>
+                    } 
+                    else if (data.DantalCarStatus.Trim() == "8")
+                    {
+                        <div style=" color :#FF1414">
+                            แจ้งเเก้ไข
+                        </div>
+                    }
+                </Column>
+                <ActionColumn Title="" Width="10%" Align="ColumnAlign.Left">
+                    <img class="mx-2" title="แสดงข้อมูล" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" />
+                    @if (data.DantalCarStatus.Trim() != "1")
+                    {
+                    <img class="mx-2" title="แก้ใขข้อมูล" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px;" @onclick=@(() => Edit(data.DentalCarHId)) />
+                    }
+                </ActionColumn>
+            </ChildContent>
+        </Table>
+
+
+    </div>
+
+
+</div>
+
+<style>
+
+    .modalStyle .ant-modal-header {
+        background: #F56C6C !important;
+    }
+</style>
+
+<Modal Title="@title"
+       Visible="@_visible1"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+
+       Width="1200"
+       Footer=null
+       WrapClassName="modalStyle">
+
+    <div class="container py-4">
+
+        <div class="d-flex">
+            <div class="col-1"></div>
+            <div class="col-5">
+                <div class="row mb-2">
+                    <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex" style="font-size : 18px; color : #000">ชื่อสถานพยาบาล :</div>
+                    <div class="col-sm mms-txt-headdetail" style="font-size : 18px; color : #000" >@ListDataView.PlaceName</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex">สถานที่ออกให้บริการ :</div>
+                    <div class="col-sm">@ListDataView.PlaceName</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex">รถที่ออกให้บริการ :</div>
+                    <div class="col-sm">
+                        @{
+                            var carlist =  ListDataView.AllLicensePlate.Split(',');
+                        }
+                  
+                        @for (int i = 0; i < carlist.Length; i++)
+                        {
+                            <div>ในระบบ รถคันที่ @(i+1) : @carlist[i] </div>
+                           
+                        }
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex">จังหวัดปลายทาง :</div>
+                    <div class="col-sm">ตำบล @subdistrict อำเภอ @district จังหวัด @province</div>
+                </div>
+                <div class="flex-column my-3">
+                    <div class="col-sm-6 mms-txt-headdetail mb-3">รายละเอียดการขอเเก้ไข<span style="color : red">*</span></div>
+                    <TextArea ShowCount MaxLength=250 OnChange="onChange" @bind-Value=@ListDataView.ChangeDesc />
+                 
+                </div>
+            </div>
+            <div class="col-5">
+                    <div class="row mb-2">
+                        <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex" >วันที่ออกให้บริการ :</div>
+                        <div class="col-sm">
+                        @ThaiDateFormat.FormatShotMonth(ListDataView.ServiceStartDate) -  @ThaiDateFormat.FormatShotMonth(ListDataView.ServiceEndDate)
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-6 mms-txt-headdetail justify-content-end d-flex">แนบไฟล์ใบอนุญาต สธ. :</div>
+                    <a class="col-sm" href="@ListDataView.RegisterDoc" target="_blank">@ListDataView.RegisterDocFileName</a>
+                    </div>
+
+
+            </div>
+            <div class="col-1"></div>
+        </div>
+        <div class="mms-media-end my-4 mt-4">
+            
+
+            &nbsp;&nbsp;
+            <div class="mt-4 pt-2">
+                <Button Type="@ButtonType.Primary" OnClick="(()=> submit(ListDataView.DentalCarHId))"><i class="fa-solid fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@using sso.mms.fees.api.Entities.Dental;
+@using sso.mms.fees.api.ViewModels.Dental;
+@using sso.mms.fees.ext.Providers.Dental.RecordCar;
+
+@inject SweetAlertService Swal
+@inject RecordCarServices recordCarServices
+@inject NavigationManager Navigation
+@inject ModalService _modalService
+@code {
+
+    List<AaiDentalCarHView> ListData = new List<AaiDentalCarHView>();
+    List<AaiDentalCarHView> ListDataSearch = new List<AaiDentalCarHView>();
+    AaiDentalCarHView ListDataView = new AaiDentalCarHView();
+
+    string title = "เเจ้งขอเเก้ไขข้อมูลขอใช้รถทันตกรรมผิด";
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    string? searchText ;
+    string? province ;
+    string? district ;
+    string? subdistrict ;
+    bool _visible1 = false;
+    public bool isloading = true;
+    string changeDescription = "";
+
+    private void HandleOk(MouseEventArgs e)
+    {
+
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+
+    }
+    public async void Edit(decimal? carHId)
+    {
+        isloading = true;
+
+        ListDataView = ListDataSearch.Where(w => w.DentalCarHId == carHId).FirstOrDefault();
+        var provincelist = await recordCarServices.GetProvince();
+        var districtlist = await recordCarServices.GetDistrict(Int32.Parse(ListDataView.PlaceProvince));
+        var subdistrictlist = await recordCarServices.GetSubDistrict(Int32.Parse(ListDataView.PlaceDistrict));
+
+        province = provincelist.ResultList.FirstOrDefault(w => w.ProvId == Int32.Parse(ListDataView.PlaceProvince)).ProvName;
+        district = districtlist.ResultList.FirstOrDefault(w => w.DistId == Int32.Parse(ListDataView.PlaceDistrict)).DistName;
+        subdistrict = subdistrictlist.ResultList.FirstOrDefault(w => w.SubdistId == Int32.Parse(ListDataView.PlaceSubDistrict)).SubdistName;
+
+        if(ListDataView != null)
+        {
+
+            _visible1 = true;
+        }
+        isloading = false;
+        StateHasChanged();
+    }
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    public async Task goView(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    public async Task GetListData()
+    {
+        ListData = await recordCarServices.GetAll();
+        ListDataSearch = ListData.OrderByDescending(o => o.CreateDate).ToList();
+    }
+    protected override async Task OnInitializedAsync()
+    {      
+        isloading = true;
+        await GetListData();
+        isloading = false;
+        StateHasChanged();
+    }
+
+    private void onChange(string value)
+    {
+        Console.WriteLine("onChange =>" + value);
+    }
+    private async Task submit(decimal? carHID)
+    {
+
+        if (string.IsNullOrEmpty(ListDataView.ChangeDesc))
+        {
+            var swalresult = await Swal.FireAsync(
+            "กรุณากรอกข้อมูล แจ้งแก้ไขก่อนบันทึก !",
+            null,
+            SweetAlertIcon.Warning
+            );
+            return;
+        }
+
+        ChangeDesViewModel data = new ChangeDesViewModel()
+        {
+            ChangeDesc = ListDataView.ChangeDesc,
+            DentalCarHId = carHID
+        };
+        var result = await recordCarServices.UpdateCarHChangeDes(data);
+
+        if (result == "success")
+        {
+            var swalresult = await Swal.FireAsync(
+            "บันทึกข้อมูลสำเร็จ !",
+            null,
+            SweetAlertIcon.Success
+            );
+            _visible1 = false;
+            await GetListData();
+            StateHasChanged();
+        }
+        else
+        {
+            var swalresult = await Swal.FireAsync(
+            $"บันทึกข้อมูลไม่สำเร็จ ! \n {result}",
+            null,
+            SweetAlertIcon.Error
+            );
+            StateHasChanged();
+        }
+    }
+
+    private void SearchData()
+    {
+        if (string.IsNullOrEmpty(searchText))
+        {
+            ListDataSearch = ListData.OrderByDescending(o => o.CreateDate).ToList();
+        }
+        else
+        {
+          // ListDataSearch = ListData.Where(w => w.PlaceName.Contains(searchText)).OrderByDescending(o => o.CreateDate).ToList();
+            ListDataSearch = ListData.Where(w => w.PlaceName.Contains(searchText) || 
+                                               ThaiDateFormat.FormatShotMonth(w.ServiceStartDate).Contains(searchText) ||
+                                               ThaiDateFormat.FormatShotMonth(w.ServiceEndDate).Contains(searchText) ||
+                                               ThaiDateFormat.FormatShotMonth(w.ServiceDate).Contains(searchText) ||
+                                                w.AllLicensePlate.Contains(searchText))
+                                    .OrderByDescending(o => o.CreateDate)
+                                    .ToList();
+        }
+    }
+
+
+}
+

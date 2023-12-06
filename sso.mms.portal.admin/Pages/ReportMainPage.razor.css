@@ -1,0 +1,49 @@
+﻿.card-body-main {
+    border-radius: 8px 8px 8px 8px;
+    background: #FFF;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    min-height: 750px;
+    padding: 0px;
+}
+.card-head {
+    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0px 0px;
+    background: #FFCC41;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
+}
+.header-txt {
+    color: #224183;
+    text-align: center;
+    font-size: 24px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.sub-txt {
+    color: #224183;
+    text-align: center;
+    font-size: 20px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 700;
+}
+.serch-bg {
+    background: #334396;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    height: 36px;
+    color: white;
+}
+.btn-bo-main {
+    border-radius: 4px;
+    border: 2px solid #334396;
+    background: #FFF;
+    color: #334396;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 600;
+}

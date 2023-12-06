@@ -1,0 +1,69 @@
+﻿@page "/adjRW/progressAI"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.AdjRW.ProgressAI
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+
+<LayoutIndex ShortToken="@shortToken" Page="adjRW">
+
+    @if (progressAIpage == 1)
+    {
+        <ProgressAIIndex IndexPage="@Indexpage" />
+    }
+    else if (progressAIpage == 2)
+    {
+        <ProgressAIList IndexPage="@Indexpage"/>
+    }
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+
+    public int progressAIpage = 1;
+
+    public async Task Indexpage(int usepage)
+    {
+        this.progressAIpage = usepage;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            userRole = await userRoleService.GetRoleByUserName(username);
+            await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+
+}

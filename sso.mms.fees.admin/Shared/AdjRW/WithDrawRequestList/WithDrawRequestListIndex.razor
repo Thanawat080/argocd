@@ -1,0 +1,70 @@
+﻿@using sso.mms.fees.admin.Shared.AdjRW.WithDrawRequestList.Tab
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ AdjRW</div>
+    </div>
+    <div class="p-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                @*                <li class="breadcrumb-item" aria-current="page" @onclick=@(() => goEdit(1))>
+                <span class="breadcum-sucress py-2">ช้อมูลสถานพยาบาลรายปี</span>
+                </li>*@
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการขอเบิก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail pe-2">รอบการนำเข้าข้อมูลประจำเดือน</div>
+                    <Input Style="width:auto;" Placeholder="เมษายน" @bind-Value="@txtValue" Disabled />
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-5">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail pe-2">วันที่ประมวลผล</div>
+                    <Input Style="width:auto;" Placeholder="02/04/2566" @bind-Value="@txtValue" Disabled />
+                </div>
+            </div>
+        </div>
+        <hr />
+        <Tabs @bind-ActiveKey="@activeKey" OnChange="OnTabChange" Animated>
+            <TabPane Tab="HMain = HCode" Key="1">
+                @if (Tab == 1)
+                {
+                    <HMainHCode_Tab1 UseTab="TakeUseTab"></HMainHCode_Tab1>
+                }
+                else if (Tab == 2)
+                {
+                    <HMainHCode_SubTab1 UseTab="TakeUseTab"></HMainHCode_SubTab1>
+                }
+            </TabPane>
+            <TabPane Tab="HMain <> HCode" Key="2">
+                <HMainHCode_Tab2></HMainHCode_Tab2>
+            </TabPane>
+        </Tabs>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string txtValue { get; set; }
+    string activeKey = "1";
+    int Tab = 1;
+
+    public async Task TakeUseTab(int Tab)
+    {
+        this.Tab = Tab;
+    }
+    void OnTabChange(string key)
+    {
+        Console.WriteLine($"tab change:{key}");
+    }
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+}

@@ -1,0 +1,69 @@
+﻿@page "/Methadone/DisbursementHistory"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+
+<LayoutIndex ShortToken="@shortToken" Page="Methadone">
+
+    @if (usepage == 1)
+    {
+        <MDDH_Index IndexPage="@((args) =>Indexpage(args.Item1 , args.Item2))"/>
+    }
+    else if (usepage == 2)
+    {
+        <MDDH_Detail IndexPage="@((args) =>Indexpage(args.Item1 , args.Item2))" PayCricle="@paycricle" />
+    } 
+
+</LayoutIndex>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+
+    public int usepage = 1;
+    public string paycricle;
+
+    public async Task Indexpage(int usepage , string PayCricle)
+    {
+        this.usepage = usepage;
+        this.paycricle = PayCricle;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            userRole = await userRoleService.GetRoleByUserName(username);
+            await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+
+}

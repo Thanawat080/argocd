@@ -1,0 +1,163 @@
+﻿
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3"> ค่าบริการทางการแพทย์กรณีการผ่าตัดแบบวันเดียวกลับ (ODS)</div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">กำหนดอัตราค่าบริการ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="py-4">
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="col-4 mms-media-start">
+                        <div class="">
+                            <Button Type="@ButtonType.Primary" Class="mms-text-header" >
+                                <i class="fa-solid fa-circle-plus"></i>
+                                เพิ่ม
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="col-4 " style="text-align:center">
+                      
+                    </div>
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ข้อมูลที่ต้องการค้นหา" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+            </div>
+            <Table DefaultExpandAllRows DataSource="data" DefaultExpandMaxLevel="1"  Bordered ScrollX="1000">
+
+                    <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Align="ColumnAlign.Center"  Width="10%"  />
+                    <PropertyColumn Property="c=>c.year" Title="ปี" Align="ColumnAlign.Center"  Width="50%"  />
+                    <PropertyColumn Property="c=>c.Date" Title="วันที่เริ่มต้นการใช้" Align="ColumnAlign.Center"  Width="17%"  />
+                    <PropertyColumn Property="c=>c.Amount" Title="วงเงิน(บาท)" Align="ColumnAlign.Center"  Width="17%" >
+                       @String.Format("{0:n}", context.Amount)
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.year" Title="" Align="ColumnAlign.Center"  Width="17%"  >
+                        @if (context.year  != (DateTime.Now.Year+543).ToString()) 
+                        {
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                        style="width:24px;height:24px; cursor:pointer;"  />
+                        }
+                        else
+                        {
+                            <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/edit.png"
+                            style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>Indexpage(2,context.year)) />
+                        }
+
+                    </PropertyColumn>
+
+               
+            </Table>
+        </div>
+    </div>
+</div>
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }
+        </style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public EventCallback<(int,string)> IndexPage { get; set; }
+
+    IEnumerable<Data> selectedRows;
+    int page;
+    bool openConfirmModal { get; set; }
+    bool openViewDataModal { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+    bool isloading = false;
+
+    List<Data> _data;
+
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+        public string year { get; set; }
+
+        public string Name { get; set; }
+
+        public int Amount { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+
+        public string Address { get; set; }
+
+    }
+
+    List<Data> data = new List<Data>();
+
+    string _selectedValue;
+
+   
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        data = new List<Data>
+    {
+        new Data {
+            HosStatus  = true,
+            Id = "1",
+            Key = "1",
+            year = "2566",
+            Date = "01/01/2566",
+            Amount =9600,
+        },
+        new Data {
+            HosStatus  = true,
+            Id = "2",
+            Key = "2",
+            year = "2565",
+            Date = "01/01/2565",
+            Amount =9300,
+        },
+    };
+       
+
+        isloading = false;
+        StateHasChanged();
+    }
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewDataModal(bool value)
+    {
+        openViewDataModal = value;
+    }
+    public async Task Indexpage(int usepage,string year)
+    {
+        this.page = usepage;
+        if (this.page == 2)
+        {
+           await IndexPage.InvokeAsync((2,year));
+        }
+    }
+}

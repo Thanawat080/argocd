@@ -1,0 +1,624 @@
+﻿@page "/editnews"
+@using Blazored.LocalStorage;
+@using MatBlazor
+@using AntDesign
+@inject NavigationManager Navigation;
+@inject IJSRuntime JSRuntime;
+@using System.Globalization;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.news.ViewModels;
+@using sso.mms.news.Services;
+@using sso.mms.helper.Utility;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.portal.admin.ViewModels
+@using sso.mms.login.Services;
+@inject NewsService newsService
+@inject IHttpClientFactory ClientFactory
+@inject ILocalStorageService localStorage
+@inject UserRoleService userRoleService
+@inject SweetAlertService Swal;
+<style>
+    :root {
+        --mdc-theme-primary: #334396;
+    }
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+    .mdc-paginator-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+        width: 100%;
+    }
+
+    body {
+        background: #F5F3F7;
+    }
+
+    .text-title {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 150%;
+        letter-spacing: -0.019em;
+        color: #334396;
+    }
+
+    .f20 {
+        font-size: 20px;
+    }
+
+    .text-detail {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 150%;
+        letter-spacing: -0.019em;
+        color: #334396;
+    }
+
+    .text-detail-add {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 150%;
+        letter-spacing: -0.019em;
+        color: #fff;
+    }
+
+    .serch-bg {
+        background: #334396;
+        flex: none;
+        order: 1;
+        align-self: stretch;
+        flex-grow: 0;
+        height: 36px;
+        color: white;
+    }
+
+    .mdc-table th {
+        font-size: 1.143rem;
+        color: #334396;
+        border: 2px solid rgb(255 255 255);
+        padding: 12px 12px 12px 24px;
+        background: #FFCC41;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 27px;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .mdc-table, .mdc-table--striped {
+        width: 100%;
+        max-width: 100%;
+        background-color: transparent;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: inline-block;
+        overflow-x: auto;
+        margin: 8px 0 32px;
+        border: 0px solid rgba(0,0,0,.1);
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        align-items: center;
+        color: #1A141F;
+    }
+
+        .mdc-table td {
+            border: 2px solid white;
+            padding: 12px 12px 12px 24px;
+        }
+
+    tr.mdc-table-footer-row, tr.mdc-table-row {
+        height: 48px;
+        background: #a8a2ad17;
+    }
+
+    .mdc-table--striped tr:nth-of-type(odd) {
+        background: #00000012;
+    }
+
+    .from-style {
+        background: #FFFFFF;
+        border-radius: 8px;
+    }
+
+    .mdc-select__dropdown-icon {
+        margin-left: 1px;
+        margin-right: 1px;
+        display: inline-flex;
+        position: relative;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+
+    .mdc-select .mdc-select__anchor {
+        height: 56px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+
+    .mat-paginator .mat-paginator-container .mat-paginator-page-size {
+        display: flex;
+        margin-right: 8px;
+        align-items: center
+    }
+
+    .mat-paginator .mat-paginator-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+        background-color: #ffffff;
+        width: 80px;
+        height: 30px;
+        border-radius: 10px;
+        border: 0px solid #D4D2D5;
+    }
+
+    .mdc-paginator-page-size {
+        line-height: 56px;
+        display: flex;
+        align-items: center;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .btn-bo-main {
+        border-radius: 4px;
+        border: 2px solid #334396;
+        background: #FFF;
+        color: #334396;
+        font-size: 18px;
+        font-family: Noto Sans Thai;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+
+</style>
+
+
+    <NavbarLoginAdmin ShortToken=@shortToken PageCode="@codeName"></NavbarLoginAdmin>
+
+<MediaStyle></MediaStyle>
+
+
+<br />
+<div class="container" style="margin-bottom: 2%;padding-top:1%;">
+
+    <div class="card d-flex" style="border-radius:10px; min-height:800px;border:0px solid;box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
+        <div style="margin:34px;">
+
+            <div class="text-title pt-4 pb-4">@Title</div>
+
+
+            <div class="d-flex justify-content-between mb-3">
+                <div class="input-group">
+                    @if (permit.isRoleCreate == true)
+                    {
+                        <button class="btn btn-primary serch-bg text-detail-add" style="height: 48px;width: 90px;" @onclick="()=>addnewsadmin(int.Parse(getNewsMid))">
+                            <i class="fa fa-plus" aria-hidden="true"></i> เพิ่ม
+                        </button>
+                    }
+                </div>
+                <div class="input-group w-50">
+                    <input type="search" class="form-control" style="height: 48px;" placeholder="ข้อมูลที่ต้องการค้นหา" aria-label="Search" aria-describedby="search-addon" @bind-value="@seachTerm" @onkeypress="@SeachNewsDatakeypass" />
+                    <button type="button" @onclick="@SeachNewsData" class="btn btn-outline-primary serch-bg" style="height: 48px;width:48px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+           
+            <MatTable Items="@responseNewsT" LoadInitialData="true" Striped="true"
+                      ShowPaging="false" @bind-CurrentPage="@pageIndex" 
+                      RequestApiOnlyOnce="true" 
+                      AllowSelection="true" 
+                      RowClass="tester" 
+                      PageSize="@pageSize"
+                      >
+                <MatTableHeader>
+                    <th><div class="text-center" style="border-radius:10px 0 0 0;width:90px">ลำดับ</div></th>
+                     @if (getNewsMid == "1")
+                    {
+                          <th><div class="text-center" style="width: 180px">หัวข้อ</div></th>
+                    }else if (getNewsMid == "2"){
+                        <th><div class="text-center" style="width: 300px">หัวข้อ</div></th>
+                    }
+                    
+                    <th><div class="text-center" style="width:120px">แท็ก</div></th>
+                    <th><div class="text-center" style="width:120px">ชื่อ-นามสกุล</div></th>
+                    <th><div class="text-center" style="width : 120px">ตำแหน่ง</div></th>
+                    <th><div class="text-center" style="width : 120px">หน่วยงาน</div></th>
+                    @if (getNewsMid == "1")
+                    {
+
+                    <th><div class="text-center" style="width : 120px">วันที่เริ่มต้นประกาศ</div></th>
+                    <th><div class="text-center" style="width : 120px">วันที่สิ้นสุดประกาศ</div></th>
+                    }
+                    <th><div class="text-center" style="border-radius:0 10px 0 0 ; width:90px"></div></th>
+                </MatTableHeader>
+                <MatTableRow>
+
+                    <td >@(responseNewsT.IndexOf(context) + 1)</td>
+                    <td class="text-truncate" >@context.Title</td>
+                    <td >@(context.NewsTagLists.FirstOrDefault() != null ? context.NewsTagLists.FirstOrDefault().TagName : "")</td>
+                    <td class="text-truncate" >@context.Fname &nbsp; @context.Lname</td>
+                    <td class="text-center"  >@context.PosName</td>
+                    <td class="text-center" >@context.DepName</td>
+                    @if (getNewsMid == "1")
+                    {
+                    <td class="text-center" >@ThaiDateFormat.FormattedDate(context.CreateDate)</td>
+                    <td class="text-center" >@ThaiDateFormat.FormattedDate(@context.UpdateDate)</td>
+                     
+                     }
+                    @*<td style="width:200px">
+                    <img class="p-1" src="helper_shared/PortalAdminImage/eye.png" @onclick="()=>nextpage(context.Id)" />
+                    <img class="p-1" src="helper_shared/PortalAdminImage/edit.png" @onclick="()=>goEditpage(context.Id,int.Parse(getNewsMid))" />
+                    <img class="p-1" src="helper_shared/PortalAdminImage/download.png" />
+                    </td>*@
+                    @if (Title != null && context.NewsMId == 2)
+                    {
+                        <td >
+                            @if (permit.isRoleRead == true)
+                            {
+                                <img class="p-1" src="helper_shared/PortalAdminImage/eye.png" data-bs-toggle="tooltip" data-bs-placement="bottom" title="ดู" @onclick="()=>nextpage(context.Id)" />
+                            }
+                            @if (permit.isRoleUpdate == true)
+                            {
+                                <img class="p-1" src="helper_shared/PortalAdminImage/edit.png" data-bs-toggle="tooltip" data-bs-placement="bottom" title="แก้ไข" @onclick="()=>goEditpage(context.Id,int.Parse(getNewsMid))" />
+                            }
+                            @if (permit.isRolePrint == true)
+                            {
+                                <img class="p-1" src="helper_shared/PortalAdminImage/download.png" data-bs-toggle="tooltip" data-bs-placement="bottom" title="ดาวน์โหลด" style="display:none" />
+                            }                            @*<img src="helper_shared/PortalAdminImage/download.png" />*@
+                        </td>
+                    }
+                    else
+                    {
+                        <td >
+                            @*@if (permit.isRoleRead == true)
+                        {
+                        <img class="p-1" src="helper_shared/PortalAdminImage/eye.png" @onclick="() => toPDFPreview(context.UploadPath)" />
+                        }*@
+                            @* @if (permit.isRoleUpdate == true)
+                        {
+                        <img class="p-1" src="helper_shared/PortalAdminImage/edit.png" @onclick="()=>goEditpage(context.Id,int.Parse(getNewsMid))" />
+                        }*@
+                            @if (permit.isRolePrint == true)
+                            {
+                                <a class="p-1" @onclick="() => toPDFPreview(context.UploadPath)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="แสดงรายละเอียด" download><img src="helper_shared/PortalAdminImage/eye.png" /></a>
+                            }
+                            @if (permit.isRoleDelete == true)
+                            {
+                                <img style="width:32px;height:32px;" src="helper_shared/icon_sso/delete.png" data-bs-toggle="tooltip" data-bs-placement="bottom" title="ลบ" @onclick="()=> opennmodaldelete(context)" />
+                            }
+                        </td>
+                    }
+
+                </MatTableRow>
+            </MatTable>
+           
+            <AntDesign.Pagination ShowSizeChanger
+                                   OnShowSizeChange="OnShowSizeChange"
+                                   OnChange="OnPage"
+                                   DefaultCurrent="3"
+                                   PageSize=@pageSize
+                                   Total="@responseNewsT.Count()" />
+
+            <div class="d-flex justify-content-end align-content-end align-items-center py-4 mt-2">
+                <button @onclick="GoToMainmenu" class="btn btn-secondary btn-bo-main px-4 p-2">
+                    <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<sso.mms.helper.Components.Footer.Footer></sso.mms.helper.Components.Footer.Footer>
+@if (isloading == true)
+{
+    <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage>
+}
+@if (modaldelete)
+{
+    <ModalDelete OnClose="@DeleteNews" title="ยืนยันการลบ" description="">
+    </ModalDelete>
+}
+@code {
+    public bool isloading = false;
+    private string formattedDate;
+    public string? env = ConfigureCore.ConfigENV;
+    public string seachTerm = null;
+    private string prefixadmin = "";
+    private string url = "";
+    int pageSize = 5;
+    int pageIndex = 1;
+    int rowNo = 0;
+    string Title;
+    public UserRole userRole;
+    public MenuPerMit permit = new MenuPerMit();
+
+    [Parameter]
+    public string NewsMid { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "newsmid")]
+    public string getNewsMid { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "newstid")]
+    public string getNewsTid { get; set; } = "";
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string shortToken { get; set; } = "";
+    public string? codeName = "";
+
+
+    void OnPage(PaginationEventArgs e)
+    {
+        Console.WriteLine(e);
+        pageSize = e.PageSize;
+        pageIndex = e.Page;
+    }
+
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+    private async void nextpage(int id)
+    {
+        url = ConfigureCore.redirectsNews;
+        string urlDetail = "detail?param=" + id.ToString();
+
+        //await JSRuntime.InvokeVoidAsync("open", url + urlDetail);
+        Navigation.NavigateTo(url + "detail?param=" + id.ToString() + $"&token={shortToken}&mid={getNewsMid}&type=1");
+    }
+
+    private List<NewsMView>? responseNews = new List<NewsMView>();
+    private List<NewsTView>? responseNewsT = new List<NewsTView>();
+    private List<dynamic> listTable = new List<dynamic>();
+
+    public NewsTView selectedNewsT = new NewsTView();
+    public bool modaldelete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        responseNewsT = new List<NewsTView>();
+
+        if (env == "Development")
+        {
+            prefixadmin = "";
+        }
+        else
+        {
+            prefixadmin = "/admin";
+        }
+
+        isloading = true;
+
+        responseNews = await newsService.GetNewsM(Int32.Parse(getNewsMid));
+
+        @foreach (var item in responseNews!.Select((value, i) => (value, i)))
+        {
+            Title = item.value.Name;
+
+            foreach (var newsT in responseNews![item.i].NewsTs.Select((value, i) => (value, i)).OrderByDescending(o => o.value.UpdateDate))
+            {
+
+                responseNewsT.Add(newsT.value);
+            }
+
+        }
+        if (getNewsMid == "1")
+        {
+            codeName = "DSP0201";
+        }
+        else
+        {
+            codeName = "DSP0301";
+        }
+        userRole = await localStorage.GetItemAsync<UserRole>("userRole");
+        if (userRole != null && userRole.role != null)
+        {
+            try
+            {
+                if (getNewsMid == "1")
+                {
+                    permit = await userRoleService.GetUserAuth(userRole, "PSMSS005", "PORTAL-SSO");
+                }
+                if (getNewsMid == "2")
+                {
+                    permit = await userRoleService.GetUserAuth(userRole, "PSMSS006", "PORTAL-SSO");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+        StateHasChanged();
+        isloading = false;
+    }
+
+    public async Task toPDFPreview(string filePath)
+    {
+        //  Navigation.NavigateTo(url + "/mainmenu" + $"?token={shortToken}");
+        await JSRuntime.InvokeVoidAsync("open", $"{filePath}", "_blank");
+
+    }
+
+    public string fetchPDFDownload(string filePath)
+    {
+
+        return $"{filePath}";
+
+    }
+
+    private void addnewsadmin(int id)
+    {
+        Navigation.NavigateTo(prefixadmin + "/addnewsadmin" + $"?newsmid=" + id + "&token=" + shortToken);
+    }
+
+    public void GoToMainmenu()
+    {
+        Navigation.NavigateTo(prefixadmin + "/mainmenu" + $"?token={shortToken}");
+    }
+
+    private void goEditpage(int idT, int idM)
+    {
+        Navigation.NavigateTo(prefixadmin + "/addnewsadmin" + $"?newsmid=" + idM + "&newstid=" + idT + "&token=" + shortToken);
+    }
+
+    public async void SeachNewsData()
+    {
+        isloading = true;
+        if (seachTerm != null)
+        {
+            seachTerm = seachTerm.Trim();
+
+        }
+       
+        if (String.IsNullOrEmpty(seachTerm))
+        {
+           
+        //    await Swal.FireAsync(
+        //   "กรุณากรอกข้อมูลให้ถูกต้อง",
+        //    null,
+        //    SweetAlertIcon.Warning
+        //    );
+            responseNews = await newsService.GetNewsM(Int32.Parse(getNewsMid));
+
+            @foreach (var item in responseNews!.Select((value, i) => (value, i)))
+            {
+                Title = item.value.Name;
+
+                foreach (var newsT in responseNews![item.i].NewsTs.Select((value, i) => (value, i)).OrderByDescending(o => o.value.UpdateDate))
+                {
+
+                    responseNewsT.Add(newsT.value);
+                }
+
+            }
+        }
+        else
+        {
+            responseNews = new List<NewsMView>();
+            responseNewsT = new List<NewsTView>();
+            var data = new SearchModel
+                {
+                    newsMid = Int32.Parse(getNewsMid),
+                    searchTerm = this.seachTerm.Trim().ToLower()
+                };
+            responseNews = await newsService.SearchDataService(data);
+            @foreach (var item in responseNews!.Select((value, i) => (value, i)))
+            {
+                Title = item.value.Name;
+                foreach (var newsT in responseNews![item.i].NewsTs.Select((value, i) => (value, i)))
+                {
+                    responseNewsT.Add(newsT.value);
+                }
+            }
+            pageIndex = 1;
+            
+           
+
+        }
+        isloading = false;
+        StateHasChanged();
+    }
+
+    public async void SeachNewsDatakeypass(KeyboardEventArgs e)
+    {
+        await Task.Delay(1000);
+
+        if (e.Key == "Enter")
+        {
+            SeachNewsData();
+            StateHasChanged();
+        }
+    }
+
+    public void opennmodaldelete(NewsTView newT)
+
+    {
+        selectedNewsT = newT;
+        modaldelete = true;
+        StateHasChanged();
+    }
+
+    public async void DeleteNews(bool isOk)
+    {   
+        if(isOk == true)
+        {
+            isloading = true;
+            StateHasChanged();
+            await newsService.DeleteDataService(selectedNewsT);
+
+            OnInitializedAsync();
+            isloading = false;
+            modaldelete = false;
+            StateHasChanged();
+        }
+        else
+        {
+            modaldelete = false;
+            StateHasChanged();
+        }
+
+
+    }
+
+}

@@ -1,0 +1,75 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ AdjRW</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page" style="cursor:pointer;">
+                    <span class="breadcum-title py-2">ผลการประมวลด้วย AI</span>
+                </li>
+@*                 <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงหัวข้อรายงาน</span>
+                </li> *@
+            </ol>
+        </nav>
+        <hr />
+
+        <div class="row pb-3">
+            <div class="mms-txt-require col-md-12 col-lg-8">
+            </div>
+            <div class="w-30 col-md-12 col-lg-4">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา..." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table Class="zebra-striped-table" Bordered DataSource="data" TItem="Data">
+             <ColumnDefinitions>
+                 <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" Title="ลำดับ" Width="7%" />
+                 <PropertyColumn Property="c=>c.period" Align="ColumnAlign.Center" Title="งวดที่" />
+                 <PropertyColumn Property="c=>c.startDate" Align="ColumnAlign.Center" Title="วันที่นำเข้าข้อมูล" />
+                 <PropertyColumn Property="c=>c.endDate" Align="ColumnAlign.Center" Title="วันที่ประมวลผล" />
+                 <PropertyColumn Property="c=>c.status" Align="ColumnAlign.Center" Title="สถานะ" />
+                 <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" Title="" Width="5%">
+                     <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/eye.png"
+                          style="width:24px;height:24px; cursor:pointer;" @onclick="(() => changePage(2))" />
+                 </PropertyColumn>
+             </ColumnDefinitions>
+             <PaginationTemplate>
+                 <Pagination Class="pt-2"
+                             Total="context.Total"
+                             PageSize="context.PageSize"
+                             Current="context.PageIndex"
+                                        ShowSizeChanger
+                             OnChange="context.HandlePageChange" />
+             </PaginationTemplate>
+         </Table>
+
+     </div>
+ </div>
+
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    /*-- Data --*/
+    public record Data(int Id, string period, string startDate, string endDate, string status);
+
+    public Data[] data =
+    {
+        new(1,"2566/5", "25/05/2566", "26/05/2566", "รอประมวลผล"),
+        new(2,"2566/4", "25/04/2566", "26/04/2566", "รอประมวลผล"),
+        new(3,"2566/3", "25/03/2566", "26/03/2566", "รอประมวลผล"),
+        new(4,"2566/2", "25/02/2566", "26/02/2566", "รอประมวลผล"),
+        new(5,"2566/1", "25/01/2566", "26/01/2566", "รอประมวลผล"),
+
+    };
+
+    public async Task changePage(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+}

@@ -1,0 +1,77 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Style="width: 1200px">
+ @*    <div style="padding:30px; display: flex; flex-direction: column;margin-bottom: 50px;"> *@
+        <div class="mms-nav-title">
+            <div class="mms-text-title px-4 py-3">รายละเอียดผลการได้ยิน</div>
+        </div>
+
+        @for (int i = 1; i < 5; i++){
+        <div class="mb-3">
+                <Card Bordered="false" Title=@($"ข้อมูลการตรวจปี {66 - i}") Style="width: 100%">
+            <Body>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            ผลการตรวจ : ปกติ
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            โรงพยาบาล : โรงพยาบาลลานนา 1
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            วันที่ตรวจ : 13 ม.ค.66
+                        </div>
+                    </div>
+                </div>
+
+            </Body>
+
+        </Card>
+        </div>
+        }
+    <Graph _visible=@openGraphModal OnClose="@OpenGraphModal"></Graph>
+@*     </div> *@
+</Modal>
+
+
+
+@code {
+    string title = "";
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    bool openGraphModal { get; set; }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleModalClick()
+    {
+        // Handle clicks within the modal
+        openGraphModal = true;
+    }
+
+    public void OpenGraphModal(bool value)
+    {
+        openGraphModal = value;
+    }
+}

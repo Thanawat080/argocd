@@ -1,0 +1,75 @@
+﻿@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using sso.mms.fees.ext
+@using sso.mms.fees.ext.Shared
+@using AntDesign
+@using sso.mms.helper.Utility
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using System.Text;
+@using AntDesign.TableModels;
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Mvc;
+@using sso.mms.fees.ext.Components
+@using sso.mms.helper.Utility
+@*Import Layout*@
+@using sso.mms.fees.ext.Layouts
+
+
+@*PromoteHelth*@
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.BookHealthCheckup
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.DisbursementHistory
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.DetermineReferenceValue
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.RecordChecklist
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.Reports
+@using sso.mms.fees.api.Entities.PromoteHealth;
+@using sso.mms.fees.api.ViewModels.PromoteHealth;
+@using sso.mms.fees.ext.ViewModels.PromoteHealth;
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.DetermineDoctor;
+@using sso.mms.fees.ext.Shared.PromoteHealthExt.PayOrderHistory;
+
+@*Disability*@
+
+@using sso.mms.fees.ext.Shared.Disability.WithdrawalHistory
+@using sso.mms.fees.ext.Shared.Disability.Report
+
+@*PromoteHelthVaccination*@
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.RecordChecklist
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.RecordChecklistSubInfo
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.ProactiveVaccinationList
+
+
+@*OrganTransPlantation*@
+@using sso.mms.fees.ext.Shared.OrganTransplantation.RightCheck
+@using sso.mms.fees.ext.Shared.OrganTransplantation.DisbursementRecord
+@using sso.mms.fees.ext.Shared.OrganTransplantation.DisbursementLists
+@using sso.mms.fees.ext.Shared.OrganTransplantation.DisbursementHistory
+@using sso.mms.fees.ext.Shared.OrganTransplantation.Report
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.WithdrawalsList
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.WithdrawalsListHistory
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.HealthPromoReport
+@using sso.mms.fees.ext.Shared.HealthPromoVaccinationExt.HealthPromoSetting
+
+@*72Hours*@
+@using sso.mms.fees.ext.Shared._72Hours.RecordWithdrawal
+@using sso.mms.fees.ext.Shared._72Hours.SentWithdrawal
+@using sso.mms.fees.ext.Shared._72Hours.Disbursementhistory
+@using sso.mms.fees.ext.Shared._72Hours.Report
+
+@*Covid19*@
+@using sso.mms.fees.ext.Shared.Covid19.DisbursementHistory
+@using sso.mms.fees.ext.Shared.Covid19.Report
+
+@*Methadone*@
+@using sso.mms.fees.ext.Shared.Methadone.RecordWithdrawal
+@using sso.mms.fees.ext.Shared.Methadone.DisbursementHistory
+@using sso.mms.fees.ext.Shared.Methadone.Reports
+
+@*MedicalSpeciaList*@
+@using sso.mms.fees.ext.Shared.MedicalSpeciaList.DisbursementHistoryMedic
+@using sso.mms.fees.ext.Shared.MedicalSpeciaList.ReportMedic

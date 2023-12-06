@@ -1,0 +1,250 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">สมุดพกสุขภาพของผู้ประกันตน/สืบค้นข้อมูลผู้ประกันตน   </div>
+    </div>
+    <div class="container py-4">
+        <div class="justify-content-center align-content-center">
+            <div class="mms-media-center">
+                <img src="helper_shared/FeesExtImage/Iden.jpg" style="width:258px">
+            </div>
+
+            <div class="d-flex flex-row mb-3 justify-content-center">
+                <div class="p-2">
+                    <Select TItem="Item"
+                            TItemValue="string"
+                            DataSource="@_items"
+                    @bind-Value="@_selectedValue"
+                            ValueName="@nameof(Item.Value)"
+                            LabelName="@nameof(Item.Name)"
+                                            DefaultActiveFirstOption
+                             Style="width: 200px;"
+                             OnSelectedItemChanged="OnSelectedItemChangedHandler">
+                         <ItemTemplate>
+                             <span>@((context as Item).DisplayName)</span>
+                        </ItemTemplate>
+                    </Select>
+                </div>
+                <div class="p-2">
+                    <Space Direction="@DirectionVHType.Vertical" Class="">
+                        <SpaceItem>
+                            <Input Placeholder="โปรดระบุการค้นหา" @bind-Value=searchTerm />
+                        </SpaceItem>
+
+                    </Space>
+                </div>
+                <div class="p-2"><Button Type="@ButtonType.Primary" OnClick="@(()=> @SearchData())"><i class="fa-solid fa-magnifying-glass"></i></Button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<SearchList _visible="@openSearchListModal" OnClose="@OpenSearchListModal" usePage="IndexPage" propListOfData="@listOfDataSearch"></SearchList>
+<SearchListByName _visible="@openSearchListByNameModal" usePage="IndexPage" OnClose="@OpenSearchListByNameModal" propListOfData="@listOfDataSearch"></SearchListByName>
+
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@using sso.mms.fees.admin.Shared.PocketBook.Modals
+@using sso.mms.fees.admin.Shared.PocketBook.ViewModal;
+
+@code {
+    [Parameter]
+    public EventCallback<int> usePage { get; set; }
+
+    public async Task IndexPage(int usepage)
+    {
+        await usePage.InvokeAsync(usepage);
+    }
+
+    public class Item
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+    }
+
+    List<Item>? _items;
+    string? _selectedValue;
+    Item? _selectedItem;
+
+    bool openSearchListModal { get; set; }
+    bool openSearchListByNameModal { get; set; }
+
+
+    private string? searchTerm;
+
+    bool ModalAlert = false;
+    string Placeholder = "วว/ดด/ปปปป";
+    string style = "height:30px;line-height:30px;";
+    List<MockDataItem> listOfDataSearch = new List<MockDataItem>();
+
+    bool loading = false;
+
+    List<MockDataItem> listOfData = new List<MockDataItem>
+       {
+        new MockDataItem
+        {
+            Id = 1,
+            CitizenId = "AX10001",
+            Name = "สุจินดา ญาดา",
+            InsuredID =  "10001",
+            Passport = "1234",
+            WorkPermitID = "permit11",
+            NoContent = "",
+        },
+         new MockDataItem
+        {
+            Id = 2,
+            Name = "สุจินดา ญาดา",
+            CitizenId = "AX10002",
+            InsuredID =  "10002",
+            Passport = "PDx",
+            WorkPermitID = "permit12",
+            NoContent = "",
+        },
+         new MockDataItem
+        {
+            Id = 3,
+            Name = "พร้อมพงศ์ สุขภัณฑ์",
+            CitizenId = "AX10003",
+            InsuredID =  "10003",
+            Passport = "PDx",
+            WorkPermitID = "permit13",
+            NoContent = "",
+        },
+         new MockDataItem
+        {
+            Id = 4,
+            Name = "พร้อมพงศ์ สุขภัณฑ์",
+            CitizenId = "AX10004",
+            InsuredID =  "10004",
+            Passport = "PID10004",
+            WorkPermitID = "permit14",
+            NoContent = "",
+        },
+         new MockDataItem
+        {
+            Id = 5,
+            Name = "Alexander Grayham",
+            CitizenId = "AX10005",
+            InsuredID =  "10005",
+            Passport = "PID10005",
+            WorkPermitID = "permit15",
+            NoContent = "",
+        },
+         new MockDataItem
+        {
+            Id = 6,
+            Name = "Joseph Biyanka",
+            CitizenId = "AX10006",
+            InsuredID =  "10006",
+            Passport = "PID10005",
+            WorkPermitID = "permit16",
+            NoContent = "",
+        },
+     };
+
+
+
+
+    public async Task goPage(int item)
+    {
+        await usePage.InvokeAsync(item);
+    }
+
+    public void OpenSearchListModal(bool value)
+    {
+        openSearchListModal = value;
+    }
+
+    public void OpenSearchListByNameModal(bool value)
+    {
+        openSearchListByNameModal = value;
+    }
+
+    protected override void OnInitialized()
+    {
+        _items = new List<Item>
+        {
+            new Item { Value = "เลขบัตรประชาชน", Name = "เลขบัตรประชาชน", DisplayName = "เลขบัตรประชาชน" },
+            new Item { Value = "ชื่อ-นามสกุล", Name = "ชื่อ-นามสกุล", DisplayName = "ชื่อ-นามสกุล"},
+            new Item { Value = "Passport", Name = "Passport", DisplayName = "Passport"},
+            new Item { Value = "ใบอนุญาติทำงาน", Name = "ใบอนุญาติทำงาน", DisplayName = "ใบอนุญาติทำงาน"},
+            new Item { Value = "เลขประกันสังคม", Name = "เลขประกันสังคม", DisplayName = "เลขประกันสังคม"}
+        };
+
+    }
+
+    public async Task goEdit(int item)
+    {
+        await usePage.InvokeAsync(item);
+    }
+
+    private void OnSelectedItemChangedHandler(Item value)
+    {
+        _selectedItem = value;
+        Console.WriteLine($"selected: ${value?.Name}");
+    }
+
+    public void SearchData()
+    {
+
+        // try
+        // {
+        //     if (searchTerm != null)
+        //     {
+
+        //         listOfDataSearch = listOfData.Where(w => w.Name.Contains(searchTerm.ToLower())).ToList();
+        //     }
+        //     else
+        //     {
+        //         listOfDataSearch = new List<ItemData>();
+        //     }
+
+        //     if (_selectedValue == "เลขบัตรประชาชน")
+        //     {
+        //         openViewModal = true;
+        //     }
+        //     else
+        //     {
+
+        //         openViewModal = true;
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     Console.WriteLine(ex);
+        // }
+
+
+
+        if (_selectedValue == "ชื่อ-นามสกุล" && searchTerm != null)
+        {
+            listOfDataSearch = listOfData.Where(w => w.Name.Contains(searchTerm.ToLower())).ToList();
+            openSearchListByNameModal = true;
+        }
+        else if (_selectedValue == "เลขบัตรประชาชน" && searchTerm != null)
+        {
+            listOfDataSearch = listOfData.Where(w => w.CitizenId.Contains(searchTerm.ToLower())).ToList();
+            openSearchListModal = true;
+        }
+        else if (_selectedValue == "ใบอนุญาติทำงาน" && searchTerm != null)
+        {
+            listOfDataSearch = listOfData.Where(w => w.WorkPermitID.Contains(searchTerm.ToLower())).ToList();
+            openSearchListModal = true;
+        }
+        else if (_selectedValue == "เลขประกันสังคม" && searchTerm != null)
+        {
+            listOfDataSearch = listOfData.Where(w => w.InsuredID.Contains(searchTerm.ToLower())).ToList();
+            openSearchListModal = true;
+        }
+        else if (_selectedValue == "Passport" && searchTerm != null)
+        {
+            listOfDataSearch = listOfData.Where(w => w.Passport.Contains(searchTerm.ToLower())).ToList();
+            openSearchListModal = true;
+        }
+
+    }
+}

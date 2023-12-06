@@ -1,0 +1,258 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ทันตกรรม</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+               
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">  สร้างใบคำสั่งจ่าย </span>
+                </li>
+
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="row">
+            <div class="d-flex ">
+              
+                <div class="col-6">
+                    <div class="d-flex">
+                        <div class="col-4 ">
+                            <div class="mms-txt-headdetail mms-media-center">วันที่ประมวลผล : </div>
+                        </div>
+                        <div class="col-8">
+                           <Input Disabled="@IsDisabled" Value=@txtValue />
+                        </div>
+                        
+                    </div>
+                </div>
+              
+                <div class="col-6">
+                    <div class="d-flex">
+                        <div class="col-4 ">
+                            <div class="mms-txt-headdetail mms-media-center ">ประมวลผลโดย : </div>
+                        </div>
+                        <div class="col-8">
+                            <Input Disabled="@IsDisabled" Value=@txtValue />
+                        </div>
+
+                    </div>
+                </div>
+              
+            </div>
+        </div>
+         <br />
+        <div class="row">
+            <div class="d-flex  "> 
+                <div class="col-12 mms-media-end">
+                
+                            <Button Type="@ButtonType.Primary"Style="font-size:16px;width:211.33px;" Class="mms-text-header" @onclick=@(()=>OpenConfirmModal(true)) Disabled="@(selectedRows == null || selectedRows.Count() == 0 ? true:false)">
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                                อนุมัติคำสั่งจ่าย
+                            </Button>
+                         &nbsp;
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-4">
+                        <SpaceItem>
+                            <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <br />
+        <Table DataSource="listOfData" Bordered ScrollX="800" @bind-SelectedRows="selectedRows">
+                <Selection Width="7%" Key="@context.Number" Type="@selectionType" Disabled="@(context.Number == "Disabled User")" />
+                <PropertyColumn Width="7%" Align="ColumnAlign.Center" Property="c=>c.Id" Title="ลำดับ">@context.Id</PropertyColumn>
+                <PropertyColumn Width="15%" Align="ColumnAlign.Center" Property="c=>c.Number" Title="เลขที่ชุดคำสั่งจ่าย">@context.Number</PropertyColumn>
+                <PropertyColumn Width="15%" Align="ColumnAlign.Center" Property="c=>c.Count" Title="จำนวนสถานพยาบาล"> @context.Count</PropertyColumn>
+                <PropertyColumn Width="15%" Align="ColumnAlign.Center" Property="c=>c.CountRecord" Title="จำนวนรายการเบิก"> @context.CountRecord</PropertyColumn>
+                <PropertyColumn Width="10%" Align="ColumnAlign.Center" Property="c=>c.Price" Title="ยอดเงินรวม(บาท)"> @context.Price</PropertyColumn>
+                <PropertyColumn Width="10%" Align="ColumnAlign.Center" Property="c=>c.Status" Title="สถานะ" Style="@GetTextColor(context.Status)"> @context.Status</PropertyColumn>
+            
+            <PropertyColumn Width="5%" Align="ColumnAlign.Center" Property="c=>c.Status" Title="">
+
+                    @if (context.Status == "รอส่งลงลายมือชื่อ")
+                {
+                <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                    style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>goPage(2)) />
+
+
+                }
+                else if (context.Status == "รอลงลายมือชื่อ")
+                {
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;"  />
+                }
+                else if (context.Status == "ลงลายมือชื่อสำเร็จ")
+                {
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OpenOrderSucces(true)) />
+                }
+                
+            </PropertyColumn>
+        </Table>
+       
+
+    </div>
+</div>
+<ConfirmModal _visible=@openConfirmModal OnClose="@OpenConfirmModal"></ConfirmModal>
+@*<ViewModal _visible=@openViewModal OnClose="@OpenViewModal"></ViewModal>*@
+<ViewOrderSuccesModal _visible=@openOrderSucces OnClose="@OpenOrderSucces"></ViewOrderSuccesModal>
+
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.PaymentOrder.Modals
+@using System.ComponentModel;
+    @code {
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    string Placeholder = "วว/ดด/ปปปป";
+    string selectionType = "checkbox";
+    bool _visible = false; 
+    bool viewdata = false;
+    string title = "รายละเอียดข้อมูล";
+    private Model model = new Model();
+    bool loading = false;
+    private Form<Model> _form;
+    bool openConfirmModal { get; set; }
+    bool openViewModal { get; set; }
+    bool openOrderSucces { get; set; }
+    protected bool IsDisabled { get; set; } = true;
+    IEnumerable<ItemData> selectedRows;
+    string txtValue { get; set; } = "xxxx";
+
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    public async Task goPage(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    RenderFragment okbutton =
+    @<div style="color:#fff;">
+        <Icon Type="save" Theme="outline" />
+        บันทึก
+    </div>;
+    RenderFragment canclebutton =@<div>
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+        </div>
+    ;
+
+    public class Todo
+    {
+        public int UserId { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public bool Completed { get; set; }
+
+        public Todo()
+        {
+        }
+    }
+
+    Todo[] todos;
+
+    List<ItemData> listOfData = new List<ItemData>
+    {
+        new ItemData
+        {
+            Id = 1,
+            Number ="10001",
+            Count = 3,
+            CountRecord = 5,
+            Price = 4500,
+            Status ="รอส่งลงลายมือชื่อ"
+
+        },
+         new ItemData
+        {
+            Id = 1,
+            Number ="10002",
+            Count = 3,
+            CountRecord = 6,
+            Price = 5400,
+            Status ="รอลงลายมือชื่อ"
+
+        }, new ItemData
+        {
+            Id = 1,
+            Number ="10003",
+            Count = 5,
+            CountRecord = 15,
+            Price = 13500,
+            Status ="ลงลายมือชื่อสำเร็จ"
+
+        },
+
+    };
+    string _selectedValue;
+    protected override void OnInitialized()
+    {
+        
+
+    }
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Number { get; set; }
+
+        public int Count { get; set; }
+        public int CountRecord { get; set; }
+        public double Price { get; set; }
+        public string Status {get; set; }
+    };
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+    public void OpenOrderSucces(bool value)
+    {
+        openOrderSucces = value;
+    }
+    void toggle(bool value) => loading = value;
+    private void HandleOk(MouseEventArgs e)
+    {
+        _form.Submit();
+    }
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine("e");
+        _visible = false;
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private string GetTextColor(string Stauts)
+    {
+        if (Stauts == "รอส่งลงลายมือชื่อ")
+        {
+            return "color:#000;";
+        }
+        else if (Stauts == "รอลงลายมือชื่อ")
+        {
+            return "color:#F56C6C;";
+        }
+        else{
+            return "color:#009934;";
+        }
+    }
+}
+

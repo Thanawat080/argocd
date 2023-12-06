@@ -1,0 +1,345 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ กรณีประสบอันตรายหรือเจ็บป่วยฉุกเฉินวิกฤต (UCEP) </div>
+    </div>
+    <div class="p-2 p-md-5 ">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการรับเเจ้ง</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">ค้นหารายการตามงวด</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แสดงรายการงวดที่เลือก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="container py-4">
+
+            <div class="row mt-2">
+                <div class="col-12">
+                    <div class="d-flex  align-items-center">
+                        <div class="col-4">
+                        </div>
+                        <div class="mms-media-center col-4" @onclick=@(() => goEdit(2))>
+                            <Button Type="@ButtonType.Primary"><i class="fa-solid fa-square-caret-right"></i>&nbsp; ประมวลผลรายการเบิก</Button>
+                        </div>
+                        <div class="col-4 float-end">
+                            <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                                <SpaceItem>
+                                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                                </SpaceItem>
+                            </Space>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container ">
+                <div class="mms-txt-header pt-2">รายการที่สถานพยาบาลส่งเบิก</div>
+                <hr />
+            </div>
+            <Table DefaultExpandAllRows DataSource="listOfData" TreeChildren="item=>item.Children" Bordered>
+
+                <ColumnDefinitions>
+                    <PropertyColumn Property="c=>c.Id" ColSpan="@GetColSpan(context.HosStatus)" Width="5%" Style="@GetColColor(context.HosStatus)">
+
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.CardId" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Style="@GetColColor(context.HosStatus )" />
+                 
+                    <PropertyColumn Property="c=>c.Name" Align="@(context.Key == "total"? ColumnAlign.Right : ColumnAlign.Left )" ColSpan="@GetColSpan(context.HosStatus , "name",context.Key)" Width="15%" Style="@GetColColor(context.HosStatus, "name")" />
+                    <PropertyColumn  Property="c=>c.NotiId" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="15%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn  Property="c=>c.Date" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    <PropertyColumn  Property="c=>c.Date" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    @if (context.Key == "total")
+                    {
+                        <PropertyColumn Property="c=>c.Age" Align="ColumnAlign.Left" ColSpan="2" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                    }
+                    else
+                    {
+                        <PropertyColumn Property="c=>c.Age" Align="ColumnAlign.Left" ColSpan="@GetColSpan(context.HosStatus )" Width="10%" Style="@GetColColor(context.HosStatus)" /> 
+
+                    }
+
+                   
+                    <PropertyColumn Property="c=>c.Id" Title="" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)">
+                        <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;"  />
+
+                    </PropertyColumn>
+
+                </ColumnDefinitions>
+              <HeaderTemplate>
+                <TableRow>
+                    <TableHeader @bind-Field="context.Age" >ลำดับ</TableHeader>
+                        <TableHeader @bind-Field="context.Age">เลขที่เอกสาร EMCO</TableHeader>
+                        <TableHeader @bind-Field="context.Age">เลขที่งวด</TableHeader>
+                        <TableHeader @bind-Field="context.Age">ชื่อ-นามสกุล</TableHeader>
+                        <TableHeader @bind-Field="context.Age">ประเภท</TableHeader>
+                        <TableHeader @bind-Field="context.Age"> HN/<span style="color:#D94827;">AN</span> </TableHeader>
+                        <TableHeader @bind-Field="context.Age">จำนวนเงิน</TableHeader>
+                        <TableHeader @bind-Field="context.Age"></TableHeader>
+                </TableRow>
+            </HeaderTemplate>
+
+            </Table>
+        </div>
+        <div class="container d-flex flex-column py-2">
+    <div class="mms-media-start">
+        <h6>วันที่ :</h6>&nbsp;
+                <h6>@ThaiDateFormat.FormatShotMonth(DateTime.Now)</h6>
+    </div>
+    <div class="mms-media-start">
+        <h6>จำนวนสถานพยาบาลทั้งหมด :</h6>&nbsp;
+        <h6>30 สถานพยาบาล</h6>
+    </div>
+    <div class="mms-media-start">
+        <h6>เจ้าหน้าที่ผู้ประมวลผล :</h6>&nbsp;
+        <h6>นายวงศ์ สว่าง</h6>
+    </div>
+</div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+ 
+
+    string? txtValue { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+ 
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    public class ItemData
+    {
+        public bool HosStatus { get; set; }
+        public string Id { get; set; }
+        public string Key { get; set; }
+        public string CardId { get; set; }
+        public string Name { get; set; }
+        public string fullname { get; set; }
+        public int Age { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+        public string Address { get; set; }
+        public List<ItemData> Children { get; set; }
+    };
+
+    List<ItemData> listOfData = new List<ItemData>();
+    private int total => listOfData.Count();
+    private int pageSize = 3;
+
+    protected override void OnInitialized()
+    {
+         listOfData = new List<ItemData>
+        { 
+            new ItemData {
+            HosStatus  = true,
+            Id = "1",
+            Key = "1",
+            Name = "โรงพยาบาลลานนา1",
+            Address = "New York No. 1 Lake Park",
+            Children = new List<ItemData> {
+                new ItemData {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                },
+                new ItemData {
+                    Id = "2",
+                    Key= "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new ItemData {
+                    Id = "3",
+                    Key= "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                new ItemData {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new ItemData {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+            }
+        },
+        new ItemData {
+              HosStatus  = true,
+            Id = "1",
+            Key = "2",
+            Name = "โรงพยาบาลลานนา2",
+            Address = "Sidney No. 1 Lake Park",
+             Children = new List<ItemData>  {
+                 new ItemData {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                },
+                new ItemData {
+                    Id = "2",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new ItemData {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+                 new ItemData {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+
+                },
+
+            }
+        },
+        };
+
+        foreach (var item in listOfData)
+        {
+
+            int totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+
+            ItemData total = new ItemData()
+                {
+                    Id = "",
+                    Key = "total",
+                    Name = "รวม Total",
+                    Age = totalAge,
+                    Address = "",
+                };
+            item.Children.Add(total);
+        }
+    }
+    private int CalculateTotalChildrenAge(List<ItemData> children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.Age;
+        }
+        return totalAge;
+    }
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return 8;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            if (key == "total")
+            {
+                return 5;
+            }
+            else
+            {
+                if (columnTitle == "total")
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+   
+}

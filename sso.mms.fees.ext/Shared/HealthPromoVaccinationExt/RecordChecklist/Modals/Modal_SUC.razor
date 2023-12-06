@@ -1,0 +1,50 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+@{
+    RenderFragment footer = @<Template>
+        <div class="m-2 mms-media-center">
+            <Button OnClick="@HandleOk" Type="@ButtonType.Dashed" Class="mms-btn-green">เสร็จสิ้น</Button>
+        </div>
+    </Template>;
+}
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="footer">
+
+    <div class="container mms-media-center flex-column">
+        <div style="background:#909399; width:75px;height:75px;border-radius:100%;" class="mms-media-center">
+            <i class="fa-solid fa-arrows-rotate" style="font-size:30px;color:#ffffff;"></i>
+        </div>
+        <div class="m-2">
+            <span style="font-size:18px !important;">ระบบกำลังประมวลผลกรุณารอสักครู่</span>
+        </div>
+
+    </div>
+</Modal>
+
+@code {
+    string title = "";
+    bool loading = false;
+
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<int> PageIndex { get; set; }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        PageIndex.InvokeAsync(2);
+        OnClose.InvokeAsync(false);
+        
+    }
+
+}

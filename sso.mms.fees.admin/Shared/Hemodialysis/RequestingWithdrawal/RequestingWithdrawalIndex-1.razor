@@ -1,0 +1,120 @@
+﻿
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีฟอกเลือดด้วยเครื่องไตเทียม และกรณีการให้ยา Erythropoietin</div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">รายการรับเเจ้ง</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" @onclick=@(()=>Indexpage(1))>
+                    <span class="breadcum-success py-2">รายการที่รอใบขอเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2"> งวด 660802</span>
+                </li>
+            </ol>
+        </nav>
+        <div style="padding-top:15px;">
+            <div class="row">
+                <div class="d-flex  mms-media-start">
+
+                    <Button Type="@ButtonType.Dashed" Class="ant-btn-distable" style="padding: 4px 30px;" @onclick=@(()=>Indexpage(1)) > <i class="fa-solid fa-circle-chevron-left"></i>&nbspย้อนกลับ</Button>
+                </div>
+                <div class="d-flex  ">
+                    <div class="col-8 mms-media-start">
+                        <div class="d-flex mms-media-start mms-txt-headdetail">
+                            รายการที่สถานพยาบาลส่งเบิก : งวดที่
+                            <Button Type="@ButtonType.Primary" Disabled style="margin-left: 10px">Text 555</Button>
+                         </div>
+                     </div>
+                     <div class="col-4 mms-media-end">
+                         <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                             <SpaceItem>
+                                 <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                             </SpaceItem>
+                         </Space>
+                     </div>
+                 </div>
+
+             </div>
+
+
+             <hr />
+             <Table DataSource="data" TItem="Data" RowClassName="@(_=>"editable-row")" Bordered>
+                <ChildContent Context="data">
+
+                    <Column Width="15%" Align="ColumnAlign.Center" TData="string" Title="ลำดับ">@data.id</Column>
+                    <Column Width="10%" Align="ColumnAlign.Center" Title="รหัสสถานพยาบาล" TData="string">@data.code</Column>
+                    <Column Width="10%" Align="ColumnAlign.Center" Title="ชื่อสถานพยาบาล" TData="string">@data.name</Column>
+                    <Column Width="10%" Align="ColumnAlign.Center" Title="จำนวนรายผู้ประกันตน" TData="string">@data.count</Column>
+                    <Column Width="10%" Align="ColumnAlign.Center" Title="จำนวนเงิน" TData="string">@data.price</Column>
+                    <Column Width="5%" Align="ColumnAlign.Center" TData="string" Title="">
+                        <img title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" />
+                    </Column>
+                </ChildContent>
+            </Table>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    [Parameter]
+    public int Page { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+    List<Data> data = new List<Data>();
+    string select;
+    public async Task Indexpage(int usepage)
+    {
+        IndexPage.InvokeAsync(usepage);
+    }
+    public class Data
+    {
+        public int id { get; set; }
+
+        public string code { get; set; }
+
+        public string name { get; set; }
+
+        public int count { get; set; }
+        public string price { get; set; }
+
+
+    }
+    protected override void OnInitialized()
+    {
+        data = new List<Data>
+        {
+            new Data
+            {
+                id = 1,
+                code = "1001",
+                name = "โรงพยาบาลสระบุรี",
+                count = 1,
+                price = "1900"
+            },
+            new Data
+            {
+                id = 1,
+                code = "1001",
+                name = "โรงพยาบาลสระบุรี",
+                count = 1,
+                price = "1900"
+            }
+        };
+    }
+}

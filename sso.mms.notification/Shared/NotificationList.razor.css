@@ -1,0 +1,67 @@
+﻿.card-header-m {
+    background: #FFCC41;
+    border: 0px solid #FFCC41;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.05);
+    border-radius: 10px 10px 0px 0px;
+    width: auto;
+    height: 74px;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    /*justify-content: center;*/
+}
+
+.noti-box {
+    padding-left: 1.5rem;
+    padding-right: 0.5rem;
+    padding-top: 1.5rem;
+    width: 100%;
+}
+.clicked ::deep {
+    border-top-left-radius: 0.3rem;
+    border-bottom-left-radius: 0.3rem;
+    background-color: #C5CBE673;
+    border-right: 0.8rem solid #334396;
+}
+
+.text-header-m {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+    margin: 14px;
+}
+
+.card-body-m-w{
+    width: auto;
+    background: #fff;
+    margin: 14px;
+}
+
+.text-datetimes {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 144%;
+    color: #909399;
+}
+
+.btn-select-all {
+    background: #334396;
+    border-radius: 4px;
+    width: 173px;
+    height: 51px;
+    border: 0px solid;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+}
+.text-color-cutom {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 144%;
+    color: #334396;
+}

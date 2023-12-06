@@ -1,0 +1,130 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Width="1200"
+       Footer="footer">
+
+    <div class="row py-2">
+        <div class="mms-txt-header py-2">ข้อมูลผู้ใช้สิทธิ</div>
+        <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-6 mms-txt-headdetail site-end-colum">
+                    <div>เลขประจำตัวประชาชน :</div>
+                    <div>เพศ :</div>
+                    <div>สัญชาติ :</div>
+                    <div>เบอร์โทรศัพท์ :</div>
+                    <div>โรงพยาบาลตามสิทธิ์ :</div>
+                </div>
+                <div class="col-6 mms-text-gray mbsite-cloum">
+                    <div>1234567890xxx</div>
+                    <div>ชาย</div>
+                    <div>ไทย</div>
+                    <div>099-200-654</div>
+                    <div>โรงพยาบาลลานนา 1</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-6 mms-txt-headdetail site-end-colum">
+                    <div>ชื่อ - นามสกุล :</div>
+                    <div>วันเกิด :</div>
+                    <div>อายุ :</div>
+                    <div>สถานะผู้ประกันตน :</div>
+                </div>
+                <div class="col-6 mms-text-gray mbsite-cloum">
+                    <div>นายสมพงษ์ ดวงรัก</div>
+                    <div>12  พฤษภาคม 2510</div>
+                    <div>56 ปี</div>
+                    <div>มีสิทธิ์รับวัคซีน</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="row py-2">
+        <div class="mms-txt-header py-2">รายละเอียดการใช้สิทธิ</div>
+        <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-6 mms-txt-headdetail site-end-colum">
+                    <div>วันที่รับวัคซีน :</div>
+                    <div>ชนิดวัคซีน :</div>
+                    <div>ชื่อทางการค้าวัคซีน :</div>
+                    <div>เลข Lot วัคซีน :</div>
+                </div>
+                <div class="col-6 mms-text-gray mbsite-cloum">
+                    <div>1 มีนาคม 2561</div>
+                    <div>3 สายพันธุิ์</div>
+                    <div>ABC-TEST01</div>
+                    <div>LOT00001</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="mms-txt-header">ความดันโลหิต</div>
+            <div class="row">
+                <div class="col-6 mms-txt-headdetail site-end-colum">
+                    <div>ค่าบน :</div>
+                    <div>ค่าล่าง :</div>
+                </div>
+                <div class="col-6 mms-text-gray mbsite-cloum">
+                    <div>160</div>
+                    <div>90</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 mms-txt-headdetail site-end-colum">
+                        <div>สถานะ : </div>
+                        <div>วันที่จ่าย : </div>
+                        <div>เลขใบคำสั่งจ่าย : </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 mms-text-gray mbsite-cloum">
+                        <div style="color:red;">รอการจ่าย</div>
+                        <div class="mms-text-gray">-</div>
+                        <div class="mms-text-gray">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="mms-media start pt-4 mbsite-cloum">
+                    <span class="mms-txt-header">จำนวนเงิน :</span>
+                    <span class="mms-txt-headerBlack">250 บาท</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    string title = "ตรวจสอบข้มูล ประวัติการเบิกจ่าย";
+    bool loading = false;
+
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<int> PageIndex { get; set; }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+
+    }
+
+}

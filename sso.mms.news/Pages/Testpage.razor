@@ -1,0 +1,48 @@
+﻿@page "/Testpage"
+@using System.Text;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.news.ViewModels;
+@using sso.mms.news.Services;
+@inject NewsService newsService
+@inject IHttpClientFactory ClientFactory
+
+<h3>testpage</h3>
+
+@*<button @onclick=@postdata> Add News Mock</button>*@
+
+
+@*@if (responseNews != null)
+    {
+    @foreach(var newsItem in responseNews)
+    {
+    <div>@newsItem.Title @newsItem.CreateDate @newsItem.UpdateDate</div>
+    }
+    }*@
+
+@code {
+
+
+    //private List<NewsT>? responseNews = null;
+    //protected override async Task OnInitializedAsync()
+    //{
+    // // responseNews = await newsService.GetNews();
+    //}
+
+
+    //public async Task postdata()
+    //{
+
+    // NewsT data = new NewsT
+    // {
+    // Title = "news5",
+    // Content = "news detail 5",
+    // ImagePathM = "",
+    // ImageFileM = "",
+    // CreateBy = "",
+    // UpdateBy = ""
+    // };
+    // Console.WriteLine(data);
+
+    // ResponseModel response = await newsService.AddNewsService(data);
+    //}
+}

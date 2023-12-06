@@ -1,0 +1,100 @@
+﻿@using System.ComponentModel;
+@using sso.mms.fees.admin.Shared.RiskExposure.ChoronicDisease.Modals
+
+<div class="mms-media-between">
+    <div class="mms-txt-header">
+        ICD10 โรคแทรกซ้อน
+    </div>
+    @*<Button Type="@ButtonType.Primary" OnClick="">
+        <i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม
+    </Button>*@
+</div>
+<div class="mt-3">
+    <Table @ref="table"
+           TItem="MockUpData"
+           DataSource="@mockUpdata"
+           Total="_total"
+    @bind-PageIndex="_pageIndex"
+    @bind-PageSize="_pageSize"
+    @bind-SelectedRows="selectedRows"
+           OnChange="OnChange"
+           Size="TableSize.Small">
+        <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Style="background: #EAE8EC" />
+        <PropertyColumn Title="รหัส ICD10 โรคเรื้อรัง" Property="c=>c!.Code" Style="background: #EAE8EC" />
+        <PropertyColumn Title="สถานะการใช้งาน" Property="c=>c!.Status" Width="200px" Style="background: #EAE8EC">
+            <Switch @bind-Value="@context.Status"></Switch>
+        </PropertyColumn>
+    </Table>
+
+    <br />
+    <p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+    <br />
+</div>
+
+<ICDChronicDisease _visible=@openChronicDiseaseModal OnClose="@OpenChronicDiseaseModal" />
+
+
+@code {
+    bool openChronicDiseaseModal { get; set; }
+    MockUpData[] mockUpdata;
+
+    IEnumerable<MockUpData> selectedRows;
+    ITable table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mockUpdata = await GetForecastAsync(1, 50);
+        _total = 50;
+    }
+
+    public class MockUpData
+    {
+        public int Id { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        public bool Status { get; set; }
+    }
+
+    private static readonly string[] Code = new[]
+    {
+        "E10", "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19"
+    };
+
+    //void addRow()
+    //{
+    //    listOfData = listOfData.Append(new($"{i}", "32", $"London, Park Lane no. {i}") { Name = $"Edward King {i}" });
+    //    i++;
+    //}
+
+    public async Task OnChange(QueryModel<MockUpData> queryModel)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(queryModel));
+    }
+
+    public Task<MockUpData[]> GetForecastAsync(int pageIndex, int pageSize)
+    {
+        var rng = new Random();
+        return Task.FromResult(Enumerable.Range((pageIndex - 1) * pageSize + 1, pageSize).Select(index =>
+        {
+            var temperatureC = rng.Next(-20, 55);
+            return new MockUpData
+                {
+                    Id = index,
+                    Code = Code[rng.Next(Code.Length)],
+                    Status = false,
+                };
+        }).ToArray());
+    }
+
+    public void OpenChronicDiseaseModal(bool value)
+    {
+        openChronicDiseaseModal = value;
+    }
+}

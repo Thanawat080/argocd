@@ -1,0 +1,200 @@
+﻿
+<style>
+
+    .mdc-table td {
+        padding: 20px !important;
+    }
+
+    .mdc-table th {
+        padding: 20px !important;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีฟอกเลือดด้วยเครื่องไตเทียม และกรณีการให้ยา Erythropoietin  </div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">ประวัติการเบิกจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงรายการประวัติเบิกจ่าย</span>
+                </li>
+
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="mms-media-end">
+            <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch">
+                <SpaceItem>
+                    <Search Placeholder="เลขประจำตัวประชาชน" EnterButton="true" />
+                </SpaceItem>
+            </Space>
+        </div>
+       
+    
+        <Table DataSource="@todos" TItem="Todo" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1600">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="8%" Style="text-align:center;">
+                    @String.Format("{0:d}", @todos.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="เลขงวด" Style="text-align:center;">
+                   @data.emco
+                </Column>
+                <Column TData="string" Title="เลขชุดคำสั่งจ่าย"  Style="text-align:center;">
+                    @data.withdraw
+                </Column>
+                <Column TData="string" Title="เลขใบคำสั่งจ่าย"  Style="text-align:center;">
+                    @data.name
+                </Column>
+                <Column TData="string" Title="จำนวนราย ผู้ประกันตน"  Style="text-align:center;">
+                    @data.name
+                </Column>
+                <Column TData="string" Title="ค่าฟอกเลือด"  Style="text-align:center;">
+                    @data.name
+                </Column> 
+                <Column TData="string" Title="ค่ายา Epo"  Style="text-align:center;">
+                    @data.name
+                </Column>
+                <Column TData="string" Title="จำนวน เงินเบิกรวม" Style="text-align:center;">
+                    @String.Format("{0:n}", data.Amount)
+                </Column>
+                
+                
+                <Column TData="string" Title="สถานะ" Width="10%" Align="ColumnAlign.Left" >
+                    @if (data.status == "อนุมัติ")
+                    {
+                        <span style="color:#53D658;"> <span class="status-color-green me-2"></span>@data.status</span>
+                    }else if(data.status == "รอการอนุมัติ")
+                    {
+                        <span style="color:#999292;"> <span class="status-color-gray me-2"></span>@data.status</span>
+                    }
+                    else if(data.status == "ไม่อนุมัติ")
+                    {
+                        <span style="color:#F56C6C;"> <span class="status-color-red me-2"></span>@data.status</span>
+                    }
+
+                </Column>
+            </ChildContent>
+        </Table>
+
+    </div>
+</div>
+
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading = false;
+    string txtValue { get; set; }
+    List<Todo> todos = new List<Todo>();
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+    RenderFragment titletamplate =@<span>HN/<span style="color:#D94827">AN</span> </span>;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        todos = new List<Todo>()
+        {
+        new Todo() {
+                Id = 1,
+                report = "รายงาน........................",
+                emco = "20230907083008-11558-002",
+                withdraw = "UCEP2566-G120123",
+                name = "นายธรากร สังข์สุด",
+                type = "IPD ปกติ",
+                anhn = "6604570",
+                Amount = 10000,
+                status = "อนุมัติ",
+            },
+        new Todo() {
+                 Id = 2,
+                report = "รายงาน........................",
+                emco = "20230827090650-11560-001",
+                withdraw = "UCEP2566-G120123",
+                name = "นายสมชาย พาลีบัตร",
+                type = "OPD",
+                anhn = "6615447",
+                Amount = 20000,
+                status = "รอการอนุมัติ",
+            },
+        new Todo() {
+                 Id = 3,
+                report = "รายงาน........................",
+                emco = "20230911165823-11560-005",
+                withdraw = "UCEP2566-G120123",
+                name = "นางสาวชนุตร์ ชื่นชวนชม",
+                type = "OPD",
+                anhn = "6605984",
+                Amount = 10000,
+                status = "ไม่อนุมัติ",
+            },
+        };
+
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+    public class Todo
+    {
+        public int Id { get; set; }
+        public string report { get; set; }
+        public string emco { get; set; }
+        public string withdraw { get; set; }
+        public string name { get; set; }
+        public string type { get; set; }
+        public string anhn { get; set; }
+        public int Amount { get; set; }
+        public string status { get; set; }
+
+
+    }
+
+
+}

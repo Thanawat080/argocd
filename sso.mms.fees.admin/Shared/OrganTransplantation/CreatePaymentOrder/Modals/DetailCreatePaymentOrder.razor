@@ -1,0 +1,232 @@
+﻿@inject IConfirmService _confirmService
+@inject ModalService _modalService
+@inject IMessageService _message
+
+
+<Modal Visible="_visible"
+       Footer="@ModalFooter.DefaultCancelFooter"
+       OnCancel="@HandleCancel" Style="width:auto">
+
+    <Table DataSource="@childData" Bordered TreeChildren="item=>item.Children" DefaultExpandAllRows>
+        <PropertyColumn Property="c=>c.Key" Title="ลำดับ" ColSpan=@GetColSpan(@context.TitleStatus,"name") Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus,"name")"></PropertyColumn>
+        <PropertyColumn Property="c=>c.IdCard" Title="เลขประจำตัวประชาชน" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Name" Title="ชื่อ-นามสกุล" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.DateOfSurgery" Title="วันที่ผ่าตัด" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.IDDonor" Title="ID Donor" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.ServiceTypeName" Title="ประเภทบริการ" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.HospitalApprove" Title="สถานพยาบาล อนุมัติสิทธิ" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.AmountMonney" Title="จำนวนเงิน" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Diagnose" Title="วินิจฉัย" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Detail" Title="" ColSpan=@GetColSpan(@context.TitleStatus) Style="@ColColor(@context.ServiceTypeStatus,@context.TitleStatus)">
+            <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" />
+        </PropertyColumn>
+        <SummaryRow>
+        <SummaryCell ColSpan="7" Align="ColumnAlign.Right">รวมทั้งหมด</SummaryCell>
+        <SummaryCell ColSpan="3">
+                <Text>@totalAmountMonney</Text>
+        </SummaryCell>
+        </SummaryRow>
+    </Table>
+
+</Modal>
+
+
+@code {
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpen { get; set; }
+
+    string _okText = "ดูรายการข้อมูล";
+    string _title = "Override Locale";
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+    List<Data> childData = new List<Data>()
+    {
+        new Data {
+           Key = "โรงพยาบาลลานนา 1",
+           TitleStatus = true,
+           ServiceTypeStatus = false,
+           Children = new List<Data>()
+           {
+                  new Data {
+                    Key = "ประเภทบริการปลูกถ่ายไต",
+                    ServiceTypeStatus = true,
+                    TitleStatus = true,
+                    Children = new List<Data>()
+                    {
+                          new Data
+                          {
+                              TitleStatus=false,
+                              Key="1",
+                              Installment="6704",
+                              IdCard="1234587957xxx",
+                              Name="นางสุจินดา  ญาดา",
+                              DateOfSurgery = "29 มี.ค. 2566",
+                              IDDonor="12345678",
+                              ServiceTypeName ="ไต",
+                              HospitalApprove="โรงพยาบาล 1",
+                              AmountMonney="40,000",
+                              Diagnose="อนุมัติ",
+                          }
+                    }
+               },
+               new Data {
+                    Key = "ประเภทบริการปลูกถ่ายตับ",
+                    ServiceTypeStatus = true,
+                    TitleStatus = true,
+                    Children = new List<Data>()
+                    {
+                          new Data
+                          {
+                              TitleStatus=false,
+                              Key="2",
+                              Installment="6704",
+                              IdCard="1234567890xxx",
+                              Name="นางบุษบา  กล้ายิ่ง",
+                              DateOfSurgery = "11 มี.ค. 2566",
+                              IDDonor="12345679",
+                              ServiceTypeName ="ตับ",
+                              HospitalApprove="โรงพยาบาล 1",
+                              AmountMonney="40,000",
+                              Diagnose="อนุมัติ",
+                          },
+                          new Data
+                          {
+                              TitleStatus=false,
+                              Key="3",
+                              Installment="Jim Green",
+                              IdCard="1156987425xxx",
+                              Name="นางสามารถ  กาจวิชา",
+                              DateOfSurgery = "19 ม.ค. 2566",
+                              IDDonor="12345680",
+                              ServiceTypeName ="ตับ",
+                              HospitalApprove="โรงพยาบาล 1",
+                              AmountMonney="40,000",
+                              Diagnose="อนุมัติ",
+                          }
+                    }
+               },
+               new Data {
+                    Key = "ประเภทบริการปลูกถ่ายกระจกตา",
+                    ServiceTypeStatus = true,
+                    TitleStatus = true,
+                    Children = new List<Data>()
+                    {
+                          new Data
+                          {
+                              TitleStatus=false,
+                              Key="4",
+                              Installment="6704",
+                              IdCard="1234567890xxx",
+                              Name="นายเดช  เจนสุข",
+                              DateOfSurgery = "11 ม.ค. 2566",
+                              IDDonor="12345677",
+                              ServiceTypeName ="กระจกตา",
+                              HospitalApprove="โรงพยาบาล 2",
+                              AmountMonney="15,000",
+                              Diagnose="อนุมัติ",
+                          }
+                    }
+               },
+           }
+        }
+    };
+
+    long totalAmountMonney = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        foreach (var child in childData)
+        {
+            foreach(var subChildData in child.Children)
+            {
+                totalAmountMonney = totalAmountMonney + subChildData.Children.Sum(x =>  long.Parse(x.AmountMonney.Replace(",", "")));
+            }
+        }
+
+    }
+
+    public class Data
+    {
+
+        public string Key { get; set; }
+
+        public bool TitleStatus { get; set; }
+
+        public string Installment { get; set; }
+
+        public string IdCard { get; set; }
+
+        public string Name { get; set; }
+
+        public string DateOfSurgery { get; set; }
+
+        public string IDDonor { get; set; }
+
+        public string ServiceTypeName { get; set; }
+
+        public bool ServiceTypeStatus { get; set; }
+
+        public string HospitalApprove { get; set; }
+
+        public string AmountMonney { get; set; }
+
+        public string Diagnose { get; set; }
+
+        public string Detail { get; set; }
+
+        public List<Data> Children { get; set; }
+    }
+
+
+    private int GetColSpan(bool TitleStatus, string columnTitle = "")
+    {
+        if (TitleStatus == true)
+            if (columnTitle == "name")
+                return 10;
+            else
+                return 0;
+        else
+            return 1;
+    }
+
+    private string ColColor(bool ServiceTypeStatus, bool TitleStatus, string columnTitle = "")
+    {
+        if (TitleStatus == true && ServiceTypeStatus == false)
+        {
+            if (columnTitle == "name")
+            {
+                return "background-color:#415CE7; color:#FFFFFF";
+            }
+            else
+            {
+                return "";
+            }
+        }
+        else if (TitleStatus == true && ServiceTypeStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return "background-color: #D8D6D6;";
+            }
+            else
+            {
+                return "";
+            }
+        }
+        else
+        {
+
+            return "";
+        }
+    }
+}

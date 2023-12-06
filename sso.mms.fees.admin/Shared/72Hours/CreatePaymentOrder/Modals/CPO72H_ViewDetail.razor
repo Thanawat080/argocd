@@ -1,0 +1,255 @@
+﻿<style>
+    .xmark .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+</style>
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+
+
+<Modal Title="รายละเอียดข้อมูล"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       WrapClassName="xmark"
+       Footer="@footer"
+       Width="1350">
+
+    <div class="container py-4">
+        <Table DefaultExpandAllRows DataSource="data" RowSelectable="@(x =>x.HosStatus == false ? false : true)" TreeChildren="item=>item.Children" Bordered Class="overflow-hidden">
+
+            @if (context.HosStatus == false)
+            {
+                <PropertyColumn Property="c=>c.Id" Title="ลำดับ" ColSpan="@GetColSpan(context.HosStatus)" Style="@GetColColor(context.HosStatus)" />
+            }
+            <PropertyColumn Property="c=>c.Name" Title="เลขใบคำสั่งจ่าย" Align="ColumnAlign.Left" ColSpan="@GetColSpan(context.HosStatus,"name",context.Hos)" Style="@GetColColor(context.HosStatus, "name")" />
+
+            <PropertyColumn Property="c=>c.Date" Title="เลขประจำตัวประชาชน" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Style="@GetColColor(context.HosStatus )" />
+            <PropertyColumn Property="c=>c.Date" Title="ชื่อ-นามสกุล" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Hos)" Style="@GetColColor(context.HosStatus)" />
+            <PropertyColumn Property="c=>c.Age" Title="Admit Date" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Hos)" Style="@GetColColor(context.HosStatus)" />
+            <PropertyColumn Property="c=>c.Age" Title="Discharge Date" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Hos)" Style="@GetColColor(context.HosStatus)" />
+            <PropertyColumn Property="c=>c.Servicetype" Title="สถานพยาบาลอนุมัติสิทธิ" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Hos)" Style="@GetColColor(context.HosStatus)" />
+            <PropertyColumn Property="c=>c.money" Title="จำนวนเงิน" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Hos)" Style="@GetColColor(context.HosStatus)">
+                @String.Format("{0:n}",context.money)
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.istatus" Title="วินิจฉัย" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus,context.Hos)" Style="@GetColColor(context.HosStatus)">
+                @if (context.istatus == true)
+                {
+                    <span style="color:green"><span class="status-color-green me-2"></span>จ่ายแล้ว</span>
+                }
+                else
+                {
+                    <span style="color:orangered"><span class="status-color-orangered me-2"></span>ยังไม่ชำระ</span>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.istatus" Title="" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus,context.Hos)" Style="@GetColColor(context.HosStatus)">
+                <img class="mx-2" title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" />
+            </PropertyColumn>
+            @{
+                var sum = 0;
+                var count = 0;
+                foreach (var item in data)
+                {
+                    sum += CalculateTotalChildrenAge(item.Children.ToList());
+                    count = item.Children.Count;
+                }
+            }
+            <SummaryRow>
+                <SummaryCell ColSpan="7" Align="ColumnAlign.Center">รวมทั้งหมด</SummaryCell>
+                <SummaryCell Align="ColumnAlign.Center" ColSpan="3">
+                    <Text>@String.Format("{0:n}",sum)</Text>
+                </SummaryCell>
+            </SummaryRow>
+        </Table>
+    </div>
+</Modal>
+@code {
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    bool _loading = false;
+    private void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+    bool viewdetail = false;
+    bool viewconfirm = false;
+    List<Data> _data;
+
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+        public string Id { get; set; }
+        public string Hos { get; set; }
+        public string CardId { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+        public string Address { get; set; }
+        public int money { get; set; }
+        public bool istatus { get; set; }
+        public string Servicetype { get; set; }
+        public List<Data> Children { get; set; }
+    }
+    List<Data> data = new List<Data>
+    {
+        new Data {
+            HosStatus  = true,
+            Id = "1",
+            Hos = "1",
+            Name = "ศูนย์รับบริจากอวัยวะสภากาชาดไทย",
+            Address = "New York No. 1 Lake Park",
+            Children = new List<Data> {
+                new Data {
+                    Id = "1",
+                    Hos = "โรงพยาบาล 1",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                    Servicetype = "ตับ",
+                    istatus = true,
+                    money = 8900,
+                },
+                new Data {
+                    Id = "2",
+                    Hos= "โรงพยาบาล 1",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    Servicetype = "กระจกตา",
+                    istatus = true,
+                     money = 1900,
+                },
+                 new Data {
+                    Id = "3",
+                    Hos= "โรงพยาบาล 1",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    Servicetype = "ไต",
+                    istatus = false,
+                     money = 8000,
+                },
+                new Data {
+                    Id = "3",
+                    Hos= "โรงพยาบาล 1",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    Servicetype = "ไต",
+                    istatus = true,
+                     money = 8200,
+                },
+                 new Data {
+                    Id = "4",
+                    Hos= "โรงพยาบาล 1",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    Servicetype = "ไต",
+                    istatus = true,
+                     money = 2900,
+                },
+            }
+        },
+    };
+
+    private int CalculateTotalChildrenAge(List<Data> children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.money;
+        }
+        return totalAge;
+    }
+    string _selectedValue;
+
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return 11;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    int totalAge;
+    protected override async Task OnInitializedAsync()
+    {
+
+        foreach (var item in data)
+        {
+            totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+        }
+        await Task.Delay(3000);
+        StateHasChanged();
+    }
+    public async Task CloseModal(bool item)
+    {
+        viewdetail = item;
+    }
+    public async Task CloseConfirmModal(bool item)
+    {
+        viewconfirm = item;
+    }
+}

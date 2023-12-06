@@ -1,0 +1,40 @@
+﻿@page "/phase2"
+@using sso.mms.helper
+@using sso.mms.helper.Configs;
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager Navigation;
+
+<style>
+    .txt-phase2 {
+        color: #334396;
+        font-family: Noto Sans Thai;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 150%;
+        letter-spacing: -0.608px;
+    }
+
+    .btn-home {
+        border-radius: 4px;
+        background: #334396;
+    }
+</style>
+
+<nav class="d-flex justify-content-between shadow-sm">
+    <div class="px-5 m-3 ">
+        <div>
+            <img src="helper_shared/icon_sso/mms-logo.png" style="width:286px;height:52.3px;" />
+        </div>
+        <div>
+        </div>
+    </div>
+</nav>
+<div class="d-flex justify-content-center align-items-center align-content-center mt-5 pt-5">
+    <p class="txt-phase2">ระบบ @pagename จะขึ้นระบบใน Phase 2</p>
+</div>
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "pagename")]
+    public string? pagename { get; set; }
+}

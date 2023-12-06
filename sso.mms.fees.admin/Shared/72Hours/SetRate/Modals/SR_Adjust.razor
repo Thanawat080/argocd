@@ -1,0 +1,101 @@
+﻿@inject NavigationManager NavigationManager
+<style>
+    .xmark .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+
+    .ant-form-item-control-input {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 32px;
+        padding-left: 2rem;
+    }
+</style>
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+
+<Modal Title="แสดงข้อมูลรายการค่าบำรุงรักษาอวัยวะ"
+       Visible="@_visible"
+       OnCancel="@HandleCancel"
+       WrapClassName="xmark"
+       Footer="@footer"
+       Width="1000">
+    <div class="container">
+        <div class="row">
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <div class="mms-media-start pb-2">
+                        <label class="mms-txt-headdetail w-50">รหัส OTP</label>
+                        <Input Placeholder="onblur change" @bind-Value="@txtValue" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="mms-media-start pb-2">
+                    <label class="mms-txt-headdetail w-50">รหัส claim<span class="star-comment">*</span></label>
+                    <Input Placeholder="onblur change" @bind-Value="@txtValue" />
+                </div>
+                <div class="mms-media-start pb-2">
+                    <label class="mms-txt-headdetail w-50">ชื่อ claim<span class="star-comment">*</span></label>
+                    <Input Placeholder="onblur change" @bind-Value="@txtValue" />
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="mms-media-start pb-2">
+                    <label class="mms-txt-headdetail w-50">ประเภท<span class="star-comment">*</span></label>
+                    <Input Placeholder="onblur change" @bind-Value="@txtValue" />
+                </div>
+                <div class="mms-media-start pb-2">
+                    <label class="mms-txt-headdetail w-50">วงเงิน<span class="star-comment">*</span></label>
+                    <Input Placeholder="onblur change" @bind-Value="@txtValue" />
+                    <label class="mms-txt-headdetail px-4">บาท</label>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-top:100px;">
+            <div class="mms-media-end">
+                <Button Class="ant-btn-distable" @onclick="@HandleCancel"><i class="fa-solid fa-circle-xmark"></i>&nbsp; ยกเลิก</Button> &nbsp;
+                <Button Type="@ButtonType.Primary" @onclick="@HandleCancel"><i class="fa-solid fa-floppy-disk"></i>&nbsp; บันทึก</Button>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    string txtValue { get; set; }
+
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+}

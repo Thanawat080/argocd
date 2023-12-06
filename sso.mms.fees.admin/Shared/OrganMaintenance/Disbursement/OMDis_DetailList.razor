@@ -1,0 +1,145 @@
+﻿@using System.ComponentModel
+@using System.Net.Http.Headers
+@inject HttpClient Http
+
+@inject ModalService _modalService
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">บำรุงรักษาอวัยวะสภากาชาดไทย</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ประวัติการเบิกจ่าย</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4">
+            <div class="col-sm-12 col-lg-8 mms-media-start">
+                <div class="mms-txt-headdetail">งวดที่ :</div>
+                <div class="px-2">
+                    <Select TItem="Item"
+                            TItemValue="string"
+                            DataSource="@_items"
+                            @bind-Value="@_selectedValue"
+                            ValueName="@nameof(Item.Value)"
+                            LabelName="@nameof(Item.Value)"
+                                            DefaultActiveFirstOption
+                            Style="width: 200px;">
+                        <ItemTemplate>
+                            <span>@((context as Item).Value)</span>
+                        </ItemTemplate>
+                    </Select>
+                </div>
+                <div>
+                    <Button Type="@ButtonType.Primary">ค้นหา</Button>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-4 mms-media-end">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา..." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="data" Bordered HidePagination>
+            <PropertyColumn Title="ลำดับ" Property="c=>c.key"></PropertyColumn>
+            <PropertyColumn Title="งวด" Property="c=>c.period"></PropertyColumn>
+            <PropertyColumn Title="เลขชุดคำสั่งจ่าย" Property="c=>c.payorder"></PropertyColumn>
+            <PropertyColumn Title="เลขใบคำสั่งจ่าย" Property="c=>c.paynumber"></PropertyColumn>
+            <PropertyColumn Title="หน่วยงาน" Property="c=>c.agency"></PropertyColumn>
+            <PropertyColumn Title="จำนวนรายการ" Property="c=>c.itemnumber"></PropertyColumn>
+            <PropertyColumn Title="จำนวนเงิน(บาท)" Property="c=>c.amount">@String.Format("{0:N2}", context.amount)</PropertyColumn>
+            <PropertyColumn Title="วันที่จ่าย" Property="c=>c.payDate"></PropertyColumn>
+            <PropertyColumn Title="สถานะ" Property="c=>c.Isstatus">
+                @if (context.Isstatus == true)
+                {
+                    <span style="color:green;">จ่ายเเล้ว</span>
+                }
+                else
+                {
+                    <span style="color:red;">รอจ่าย</span>
+                }
+            </PropertyColumn>
+            <PropertyColumn Title="" Property="c=>c.emty">
+                <img title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => OpendetailTable(true)) />
+            </PropertyColumn>
+            @{
+                var totalamount = data.Sum(x => x.amount);
+                var totalitemnumber = data.Sum(x => x.itemnumber);
+            }
+            <SummaryRow>
+                <SummaryCell ColSpan="5">รวมทั้งหมด</SummaryCell>
+                <SummaryCell>
+                    <Text>@totalitemnumber</Text>
+                </SummaryCell>
+                <SummaryCell>
+                    <Text>@String.Format("{0:N2}", totalamount)</Text>
+                </SummaryCell>
+                <SummaryCell ColSpan="3"></SummaryCell>
+            </SummaryRow>
+        </Table>
+    </div>
+</div>
+@using sso.mms.fees.admin.Shared.OrganMaintenance.Disbursement.Modals
+<Dis_DetailTable _visible=@detailTable OnClose="@OpendetailTable" />
+
+@code {
+    /*-- CallbackModel --*/
+    bool detailTable { get; set; }
+    public void OpendetailTable(bool value)
+    {
+        detailTable = value;
+    }
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    /*---SELECT TABLE---*/
+    public class Item { public string Value { get; set; } }
+    List<Item> _items;
+    string _selectedValue;
+    Item _selectedItem;
+
+    protected override void OnInitialized()
+    {
+        _items = new List<Item>
+        {
+            new Item { Value = "china",},
+            new Item { Value = "usa",},
+            new Item { Value = "japan",},
+            new Item { Value = "korea",}
+        };
+    }
+    /*-- Table Data --*/
+    record Data(
+        string key,
+        string emty,
+        string name,
+        string period,
+        string agency,
+        int itemnumber,
+        int payorder,
+        int paynumber,
+        double amount,
+        DateTime payDate,
+        bool Isstatus
+    );
+
+    Data[] data = new Data[]
+    {
+        new("1","","John Brown","6410","ศูนย์รับบริจากอวัยวะสภากาชาดไทย",3,123,11122331,95000.100,DateTime.Now ,true),
+        new("2","","Jim Green","6409","ศูนย์รับบริจากอวัยวะสภากาชาดไทย",3,123,11122331,400000.100,DateTime.Now,false),
+        new("3","","Joe Black","6408","ศูนย์ดวงตาสภากาชาดไทย",30,125,11122331,30000.99,DateTime.Now,true),
+        new("4","","Jim Red","6407","ศูนย์ดวงตาสภากาชาดไทย",17,127,11122331,7500.20,DateTime.Now,false),
+    };
+}
+

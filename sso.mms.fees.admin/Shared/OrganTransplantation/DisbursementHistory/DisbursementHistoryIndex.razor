@@ -1,0 +1,148 @@
+﻿@using sso.mms.fees.admin.Shared.OrganTransplantation.CreatePaymentOrder.Modals
+@using sso.mms.fees.admin.Shared.OrganTransplantation.DisbursementHistory.Modals
+
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การปลูกถ่ายอวัยวะ >> ประวัติการเบิกจ่าย</div>
+    </div>
+    <div class="container py-4">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <div class="mms-txt-headdetail me-2">งวดที่ :</div>
+                    <div>
+                        <Input Placeholder="--เลือกงวด--" @bind-Value="@txtValue" />
+                    </div>
+                    <div>
+                        <Button Type="@ButtonType.Primary">ค้นหา</Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row" style="display:flex; justify-content:end; margin-bottom:5px">
+            <Space Direction="@DirectionVHType.Vertical" Style="width:300px" >
+                <SpaceItem>
+                    <Search Placeholder="ระบุชื่อโรงพยาบาล" EnterButton="true" />
+                </SpaceItem>
+            </Space>
+        </div>
+
+        <Table Bordered DataSource="@data" OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" >
+             <ChildContent>
+                 <PropertyColumn Title="ลำดับ" Property="c=>c!.No" Width="10px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="งวด" Property="c=>c!.Installment" Width="20px" />
+                 <PropertyColumn Title="เลขชุดคำสั่งจ่าย" Property="c=>c!.OrderNumber" Width="100px" />
+                 <PropertyColumn Title="เลขใบคำสั่งจ่าย" Property="c=>c!.PaymentOrderNumber" Width="100px" />
+                 <PropertyColumn Title="ชื่อสถานพยาบาล" Property="c=>c!.HospitalName" Width="100px" />
+                 <PropertyColumn Title="จำนวนรายการ" Property="c=>c!.NumberItems" Width="100px" />
+                 <PropertyColumn Title="จำนวนเงิน" Property="c=>c!.AmountOfMoney" Width="100px" />
+                 <PropertyColumn Title="วันที่จ่าย" Property="c=>c!.PaymentDate" Width="100px" />
+                 <PropertyColumn Title="สถานะ" Property="c=>c!.Status" Width="50px" />
+                 <PropertyColumn Title="" Property="c=>c!.NoContent" Width="50px">
+                     <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" @onclick=@(() => OpenDetailDisbursementHistory(true)) />
+                 </PropertyColumn>
+                 <SummaryRow>
+                     <SummaryCell ColSpan="4" Align="ColumnAlign.Right"><div>รวมทั้งหมด</div></SummaryCell>
+                     <SummaryCell>
+                         3
+                     </SummaryCell>
+                     <SummaryCell>
+                         10
+                     </SummaryCell>
+                     <SummaryCell>
+                         18,000,00.00 บาท
+                     </SummaryCell>
+                     <SummaryCell ColSpan="3">
+                     </SummaryCell>
+                 </SummaryRow>
+             </ChildContent>
+             <PaginationTemplate>
+                 <Pagination Class="pt-2" Total="context.Total"
+                             PageSize="context.PageSize"
+                             Current="context.PageIndex"
+                                        ShowSizeChanger
+                             OnChange="context.HandlePageChange" />
+             </PaginationTemplate>
+         </Table>
+    </div>
+</div>
+ <DetailDisbursementHistoryModal _visible=@openDetailDisbursementHistory OnOpen="@OpenDetailDisbursementHistory"></DetailDisbursementHistoryModal>
+ 
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    bool openDetailDisbursementHistory { get; set; }
+
+    int pageSize = 5;
+
+    string txtValue { get; set; }
+
+    Table<MockUpData> Table;
+
+    public void OpenDetailDisbursementHistory(bool value)
+    {
+        openDetailDisbursementHistory = value;
+    }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    class MockUpData
+    {
+        public MockUpData(
+        int no,
+        string installment,
+        string orderNumber,
+        string paymentOrderNumber,
+        string hospitalName,
+        string numberItems,
+        string amountOfMoney,
+        string paymentDate,
+        string status,
+        string noContent
+        )
+        {
+            No = no;
+            Installment = installment;
+            OrderNumber = orderNumber;
+            PaymentOrderNumber = paymentOrderNumber;
+            HospitalName = hospitalName;
+            NumberItems = numberItems;
+            AmountOfMoney = amountOfMoney;
+            PaymentDate = paymentDate;
+            Status = status;
+            NoContent = noContent;
+        }
+        public int No { get; set; }
+        public string Installment { get; set; }
+        public string OrderNumber { get; set; }
+        public string PaymentOrderNumber { get; set; }
+        public string HospitalName { get; set; }
+        public string NumberItems { get; set; }
+        public string AmountOfMoney { get; set; }
+        public string PaymentDate { get; set; }
+        public string Status { get; set; }
+        public string NoContent { get; set; }
+    }
+
+    MockUpData[] data =
+    {
+           new(1,"6603","11123","11122331","โรงพยาบาล 1","5","3,000,00.00","19 พ.ค. 2566","จ่ายเเล้ว",""),
+           new(2,"6603","11123","11122331","โรงพยาบาล 2","10","5,000,00.00","19 พ.ค. 2566","จ่ายเเล้ว",""),
+           new(3,"6603","11123","11122331","โรงพยาบาล 3","15","10,000,00.00","-","รอจ่าย",""),
+           new(4,"6603","11123","11122331","โรงพยาบาล 4","1","40,00.00","-","รอจ่าย",""),
+    };
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+}

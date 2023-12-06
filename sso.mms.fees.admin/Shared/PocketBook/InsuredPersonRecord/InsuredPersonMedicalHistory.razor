@@ -1,0 +1,58 @@
+﻿
+<style>
+    .text-lable-medical-history {
+        width: 135px;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        color: #334396;
+        font-size: 16px;
+        font-weight:bold;
+        padding-right: 5px;
+    }
+</style>
+
+<div class="d-flex justify-content-center pt-5">
+    <div class="text-lable-medical-history">ช่วงวันที่ :</div>
+    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Style="width: 226px;" />
+    <div class="text-lable-medical-history">ถึง :</div>
+    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Style="width: 226px;" />
+    <Button Type="@ButtonType.Primary">
+        <i class="fa fa-search"></i>
+    </Button>
+</div>
+<hr>
+
+<Table DataSource="data" OnChange="OnChange" TItem="Data" HidePagination Bordered>
+    <PropertyColumn Title="ลำดับ" Property="c=>c.No" />
+    <PropertyColumn Title="รายละเอียดการรักษา" Property="c=>c.DetailMedical" />
+    <PropertyColumn Title="ประเภทการรักษา" Property="c=>c.TypeMedical" />
+    <PropertyColumn Title="สถานพยาบาล" Property="c=>c.HospitalName" />
+    <PropertyColumn Title="วันที่เริ่ม" Property="c=>c.StartDate" />
+    <PropertyColumn Title="วันที่สิ้นสุด" Property="c=>c.EndDate" />
+    <PropertyColumn Title="สถานะ" Property="c=>c.Status" />
+</Table>
+
+
+@code {
+
+    public record Data(
+        string No,
+        string DetailMedical,
+        string TypeMedical,
+        string HospitalName,
+        string StartDate,
+        string EndDate,
+        string Status);
+
+    public Data[] data =
+    {
+        new("1","โรคเส้นเลือดสมองแตก","ป่วยใน","โรงพยาบาลลานนา1","13  ม.ค  66","15  ม.ค  66","เสร็จสิ้น"),
+        new("2","ไข้หวัด","ป่วยนอก","โรงพยาบาลลานนา1","1  ก.พ  66","-","เสร็จสิ้น"),
+    };
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+}

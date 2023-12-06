@@ -1,0 +1,85 @@
+﻿.card-main {
+    border-radius: 10px;
+    background: #FFF;
+    min-height: 835px;
+    width: auto;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.txt-title {
+    color: #334396;
+    font-size: 32px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    letter-spacing: -0.608px;
+}
+.sub-title {
+    color: #334396;
+    font-size: 20px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0.2px;
+}
+.sub-detal {
+    color: #1A141F;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+}
+.form-check-input:checked {
+    background-color: #334396;
+    border-color: #334396;
+    width: 25px;
+    height: 25px;
+}
+.form-check-input[type=radio] {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+}
+.txt-check {
+    color: #000;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.2px;
+}
+.card-banner {
+    border: 2px dashed #D5D5D5;
+    max-width: 100%;
+    min-height: 353px;
+}
+.banner-style {
+    width: 100%;
+    height: 380px;
+}
+
+.btn-bo-main {
+    border-radius: 4px;
+    border: 2px solid #334396;
+    background: #FFF;
+    color: #334396;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 600;
+    height: 48px;
+}
+
+.btn-save-main {
+    border-radius: 4px;
+    background: #334396;
+    color: #ffffff;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-style: normal;
+    font-weight: 600;
+    height: 48px;
+}

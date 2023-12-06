@@ -1,0 +1,1220 @@
+﻿@using ClosedXML.Excel;
+@using System;
+@using System.Collections.Generic;
+@using System.Text;
+@using System.Data
+@using sso.mms.fees.ext.Providers.PromoteHealth.BookHealthCheckup;
+@using System.Globalization;
+@using Blazored.LocalStorage;
+@using ClosedXML.Report;
+@using sso.mms.fees.ext.Providers.PromoteHealth.DetermineReferenceValue;
+@inject DetermineReferenceServices determineReferenceServices
+@inject BookHealthCheckupServices bookHealthCheckupServices;
+@inject ILocalStorageService _localstorage;
+@inject SweetAlertService Swal;
+@inject IJSRuntime JsRuntime
+
+<style>
+    html, body {
+        overflow-x: visible;
+    }
+
+    .body-bg {
+        background-color: rgba(0, 0, 0, 0.4);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+    }
+
+    .load {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .index-set {
+        z-index: 100001;
+    }
+
+    .card {
+        border-radius: 10px 10px 10px 10px;
+    }
+
+    .shadow {
+        box-shadow: 0rem 0.5rem 1rem rgba(0,0,0,.2) !important;
+    }
+
+    input {
+        color: black !important;
+    }
+</style>
+
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page" @onclick="()=> goBack(1)">
+                    <span class="breadcum-sucress py-2">จองสิทธิ์การตรวจสุขภาพ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    @if (Checktype == 2)
+                    {
+                        <span class="breadcum-process py-2">เพิ่มรายการ</span>
+                    }
+                    else if (Checktype == 3)
+                    {
+                        <span class="breadcum-process py-2">@reserveH.CompanyName</span>
+                    }
+                    else if (Checktype == 4)
+                    {
+                        <span class="breadcum-process py-2">@reserveH.CompanyName</span>
+                    }
+                </li>
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+
+        <EditForm Model=@reserveH>
+            <DataAnnotationsValidator />
+            <div class="row pb-3">
+                <div class="col-xl-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3">
+                            <div class="mms-txt-headdetail">วันที่สร้าง</div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <Input @bind-Value="@showCreateDate" ReadOnly Disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3">
+                            <div class="mms-txt-headdetail">วันที่แก้ไขล่าสุด</div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <Input @bind-Value="@showUpdateDate" ReadOnly Disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3">
+                            <div class="mms-txt-headdetail">แก้ไขล่าสุดโดย</div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <Input @bind-Value="@reserveH.UpdateBy" ReadOnly Disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-4">
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">เลขที่บัญชีนายจ้าง<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.CompanyAccNo" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.CompanyAccNo)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail text-md-end">เลขที่นิติบุคคล<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.CompanyTaxNo" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.CompanyTaxNo)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pb-4">
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">ชื่อสถานประกอบการ<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.CompanyName" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.CompanyName)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 ">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail text-md-end">เลขสาขา<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.CompanyBranch" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.CompanyBranch)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row pb-4">
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">ชื่อ-นามสกุล HR<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.HrName" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.HrName)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail text-md-end">เบอร์ติดต่อ HR<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.HrPhone" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.HrPhone)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-4">
+                <div class="col-xl-6">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">อีเมล HR<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@reserveH.HrEmail" ReadOnly Disabled />
+                            <ValidationMessage For="@(() => reserveH.HrEmail)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-4">
+                <div class="col-xl-12">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mms-txt-headdetail">ที่อยู่สถานประกอบการ<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-10">
+                            <TextArea @bind-Value="@reserveH.CompanyAddr" ReadOnly Disabled Style="color: black" />
+                            <ValidationMessage For="@(() => reserveH.CompanyAddr)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pb-4">
+                <div class="col-xl-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="mms-txt-headdetail">วันที่จองตรวจ<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <DatePicker @bind-Value="@reserveStartDate" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Disabled="true" />
+                            <ValidationMessage For="@(() => reserveH.ReserveStartDate)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 px-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mms-txt-headdetail">ถึง</div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-9">
+                            <DatePicker @bind-Value="@reserveEndDate" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Disabled="true" Style="width: 70%; color:black" />
+                            <ValidationMessage For="@(() => reserveH.ReserveEndDate)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @if (Checktype == 2 && dataStatus == false)
+            {
+                <div class="row pb-3">
+                    <div class="col-xl-12 mms-media-end">
+                        <Button Type="@ButtonType.Primary" OnClick="@(()=> LoadFile())" style="padding: 4px 30px">
+                            <i class="fa-solid fa-upload"></i> &nbsp; อัปโหลด
+                        </Button>
+                    </div>
+                </div>
+            }
+
+            @if (Checktype == 3 || Checktype == 4 || dataStatus == true)
+            {
+                <div class="row pb-3">
+                    <div class="col-xl-4 mms-media-start">
+                        <div class="mms-txt-headdetail" style="width: 52%;">จำนวนคนทั้งหมด</div>&nbsp;
+                        <Input @bind-Value="@AllPatient" Style="width: 27%;color:black " ReadOnly Disabled />
+                    </div>
+                    <div class="col-xl-4 mms-media-center" style="margin-left: -6%">
+                        <div class="mms-txt-headdetail" style="width: 100%">จำนวนคนที่มีสิทธิ์ตรวจ</div>&nbsp;
+                        <Input @bind-Value="@PatientI" Style="width: 27%; margin-left: -50%; color:black" ReadOnly Disabled />
+                    </div>
+                    <div class="col-xl-4 mms-media-end" style="margin-left: -5%;">
+                        <div class="mms-txt-headdetail" style="width: 120%;">จำนวนคนที่ไม่มีสิทธิ์ตรวจ</div>&nbsp;
+                        <Input @bind-Value="@PatientN" Style="width: 27%; margin-left: -65%; color:black" ReadOnly Disabled />
+                    </div>
+                </div>
+                <div class="row pb-5">
+                    <div class="col-xl-4 mms-media-start">
+                        <div class="mms-txt-headdetail" style="width: 52%">จำนวนรายการทั้งหมด</div>&nbsp;
+                        <Input @bind-Value="@AllList" Style="width: 27%; color:black" ReadOnly Disabled />
+                    </div>
+                    <div class="col-xl-4 mms-media-center" style="margin-left: -6%">
+                        <div class="mms-txt-headdetail" style="width: 100%">จำนวนเงินทั้งหมด</div>&nbsp;
+                        <Input @bind-Value="@AllAmount" Style="width: 27%; margin-left: -50%; color:black" ReadOnly Disabled />
+                    </div>
+                </div>
+                <div class="row align-items-center py-4">
+                    <div class="col-sm-12 col-md-9">
+                        <div class="mms-txt-headdetail">รายละเอียดผู้ที่มีสิทธิ์ตรวจ</div>
+                    </div>
+                    <div class="col-sm-12 col-md-3">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                            <SpaceItem>
+                                <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+                <Table DataSource='listCheckPermission.Where(x => x.DeleteStatus == "I")' TItem="CheckPermissionCheckListView" Bordered Size="TableSize.Small" Context="data" ScrollX="1600">
+                    <ColumnDefinitions>
+                        <ActionColumn Width="50" Align="ColumnAlign.Center">
+                            <CellRender Context="cellData">
+                                @String.Format("{0:d}", listCheckPermission.Where(x => x.DeleteStatus == "I").ToList().IndexOf(data) + 1)
+                            </CellRender>
+                        </ActionColumn>
+                        <PropertyColumn Property="c=>c.PersonalId" Width="80" Align="ColumnAlign.Center" />
+                        <ActionColumn Width="100" Align="ColumnAlign.Center">
+                            <CellRender Context="cellData">
+                                <div>@data.PatientName</div>
+                                <div>@data.PatientSurname</div>
+                            </CellRender>
+                        </ActionColumn>
+
+                        @if (data.checklistMs != null)
+                        {
+                            @foreach (var item in data.checklistMs)
+                            {
+                                <ActionColumn Align="ColumnAlign.Center" Width="10">
+                                    <CellRender Context="cellData">
+                                        @if (item.statuscheck == true)
+                                        {
+                                            <i class="fa-solid fa-check" style="font-size:10px"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-xmark" style="color: red;font-size:10px"></i>
+                                        }
+                                    </CellRender>
+                                </ActionColumn>
+                            }
+
+
+                        }
+
+                        @{
+
+                            //checkHearing = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[0].statuscheck == true);
+                            //checkBreast = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[1].statuscheck == true);
+                            //checkEye1 = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[2].statuscheck == true);
+                            //checkSnelleneye = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[3].statuscheck == true);
+                            //checkCBC = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[4].statuscheck == true);
+                            //checkUA = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[5].statuscheck == true);
+                            //checkFBS = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[6].statuscheck == true);
+                            //checkCR = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[7].statuscheck == true);
+                            //checkLP = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[8].statuscheck == true);
+                            //checkHBsAag = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[9].statuscheck == true);
+                            //checkPapSmear = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[10].statuscheck == true);
+                            //checkVIA = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[11].statuscheck == true);
+                            //checkFOBT = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[12].statuscheck == true);
+                            //checkChestXray = listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[13].statuscheck == true);
+                            AllAmount = listCheckPermission.Where(x => x.DeleteStatus == "I").Sum(x => x.ChecklistPriceAll).ToString("N0");
+                            AllList = listCheckPermission.Where(x => x.DeleteStatus == "I").Sum(x => x.Allcount).ToString("N0");
+                        }
+                        <PropertyColumn Property='c=>c.Allcount.ToString("N0")' Width="50" Align="ColumnAlign.Center" />
+                        <PropertyColumn Property='c=>c.ChecklistPriceAll.ToString("N0")' Width="50" Align="ColumnAlign.Center" />
+
+                        <SummaryRow>
+
+                            <SummaryCell ColSpan="3" Align="ColumnAlign.Center">รวม</SummaryCell>
+                            @foreach (var item in listSummary)
+                            {
+                                <SummaryCell Align="ColumnAlign.Center">
+                                    <Text>@item</Text>
+                                </SummaryCell>
+                            }
+                            @*<SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkHearing</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkBreast</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkEye1</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkSnelleneye</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkCBC</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkUA</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkFBS</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkCR</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkLP</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkHBsAag</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkPapSmear</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkVIA</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkFOBT</Text>
+                        </SummaryCell>
+                        <SummaryCell Align="ColumnAlign.Center">
+                        <Text>@checkChestXray</Text>
+                        </SummaryCell>*@
+                            <SummaryCell Align="ColumnAlign.Center">
+                                <Text>@AllList</Text>
+                            </SummaryCell>
+                            <SummaryCell Align="ColumnAlign.Center">
+                                <Text>@AllAmount</Text>
+                            </SummaryCell>
+
+                        </SummaryRow>
+
+                    </ColumnDefinitions>
+
+                    <HeaderTemplate>
+                        <TableRow>
+
+                            <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                            <SimpleTableHeader RowSpan="2">เลขประจำตัวประชาชน</SimpleTableHeader>
+                            <SimpleTableHeader RowSpan="2">ชื่อ-นามสกุล </SimpleTableHeader>
+                            <SimpleTableHeader ColSpan="countChecklistM">รายการที่ตรวจได้</SimpleTableHeader>
+                            <SimpleTableHeader RowSpan="2">จำนวนเงิน </SimpleTableHeader>
+
+                        </TableRow>
+                        <TableRow>
+                            @if (listCheckPermission.Where(x => x.DeleteStatus == "I").Count() != 0)
+                            {
+
+                                foreach (var dataM in chcklistMView)
+                                {
+                                    <SimpleTableHeader>@dataM.ChecklistShortname</SimpleTableHeader>
+                                }
+
+                            }
+                            else
+                            {
+                                foreach (var listM in checkListM.Where(x => x.ChecklistStatus == "A"))
+                                {
+                                    <SimpleTableHeader>@listM.ChecklistShortname</SimpleTableHeader>
+                                }
+                            }
+
+
+
+                            <SimpleTableHeader>ทั้งหมด</SimpleTableHeader>
+
+                        </TableRow>
+
+                    </HeaderTemplate>
+
+                </Table>
+                <div class="row align-items-center py-4">
+                    <div class="col-sm-12 col-md-9">
+                        <div class="mms-txt-headdetail">รายละเอียดผู้ที่ไม่มีสิทธิ์ตรวจ</div>
+                    </div>
+                    <div class="col-sm-12 col-md-3">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                            <SpaceItem>
+                                <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                </div>
+                <Table DataSource='listCheckPermission.Where(x => x.DeleteStatus == "N")' TItem="CheckPermissionCheckListView" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+                    <ChildContent Context="data">
+                        <Column TData="string" Title="ลำดับ" Width="10%" Style="text-align:center;">
+                            @String.Format("{0:d}", listCheckPermission.Where(x => x.DeleteStatus == "N").ToList().IndexOf(data) + 1)
+                        </Column>
+                        <Column TData="string" Title="เลขประจำตัวประชาชน" Width="20%" Style="text-align:center;">
+                            @data.PersonalId
+                        </Column>
+                        <Column TData="string" Title="ชื่อ-นามสกุล" Width="20%" Style="text-align:center;">
+                            @data.PatientName @data.PatientSurname
+                        </Column>
+                        <Column TData="string" Title="หมายเหตุ" Width="50%" Style="text-align:center;">
+                            @data.Remark
+                        </Column>
+                    </ChildContent>
+                </Table>
+            }
+            <div class="row pb-3 pt-5">
+                <div class="mms-media-start col-md-6">
+
+                    @if (dataStatus == true && Checktype != 3)
+                    {
+                        <Button Type="@ButtonType.Default" style="padding: 4px 30px; margin-right: 2%" @onclick=@(() => download())><i class="fa-solid fa-cloud-arrow-down"></i> &nbsp; ดาวน์โหลดผลสิทธิ์</Button>
+                        <Button Type="@ButtonType.Primary" style="padding: 4px 30px" OnClick="@(()=> LoadFile())"> <i class="fa-solid fa-upload"></i> &nbsp; อัปโหลดอีกครั้ง</Button>
+                    }
+                    @if (Checktype == 3)
+                    {
+                        <Button Class="mms-btn-red" style="padding: 4px 30px; margin-right: 2%" @onclick=@(() => UpdateStatus(ReserveId, "13"))><i class="fa-regular fa-circle-xmark"></i> &nbsp; ยกเลิกการจอง</Button>
+                        <Button Type="@ButtonType.Default" style="padding: 4px 30px; margin-right: 2%" @onclick=@(() => download())><i class="fa-solid fa-cloud-arrow-down"></i> &nbsp; ดาวน์โหลดผลสิทธิ์</Button>
+                        <Button Type="@ButtonType.Primary" style="padding: 4px 30px" OnClick="@(()=> LoadFile())"> <i class="fa-solid fa-upload"></i> &nbsp; อัปโหลดอีกครั้ง</Button>
+                    }
+                    @if (Checktype == 4)
+                    {
+                        <Button Type="@ButtonType.Default" style="padding: 4px 30px; margin-right: 2%" @onclick=@(() => download())><i class="fa-solid fa-cloud-arrow-down"></i> &nbsp; ดาวน์โหลดผลสิทธิ์</Button>
+                    }
+                </div>
+
+                <div class="mms-media-end  col-md-6">
+
+                    <Button Type="@ButtonType.Default" style="padding: 4px 30px;margin-right: 2%" @onclick=@(() => goBack(1))><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+                    @if (Checktype != 4)
+                    {
+                        <Button Type="@ButtonType.Primary" style="padding: 4px 30px" @onclick=@(() => save()) HtmlType="submit"><i class="fa-regular fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+                    }
+
+
+
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@if (DialogIsOpen)
+
+{
+    <UploadFileDataTable DataTable="@((args)=>Handlervalue(args.Item1, args.Item2))"></UploadFileDataTable>
+}
+@if (ModalDeleteIsOpen)
+{
+    <ModalDelete OnClose="@OnModalClose" title="ยกเลิกการจอง" description="ต้องการยกเลิกการจองหรือไม่">
+    </ModalDelete>
+}
+@if (ModalIsOpen)
+{
+    <ModalSaveChange OnClose="@OnDialogClose" title="ยืนยันการบันทึกข้อมูลใช่หรือไม่" description="">
+    </ModalSaveChange>
+}
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@if (isloading850 == true)
+{
+    <div class="row index-set body-bg d-flex justify-content-center align-content-center">
+        <div class="col-sm-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="load text-primary d-flex">
+                        <div class="row pb-3">
+                            <img style="width: 75px; height: 50px " src="helper_shared/icon_sso/loadinggif.gif" />
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <p class="mms-txt-headdetail text-center">กำลังประมวลผล กรุณารอสักครู่...</p>
+                    </div>
+                    <div class="row">
+                        <p class="mms-txt-headdetail text-center">@percent %</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    [Parameter]
+    public int Checktype { get; set; }
+
+    [Parameter]
+    public decimal ReserveId { get; set; }
+
+    List<person> listCheckupH = new List<person>();
+    List<CheckPermissionCheckListView> listCheckPermission = new List<CheckPermissionCheckListView>();
+    List<ChecklistM> chcklistMView = new List<ChecklistM>();
+    ManageBookHealthCheckupView ReserveAndCheckup = new ManageBookHealthCheckupView();
+    List<UploadFileItem> fileList = new List<UploadFileItem>();
+
+    List<int> listSummary = new List<int>();
+
+    public IBrowserFile bannerFile;
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+    public bool DialogIsOpen = false;
+    public bool ModalDeleteIsOpen = false;
+    public bool ModalIsOpen = false;
+    public string? AllPatient;
+    public string? PatientI;
+    public string? PatientN;
+    public string AllList;
+    public string AllAmount;
+    public string? showCreateDate;
+    public string? showUpdateDate;
+    public DateTime? reserveStartDate;
+    public DateTime? reserveEndDate;
+    public int? checkHearing;
+    public int? checkBreast;
+    public int? checkEye1;
+    public int? checkSnelleneye;
+    public int? checkCBC;
+    public int? checkUA;
+    public int? checkFBS;
+    public int? checkCR;
+    public int? checkLP;
+    public int? checkHBsAag;
+    public int? checkPapSmear;
+    public int? checkVIA;
+    public int? checkFOBT;
+    public int? checkChestXray;
+    bool _visible1 = false;
+    public int percent = 0;
+    bool openloadfile = false;
+    bool isloading850 = false;
+    ReserveH reserveH = new ReserveH();
+    public int countChecklistM;
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    public bool dataStatus = false;
+
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            files.Add(file);
+        }
+        //TODO upload the files to the server
+
+        fileList = files.Select(file => new UploadFileItem { FileName = file.Name, Size = file.Size }).ToList();
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    public bool isloading { get; set; } = false;
+    string txtValue { get; set; } = "";
+    string Value { get; set; } = "DevTest";
+    public string? hosmCode { get; set; }
+    public string? username { get; set; }
+    public decimal reserveId { get; set; }
+    public string status { get; set; }
+    List<AaiHealthChecklistM> checkListM = new List<AaiHealthChecklistM>();
+    public async Task goBack(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine($"Success:{JsonSerializer.Serialize(reserveH)}");
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(reserveH)}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        DateTime now = DateTime.Now;
+        int year = now.Year + 543;
+        checkListM = await determineReferenceServices.GetCheckListMByNowYear(year);
+        hosmCode = await _localstorage.GetItemAsync<String>("hospitalMCode");
+        username = await _localstorage.GetItemAsync<String>("username");
+        if (ReserveId != 0)
+        {
+
+
+            ReserveAndCheckup = await bookHealthCheckupServices.GetReserveById(Decimal.ToInt32(ReserveId));
+            listCheckPermission = ReserveAndCheckup.person;
+            reserveH = ReserveAndCheckup.dataCompany;
+            AllPatient = listCheckPermission.Count().ToString("N0");
+            PatientI = listCheckPermission.Where(x => x.DeleteStatus == "I").Count().ToString("N0");
+            PatientN = listCheckPermission.Where(x => x.DeleteStatus == "N").Count().ToString("N0");
+
+            showCreateDate = reserveH.CreateDate?.AddYears(543).ToString("dd/MM/yyyy");
+            showUpdateDate = reserveH.UpdateDate?.AddYears(543).ToString("dd/MM/yyyy");
+            reserveStartDate = reserveH.ReserveStartDate?.AddYears(543);
+            reserveEndDate = reserveH.ReserveEndDate?.AddYears(543);
+
+            if (listCheckPermission.Count() != 0)
+            {
+                chcklistMView = listCheckPermission.Where(x => x.DeleteStatus == "I").ToList()[0].checklistMs;
+            }
+            if (listCheckPermission.Where(x => x.DeleteStatus == "I").Count() != 0)
+            {
+                countChecklistM = (listCheckPermission[0].checklistMs.Count()) + 1;
+                for (var i = 0; i < chcklistMView.Count(); i++)
+                {
+
+                    listSummary.Add(listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[i].statuscheck == true));
+
+                };
+            }
+            else
+            {
+                countChecklistM = (checkListM.Where(x => x.ChecklistStatus == "A").Count()) + 1;
+                for (var i = 0; i < checkListM.Where(x => x.ChecklistStatus == "A").Count(); i++)
+                {
+
+                    listSummary.Add(listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[i].statuscheck == true));
+
+                };
+            }
+
+
+        }
+
+
+
+        StateHasChanged();
+        isloading = false;
+    }
+
+
+    public async void addItem()
+    {
+        _visible1 = true;
+    }
+
+    public async void count()
+    {
+
+        for (var i = 0; i < 80; i++)
+        {
+            await Task.Delay(400);
+            percent += 1;
+            StateHasChanged();
+        }
+
+
+    }
+
+    public async Task count1()
+    {
+
+        while (true)
+        {
+            await Task.Delay(200);
+            percent += 5;
+            StateHasChanged();
+            if (percent + 5 > 100)
+            {
+                percent = 100;
+                break;
+            }
+        }
+
+    }
+
+    private async Task Handlervalue(List<DataTable> datable, bool isOk)
+    {
+        if (isOk)
+        {
+            percent = 0;
+            isloading850 = true;
+            count();
+            StateHasChanged();
+            Console.WriteLine(datable);
+            if (datable.Count() != 0)
+            {
+                foreach (DataColumn column in datable[0].Columns)
+                {
+                    if (column.ColumnName != "เลขนิติบุคคล" && column.ColumnName != "เลขที่บัญชีนายจ้าง" && column.ColumnName != "ชื่อสถานประกอบการ" && column.ColumnName != "เลขสาขา" && column.ColumnName != "ที่อยู่" && column.ColumnName != "ชื่อ HR" && column.ColumnName != "เบอร์ HR" && column.ColumnName != "อีเมล HR" && column.ColumnName != "วันที่เริ่มตรวจ" && column.ColumnName != "วันที่ตรวจเสร็จ")
+                    {
+                        isloading850 = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                              "มี field ใน excel ของข้อมูลสถานประกอบการไม่ครบตามที่กำหนด",
+                              null,
+                              SweetAlertIcon.Error
+                              );
+                        break;
+                    }
+                    else
+                    {
+                        foreach (DataRow row in datable[0].Rows)
+                        {
+                            //Console.WriteLine($"ID: {row["เลขนิติบุคคล"]}");
+                            //var test = row["เลขนิติบุคคล"];
+                            //Console.WriteLine(test);
+                            reserveH.CompanyTaxNo = row["เลขนิติบุคคล"].ToString();
+                            reserveH.CompanyAccNo = row["เลขที่บัญชีนายจ้าง"].ToString();
+                            reserveH.CompanyName = row["ชื่อสถานประกอบการ"].ToString();
+                            reserveH.CompanyBranch = row["เลขสาขา"].ToString();
+                            reserveH.CompanyAddr = row["ที่อยู่"].ToString();
+                            reserveH.HrName = row["ชื่อ HR"].ToString();
+                            reserveH.HrPhone = row["เบอร์ HR"].ToString();
+                            reserveH.HrEmail = row["อีเมล HR"].ToString();
+                            reserveStartDate = DateTime.ParseExact(row["วันที่เริ่มตรวจ"].ToString().Substring(0, 2) + "/" + row["วันที่เริ่มตรวจ"].ToString().Substring(2, 2) + "/" + row["วันที่เริ่มตรวจ"].ToString().Substring(4), "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                            reserveEndDate = DateTime.ParseExact(row["วันที่ตรวจเสร็จ"].ToString().Substring(0, 2) + "/" + row["วันที่ตรวจเสร็จ"].ToString().Substring(2, 2) + "/" + row["วันที่ตรวจเสร็จ"].ToString().Substring(4), "dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+                        }
+
+                    }
+
+
+                }
+
+                foreach (DataColumn columnP in datable[1].Columns)
+                {
+                    if (columnP.ColumnName != "ลำดับ" && columnP.ColumnName != "เลขประจำตัวประชาชน" && columnP.ColumnName != "เพศ" && columnP.ColumnName != "ชื่อ" && columnP.ColumnName != "นามสกุล" && columnP.ColumnName != "เบอร์โทร")
+                    {
+                        isloading850 = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                              "มี field ใน excel ของข้อมูลผู้รับบริการตรวจไม่ครบตามที่กำหนด",
+                              null,
+                              SweetAlertIcon.Error
+                              );
+                        break;
+                    }
+                    else
+                    {
+                        foreach (DataRow rowPerson in datable[1].Rows)
+                        {
+                            if (listCheckPermission.Count() == 0)
+                            {
+                                person checkupH = new person();
+                                checkupH.PersonalId = rowPerson["เลขประจำตัวประชาชน"].ToString();
+                                checkupH.PatientSex = rowPerson["เพศ"].ToString();
+                                checkupH.PatientName = rowPerson["ชื่อ"].ToString();
+                                checkupH.PatientSurname = rowPerson["นามสกุล"].ToString();
+                                checkupH.PatientTel = rowPerson["เบอร์โทร"].ToString();
+                                checkupH.typeReserve = "Reserve";
+                                listCheckupH.Add(checkupH);
+                            }
+                            else
+                            {
+                                listCheckupH.Clear();
+                                listCheckPermission.Clear();
+                                AllList = 0.ToString();
+                                AllAmount = 0.ToString();
+                                person checkupH = new person();
+                                checkupH.PersonalId = rowPerson["เลขประจำตัวประชาชน"].ToString();
+                                checkupH.PatientSex = rowPerson["เพศ"].ToString();
+                                checkupH.PatientName = rowPerson["ชื่อ"].ToString();
+                                checkupH.PatientSurname = rowPerson["นามสกุล"].ToString();
+                                checkupH.PatientTel = rowPerson["เบอร์โทร"].ToString();
+                                checkupH.typeReserve = "Reserve";
+                                listCheckupH.Add(checkupH);
+                            }
+
+                        }
+                        break;
+                    }
+                }
+
+
+                listCheckPermission = await bookHealthCheckupServices.CheckPermission(listCheckupH);
+                await count1();
+                AllPatient = listCheckPermission.Count().ToString("N0");
+                PatientI = listCheckPermission.Where(x => x.DeleteStatus == "I").Count().ToString("N0");
+                PatientN = listCheckPermission.Where(x => x.DeleteStatus == "N").Count().ToString("N0");
+                var permission = listCheckPermission.Where(x => x.DeleteStatus == "I").ToList();
+                if (listCheckPermission.Count() != 0)
+                {
+                    chcklistMView = listCheckPermission.Where(x => x.DeleteStatus == "I").ToList()[0].checklistMs;
+                }
+
+                if (listCheckPermission.Where(x => x.DeleteStatus == "I").Count() != 0)
+                {
+                    countChecklistM = (listCheckPermission[0].checklistMs.Count()) + 1;
+                    for (var i = 0; i < chcklistMView.Count(); i++)
+                    {
+                        listSummary.Add(listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[i].statuscheck == true));
+                    };
+                }
+                else
+                {
+                    countChecklistM = (checkListM.Where(x => x.ChecklistStatus == "A").Count()) + 1;
+                    for (var i = 0; i < checkListM.Where(x => x.ChecklistStatus == "A").Count(); i++)
+                    {
+
+                        listSummary.Add(listCheckPermission.Where(x => x.DeleteStatus == "I").Count(x => x.checklistMs[i].statuscheck == true));
+
+                    };
+                }
+
+
+                DateTime? setDate = DateTime.Now;
+                if (ReserveId == 0)
+                {
+                    reserveH.CreateDate = setDate;
+                    showCreateDate = setDate?.AddYears(543).ToString("dd/MM/yyyy");
+                }
+                reserveH.UpdateDate = setDate;
+                showUpdateDate = setDate?.AddYears(543).ToString("dd/MM/yyyy");
+                reserveH.UpdateBy = username;
+
+                dataStatus = true;
+                isloading850 = false;
+                DialogIsOpen = false;
+                StateHasChanged();
+
+            }
+            else
+            {
+                isloading850 = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                      "อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่",
+                      null,
+                      SweetAlertIcon.Error
+                      );
+            }
+
+
+        }
+        else
+        {
+            DialogIsOpen = false;
+            StateHasChanged();
+        }
+        // Handle the new value received from the child component
+
+    }
+
+
+    public async Task LoadFile()
+    {
+        DialogIsOpen = true;
+        StateHasChanged();
+    }
+    public class Sheet1Data
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class Sheet2Data
+    {
+        public string City { get; set; }
+        public int Population { get; set; }
+    }
+
+    public async Task UpdateStatus(decimal ReserveId, string Status)
+    {
+        ModalDeleteIsOpen = true;
+        reserveId = ReserveId;
+        status = Status;
+        StateHasChanged();
+    }
+
+    private async Task OnModalClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+
+
+            var res = await bookHealthCheckupServices.UpdateReserveStatus(reserveId, status);
+
+            if (res == "success")
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                      "ยกเลิกการจองสำเร็จ",
+                      null,
+                      SweetAlertIcon.Success
+                      );
+                await IndexPage.InvokeAsync((1));
+            }
+            else
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                  "ยกเลิกการจองไม่สำเร็จ",
+                      null,
+                      SweetAlertIcon.Error
+                      );
+
+            }
+        }
+        ModalDeleteIsOpen = false;
+    }
+    public async Task download()
+    {
+
+        isloading = true;
+        await Task.Delay(3000);
+        var datetime = DateTime.Now.ToString("yyyyMMdd|HHmmss");
+        var date = datetime.Split('|')[0];
+        var time = datetime.Split('|')[1];
+        var fileName = "CHECKLIST" + "_" + date + "_" + time + ".xlsx";
+
+        var path = Path.Combine("wwwroot", "download", fileName);
+        var pathTemplate = Path.Combine("wwwroot", "CHECKLIST_TEMPLATE.xlsx");
+        var outputFile = path;
+        var template = new XLTemplate(pathTemplate);
+
+        ReserveH reserve = new ReserveH();
+        List<CheckPermissionToExcelView> listAuthorized = new List<CheckPermissionToExcelView>();
+        List<CheckPermissionCheckListView> listUnauthorized = new List<CheckPermissionCheckListView>();
+        reserve = reserveH;
+        foreach (var data in listCheckPermission.Where(x => x.DeleteStatus == "I").ToList())
+        {
+
+            CheckPermissionToExcelView authorized = new CheckPermissionToExcelView
+                {
+                    CheckupId = (decimal)data.CheckupId,
+                    DeleteStatus = data.DeleteStatus,
+                    PatientName = data.PatientName,
+                    PatientSurname = data.PatientSurname,
+                    PersonalId = data.PersonalId,
+                    Remark = data.Remark,
+                    PatientSex = data.PatientSex,
+                    PatientTel = data.PatientTel,
+                    ChecklistPriceAll = data.ChecklistPriceAll,
+                    Allcount = data.Allcount,
+
+
+                };
+            for (var i = 0; i < data.checklistMs.Count(); i++)
+            {
+                if (data.checklistMs[i].ChecklistCode == "Hearing")
+                {
+                    authorized.Hearing = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "Breast")
+                {
+                    authorized.Breast = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "Snelleneye")
+                {
+                    authorized.Snelleneye = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "CBC")
+                {
+                    authorized.CBC = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "ChestX-ray")
+                {
+                    authorized.ChestXray = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "FBS")
+                {
+                    authorized.FBS = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "CR")
+                {
+                    authorized.CR = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "LP")
+                {
+                    authorized.LP = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "HBaAg")
+                {
+                    authorized.HBaAg = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "PAPSmear")
+                {
+                    authorized.PAPSmear = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "Via")
+                {
+                    authorized.Via = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "UA")
+                {
+                    authorized.UA = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "FOBT")
+                {
+                    authorized.FOBT = data.checklistMs[i].statuscheck;
+                }
+                else if (data.checklistMs[i].ChecklistCode == "Eye1")
+                {
+                    authorized.Eye1 = data.checklistMs[i].statuscheck;
+                }
+            }
+            listAuthorized.Add(authorized);
+
+
+        }
+
+
+        listUnauthorized = listCheckPermission.Where(x => x.DeleteStatus == "N").ToList();
+        template.AddVariable("CompanyTaxNo", reserve.CompanyTaxNo);
+        template.AddVariable("CompanyAccNo", reserve.CompanyAccNo);
+        template.AddVariable("CompanyName", reserve.CompanyName);
+        template.AddVariable("CompanyBranch", reserve.CompanyBranch);
+        template.AddVariable("CompanyAddr", reserve.CompanyAddr);
+        template.AddVariable("HrName", reserve.HrName);
+        template.AddVariable("HrPhone", reserve.HrPhone);
+        template.AddVariable("ReserveStartDate", reserve.ReserveStartDate);
+        template.AddVariable("ReserveEndDate", reserve.ReserveEndDate);
+        template.AddVariable("HrEmail", reserve.HrEmail);
+        template.AddVariable("rptSummary2", listAuthorized);
+        template.AddVariable("rptSummary3", listUnauthorized);
+        template.AddVariable("rptSummary4", listAuthorized);
+        template.Generate();
+
+        template.SaveAs(outputFile);
+
+
+        isloading = false;
+        StateHasChanged();
+        await JsRuntime.InvokeAsync<object>("open", "download/" + fileName, "_blank");
+
+
+
+    }
+
+
+    public async Task save()
+    {
+
+        isloading = true;
+
+        reserveH.ReserveStartDate = reserveStartDate;
+        reserveH.ReserveEndDate = reserveEndDate;
+        ReserveAndCheckup.person = listCheckPermission;
+        ReserveAndCheckup.dataCompany = reserveH;
+        ReserveAndCheckup.dataCompany.HospitalCode = hosmCode;
+        ReserveAndCheckup.dataCompany.CreateBy = username;
+        ReserveAndCheckup.dataCompany.UpdateBy = username;
+        foreach (var item in ReserveAndCheckup.person)
+        {
+            item.PatientHeigth = "disabled";
+            item.PatientWeigth = "disabled";
+            item.PatientPressure = "disabled";
+        }
+        ModalIsOpen = true;
+        isloading = false;
+
+        StateHasChanged();
+
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+
+            if (ReserveId == 0)
+            {
+                var res = await bookHealthCheckupServices.CreateBookCheckup(ReserveAndCheckup);
+
+                if (res == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                          "บันทึกข้อมูลสำเร็จ",
+                          null,
+                          SweetAlertIcon.Success
+                          );
+                    await IndexPage.InvokeAsync((1));
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                          "บันทึกข้อมูลไม่สำเร็จ",
+                          null,
+                          SweetAlertIcon.Error
+                          );
+
+                }
+            }
+            else
+            {
+                var res = await bookHealthCheckupServices.UpdateBookCheckup(ReserveAndCheckup);
+
+                if (res == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                          "บันทึกข้อมูลสำเร็จ",
+                          null,
+                          SweetAlertIcon.Success
+                          );
+                    await IndexPage.InvokeAsync((1));
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                          "บันทึกข้อมูลไม่สำเร็จ",
+                          null,
+                          SweetAlertIcon.Error
+                          );
+
+                }
+            }
+
+
+
+        }
+        ModalIsOpen = false;
+    }
+
+}

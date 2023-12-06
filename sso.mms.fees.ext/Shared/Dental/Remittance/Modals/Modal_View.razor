@@ -1,0 +1,261 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       
+       Width="1300"
+        Footer=null>
+    <Card Bordered="true" Title=@("รายละเอียดผู้ประกันตน") Style="width: 100%;border-radius: 6px 6px 6px 6px;" Size="small" Class="mms-txt-default">
+        <Body>
+            <div class="row">
+                <div class="col-lg-3" style="color:#6A6A6A;">
+                    เลขที่รับแจ้ง :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    670165900000018
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            เลขบัตรประจำตัวประชาชน :
+                        </div>
+                        <div class="col">
+                            123456789xxxx
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            เพศ :
+                        </div>
+                        <div class="col">
+                            ชาย
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            สัญชาติ :
+                        </div>
+                        <div class="col">
+                            ไทย
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            เบอร์โทรศัพท์ :
+                        </div>
+                        <div class="col">
+                            099-200-654
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            ชื่อ - สกุล :
+                        </div>
+                        <div class="col">
+                            นาย อภิรักษ์ สำรวม
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            วันเกิด :
+                        </div>
+                        <div class="col">
+                            12 พฤษภาคม 2530
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            สถานะผู้ประกันตน :
+                        </div>
+                        <div class="col">
+                            เป็นผู้ประกันตน
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+
+                <div class="col-lg-6 col-mb-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-mb-12" style="color:#6A6A6A;">
+                            ผู้บันทึกรับแจ้ง :
+                        </div>
+                        <div class="col-lg-6 col-mb-12">
+                            นางสาว กชกร มั่นใจ
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-mb-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-mb-12" style="color:#6A6A6A;">
+                            วันที่บันทึก :
+                        </div>
+                        <div class="col-lg-6 col-mb-12">
+                            20/07/2565
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Body>
+    </Card>
+    <br />
+    <Card Bordered="true" Title=@("ข้อมูลสิทธิประโยชน์") Style="width: 100%;border-radius: 6px 6px 6px 6px;" Size="small" Class="mms-txt-default">
+        <Body>
+
+            <div class="row">
+                <div class="col-lg-3" style="color:#6A6A6A;">
+                    สิทธิประโยชน์ :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    ค่าอุดฟัน ถอนฟัน ขูดหินปูน
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            ภายใน :
+                        </div>
+                        <div class="col">
+                            1 ปี
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            เบิกแล้ว :
+                        </div>
+                        <div class="col">
+                            0.00
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            วงเงินสิทธิประโยชน์คงเหลือ :
+                        </div>
+                        <div class="col">
+                            900.00
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+
+                            จำนวนเงินที่เบิกได้ :
+
+                        </div>
+                        <div class="col">
+                            900.00
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:#6A6A6A;">
+                            เบิกครั้งนี้ :
+                        </div>
+                        <div class="col">
+                            900.00
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </Body>
+    </Card>
+    <br />
+    <Card Bordered="true" Title=@("รายการรักษาที่เบิก") Style="width: 100%;border-radius: 6px 6px 6px 6px;" Size="small" Class="mms-txt-default">
+        <Body>
+            <Table DataSource="listOfData" Bordered HidePagination Class="mms-txt-default">
+                    <PropertyColumn Width="20%" Title="ชื่อรายการ" Property="c => c.Id" Align=ColumnAlign.Left></PropertyColumn>
+                    <PropertyColumn Width="20%" Title="เลขฟัน" Property="c => c.Name" Align="ColumnAlign.Left"></PropertyColumn>
+                    <PropertyColumn Width="20%" Title="จำนวน" Property="c => c.count" Align=ColumnAlign.Center> </PropertyColumn>
+                    <PropertyColumn Width="20%" Title="ค่ารักษา" Property="c => c.Name" Align=ColumnAlign.Center> </PropertyColumn>
+                    <PropertyColumn Width="20%" Title="จำนวนที่เบิกได้" Property="c => c.Age " Align=ColumnAlign.Center></PropertyColumn>
+                    @{
+                    var totalBorrow = listOfData.Sum(x => x.Age);
+                }
+                <SummaryRow>
+                    <SummaryCell Align=ColumnAlign.Right ColSpan="4">รวมทั้งหมด</SummaryCell>
+
+                    <SummaryCell Align=ColumnAlign.Center>
+                        <Text>@totalBorrow</Text>
+                    </SummaryCell>
+                </SummaryRow>
+            </Table>
+        </Body>
+    </Card>
+    <div class="d-flex mx-3 my-4">
+        <div style="color : #1A141F">สถานะการจ่าย :</div> &nbsp;&nbsp;&nbsp;
+        <div style="color : #F56C6C">แจ้งเเก้ไข หรือ รอการจ่าย</div>
+    </div>
+
+
+</Modal>
+
+@code {
+    string title = "รายละเอียดข้อมูล";
+    private Model model = new Model();
+    bool loading = false;
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    List<ItemData> listOfData = new List<ItemData>();
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 1).Select(i => new ItemData { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+}

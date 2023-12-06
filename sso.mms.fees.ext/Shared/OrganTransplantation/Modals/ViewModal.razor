@@ -1,0 +1,417 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Width="1300"
+       Footer=null>
+    <Card Bordered="true" Title=@title1 Style="width: 100%; border-radius: 6px 6px 6px 6px; background-color: #6A6A6A;" Size="small" Class="mms-txt-default">
+        <Body>
+            <div class="row">
+                <div class="col-lg-3" >
+                    ชื่อ-สกุล :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    นางสุจินดา ญาดา
+                </div>
+                <div class="col-lg-3" >
+                    วันเกิด :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    17 ส.ค. 2508
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" >
+                            เลขบัตรประจำตัวประชาชน :
+                        </div>
+                        <div class="col">
+                            123456789xxxx
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            เพศ :
+                        </div>
+                        <div class="col">
+                            หญิง
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <div class="col" >
+                            อายุ :
+                        </div>
+                        <div class="col">
+                            58
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่เสียชีวิต :
+                        </div>
+                        <div class="col">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" >
+                            สถานะ :
+                        </div>
+                        <div class="col">
+                            A:ผู้ประกันตน
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </Body>
+    </Card>
+    <br />
+    <Card Bordered="true" Title=@("ข้อมูลการอนุมัติสิทธ์") Style="width: 100%;border-radius: 6px 6px 6px 6px; background-color: #6A6A6A;" Size="small" Class="mms-txt-default">
+        <Body>
+            <div>รายละเอียดการอนุมัติสิทธิ์ - OTP04: ปลูกถ่ายตับ</div>
+            <hr/>
+            <div class="row">
+                <div class="col-lg-3" >
+                    เลขที่อนุมัติ :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    651000200000
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" >
+                            สถานพยาบาล :
+                        </div>
+                        <div class="col">
+                            13700:1210000:โรงพยาบาลลานนา1
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่อนุมัติ :
+                        </div>
+                        <div class="col">
+                            14 ม.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            จังหวัดที่ลงทะเบียน :
+                        </div>
+                        <div class="col">
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            Admission Date :
+                        </div>
+                        <div class="col">
+                            14 พ.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่ผ่าตัด :
+                        </div>
+                        <div class="col">
+                            11 พ.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            หมายเลขผู้บริจาค :
+                        </div>
+                        <div class="col">
+                            65100020022
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            ประเภทการอนุมติสิทธิ์ :
+                        </div>
+                        <div class="col">
+                            ก่อน/ระหว่าง/หลังผ่าตัด
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            หมายเหตุ :
+                        </div>
+                        <div class="col">
+                            ผ่าตัด 2 อวัยวะพร้อมกัน หัวใจและตับ
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <div class="col" >
+                            
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่หมดสิทธิ์เบิก :
+                        </div>
+                        <div class="col">
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            AN :
+                        </div>
+                        <div class="col">                           
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Discharge Date : 
+                        </div>
+                        <div class="col">
+                            17 ส.ค. 2508
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            รหัสหน่วยบริการที่ผ่าตัด :
+                        </div>
+                        <div class="col">
+                            13700:โรงพยาบาลลานนา1
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            Discharge Date :
+                        </div>
+                        <div class="col">
+                            17 ส.ค. 2508
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            
+                        </div>
+                        <div class="col">
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่สร้างข้อมูล :
+                        </div>
+                        <div class="col">
+                            30 ม.ค. 2565
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div>รายละเอียดการอนุมัติสิทธิ์ - OTP04: ปลูกถ่ายหัวใจ</div>
+            <hr />
+            <div class="row">
+                <div class="col-lg-3" >
+                    เลขที่อนุมัติ :
+                </div>
+                <div class="col-lg-3 col-mb-12">
+                    651000200000
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6 col-md-12 ">
+
+                    <div class="row">
+                        <div class="col" >
+                            สถานพยาบาล :
+                        </div>
+                        <div class="col">
+                            13700:1210000:โรงพยาบาลลานนา1
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่อนุมัติ :
+                        </div>
+                        <div class="col">
+                            14 ม.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            จังหวัดที่ลงทะเบียน :
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            Admission Date :
+                        </div>
+                        <div class="col">
+                            14 พ.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่ผ่าตัด :
+                        </div>
+                        <div class="col">
+                            11 พ.ค. 2565
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            หมายเลขผู้บริจาค :
+                        </div>
+                        <div class="col">
+                            65100020022
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            ประเภทการอนุมติสิทธิ์ :
+                        </div>
+                        <div class="col">
+                            ก่อน/ระหว่าง/หลังผ่าตัด
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            หมายเหตุ :
+                        </div>
+                        <div class="col">
+                            ผ่าตัด 2 อวัยวะพร้อมกัน หัวใจและตับ
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <div class="col" s>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่หมดสิทธิ์เบิก :
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            AN :
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            Discharge Date :
+                        </div>
+                        <div class="col">
+                            17 ส.ค. 2508
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            รหัสหน่วยบริการที่ผ่าตัด :
+                        </div>
+                        <div class="col">
+                            13700:โรงพยาบาลลานนา1
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            Discharge Date :
+                        </div>
+                        <div class="col">
+                            17 ส.ค. 2508
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" >
+                            วันที่สร้างข้อมูล :
+                        </div>
+                        <div class="col">
+                            30 ม.ค. 2565
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Body>
+    </Card>
+</Modal>
+
+@code {
+    string title = "การปลูกถ่ายอวัยวะ/ตรวจสอบสิทธิ์/แสดงรายละเอียดสิทธิ์ผู้ประกันตน";
+    string title1 = "รายละเอียดผู้ประกันตน";
+    private Model model = new Model();
+    bool loading = false;
+    List<ItemData> listOfData = new List<ItemData>();
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 3).Select(i => new ItemData { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+}

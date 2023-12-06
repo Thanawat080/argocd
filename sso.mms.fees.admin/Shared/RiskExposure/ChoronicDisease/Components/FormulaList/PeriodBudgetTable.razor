@@ -1,0 +1,153 @@
+﻿@using System.ComponentModel
+
+<Table DataSource="@data" Bordered Size="TableSize.Default">
+        <ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </ColumnDefinitions>
+        <HeaderTemplate>
+            <TableRow>
+                <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                <SimpleTableHeader RowSpan="2">อัตรา(%)</SimpleTableHeader>
+                <SimpleTableHeader ColSpan="12">
+                    งวดที่
+                </SimpleTableHeader>
+                <SimpleTableHeader RowSpan="2">
+                    สถานะการใช้งาน
+                </SimpleTableHeader>
+            </TableRow>
+            <TableRow>
+                <SimpleTableHeader>1</SimpleTableHeader>
+                <SimpleTableHeader>2</SimpleTableHeader>
+                <SimpleTableHeader>3</SimpleTableHeader>
+                <SimpleTableHeader>4</SimpleTableHeader>
+                <SimpleTableHeader>5</SimpleTableHeader>
+                <SimpleTableHeader>6</SimpleTableHeader>
+                <SimpleTableHeader>7</SimpleTableHeader>
+                <SimpleTableHeader>8</SimpleTableHeader>
+                <SimpleTableHeader>9</SimpleTableHeader>
+                <SimpleTableHeader>10</SimpleTableHeader>
+                <SimpleTableHeader>11</SimpleTableHeader>
+                <SimpleTableHeader>12</SimpleTableHeader>
+            </TableRow>
+        </HeaderTemplate>
+        <RowTemplate>
+            <TableRow>
+
+                <TableCell>@context.Data.Id</TableCell>
+                <TableCell>@context.Data.Rate</TableCell>
+                <TableCell>
+                    <Checkbox @bind-Checked="@context.Data.Installment1" Disabled="@disabled" />
+                </TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment2" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment3" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment4" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment5" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment6" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment7" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment8" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment9" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment10" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment11" Disabled="@disabled" /></TableCell>
+                <TableCell><Checkbox @bind-Checked="@context.Data.Installment12" Disabled="@disabled" /></TableCell>
+                <TableCell><Switch @bind-Value="@context.Data.Status"></Switch></TableCell>
+            </TableRow>
+        </RowTemplate>
+    </Table>
+
+    @code {
+    Data[] data;
+
+    TableFilter<string>[] filters;
+
+    bool isChecked = true;
+    bool disabled = false;
+
+    void ToggleDisable()
+    {
+        disabled = !disabled;
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+
+        public string Rate { get; set; }
+
+        public bool Installment1 { get; set; }
+
+        public bool Installment2 { get; set; }
+
+        public bool Installment3 { get; set; }
+
+        public bool Installment4 { get; set; }
+
+        public bool Installment5 { get; set; }
+
+        public bool Installment6 { get; set; }
+
+        public bool Installment7 { get; set; }
+
+        public bool Installment8 { get; set; }
+
+        public bool Installment9 { get; set; }
+
+        public bool Installment10 { get; set; }
+
+        public bool Installment11 { get; set; }
+
+        public bool Installment12 { get; set; }
+
+        public bool Status { get; set; }
+
+    }
+
+    protected override void OnInitialized()
+    {
+        data = Enumerable.Range(0, 100).Select(x => new Data
+            {
+                Id = x,
+                Rate = "5.1",
+                Installment1 = false,
+                Installment2 = false,
+                Installment3 = false,
+                Installment4 = false,
+                Installment5 = false,
+                Installment6 = false,
+                Installment7 = false,
+                Installment8 = false,
+                Installment9 = false,
+                Installment10 = false,
+                Installment11 = false,
+                Installment12 = false,
+                Status = false,
+            }).ToArray();
+
+        filters = new TableFilter<string>[]
+        {
+            new TableFilter<string>
+            {
+                Text = "Joe",
+                Value = "Joe"
+            },
+            new TableFilter<string>
+            {
+                Text = "John",
+                Value = "John"
+            },
+        };
+    }
+}

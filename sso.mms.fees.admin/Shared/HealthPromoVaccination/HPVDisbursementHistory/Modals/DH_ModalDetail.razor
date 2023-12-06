@@ -1,0 +1,192 @@
+﻿@inject NavigationManager NavigationManager
+<style>
+    .anticon > .anticon {
+        line-height: 0;
+        vertical-align: 0;
+        color: #ffffff !important;
+    }
+
+</style>
+@{
+    RenderFragment footer = @<Template>
+    </Template>;
+}
+
+<Modal Title="รายละเอียดข้อมูลผู้ใช้สิทธิ"
+       Visible="@_visible"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Width="1000">
+
+    <div class="">
+        <div class="row">
+            <div class="col-md-12 col-lg-6">
+                <div class="row">
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <p>เลขประจำตัวประชาชน :</p>
+                        <p>เพศ :</p>
+                        <p>สัญชาติ :</p>
+                        <p>เบอร์โทรศัพท์ :</p>
+                        <p>โรงพยาบาลตามสิทธิ์ :</p>
+                    </div>
+                    <div class="col-6 ">
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+                <div class="row">
+                    <div class="col-6   d-flex flex-column align-items-end">
+                        <p>ชื่อ - นามสกุล :</p>
+                        <p>วันเกิด :</p>
+                        <p>อายุ :</p>
+                        <p>สถานะผู้ประกันตน :</p>
+                    </div>
+                    <div class="col-6 ">
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                        <p>1234567890xxx</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-6 col-lg-6">
+                <div class="row">
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <label class="mms-txt-headdetail mb-2">รายละเอียดการใช้สิทธิ</label>
+                    </div>
+                    <div class="col-6"></div>
+
+                    <div class="col-6  d-flex flex-column align-items-end">
+                        <p>วันที่รับวัคซีน :</p>
+                        <p>ชนิดวัคซีน :</p>
+                        <p>ชื่อทางการค้าวัคซีน :</p>
+                        <p>เลข Lot วัคซีน :</p>
+                    </div>
+                    <div class="col-6 ">
+                        <p>10 มีนาคม 2566</p>
+                        <p>3  สายพันธุิ์</p>
+                        <p>ABC-TEST01</p>
+                        <p>LOT00001</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                <div class="row">
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <label class="mms-txt-headdetail mb-2">ความดันโลหิต</label>
+                    </div>
+                    <div class="col-6"></div>
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <p>ค่าบน :</p>
+                        <p>ค่าล่าง :</p>
+                        <p>จำนวนเงิน :</p>
+                    </div>
+                    <div class="col-6 ">
+                        <p>160</p>
+                        <p>90</p>
+                        <p>250 บาท</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-6 col-lg-6">
+                <div class="row">
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <label class="mms-txt-headdetail mb-2">คำวินิจฉัย : </label>
+                    </div>
+                    <div class="col-6 ">
+                        <p style="color:#67C23A;">อนุมัติ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                <div class="row">
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <label class="mms-txt-headdetail mb-2">รายละเอียดการสั่งจ่าย</label>
+                    </div>
+                    <div class="col-6"></div>
+
+                    <div class="col-6 d-flex flex-column align-items-end">
+                        <p>สถานะ :</p>
+                        <p>งวด :</p>
+                        <p>เลขใบคำสั่งจ่าย :</p>
+                        <p>วันที่จ่าย :</p>
+                    </div>
+                    <div class="col-6 ">
+                        <p style="color:#67C23A;">จ่ายแล้ว</p>
+                        <p>6704</p>
+                        <p>10001111</p>
+                        <p>1  เม.ย. 67</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+    </div>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    string txtValue { get; set; }
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    /* modal */
+    bool _loading = false;
+
+    private void ShowModal()
+    {
+        _visible = true;
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _loading = false;
+        OnClose.InvokeAsync(false);
+    }
+    /*-- table --*/
+    record Data(string key, string name, int borrow, int repayment);
+
+    Data[] data = new Data[]
+    {
+        new("1","John Brown",10,33),
+        new("2","Jim Green",100,0),
+        new("3","Joe Black",10,10),
+        new("4","Jim Red",75,45),
+    };
+
+    record FixedData(string name, string description);
+
+    FixedData[] fixedData = Enumerable.Range(0, 6)
+        .Select(i => new FixedData(
+               name: (i % 2) > 0 ? "Light" : "Bamboo",
+               description: "Everything that has a beginning, has an end.")
+        ).ToArray();
+
+}

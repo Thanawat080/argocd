@@ -1,0 +1,144 @@
+﻿@using System.ComponentModel;
+@using sso.mms.fees.ext.Shared.OrganTransplantation.Report
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การปลูกถ่ายอวัยวะ/รายงาน</div>
+    </div>
+    <div class="container py-4">
+        <div class="row pb-3" style="padding: 24px;">
+            <div class="col-xl-4 mms-media-end">
+                <Space Direction="@DirectionVHType.Horizontal">
+                    <SpaceItem>
+                        <Search Placeholder="ชื่อรายงาน" EnterButton="true" AllowClear />
+                     </SpaceItem>
+                 </Space>
+             </div>
+         </div>
+         <hr />
+     </div>
+     <hr />
+     <div class="site-layout-background" style="padding: 24px;">
+         <Table Bordered DataSource=@data OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" Class="pb-5">
+             <ChildContent>
+                 <Selection Align="ColumnAlign.Center" Key="@(context.Id.ToString())" />
+                 <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.Name" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.CitizenId" Width="200px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.RecordDate" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.Status" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.CitizenId" Width="200px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.RecordDate" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="..." Property="c=>c!.Status" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="" Property="c=>c!.Skip" Align="ColumnAlign.Center" />
+             </ChildContent>
+             <PaginationTemplate>
+                 <Pagination Class="d-flex justify-content-between pt-2" Total="context.Total"
+                             PageSize="context.PageSize"
+                             Current="context.PageIndex"
+                                        ShowSizeChanger
+                             OnChange="context.HandlePageChange" />
+             </PaginationTemplate>
+         </Table>
+     </div>
+ </div>
+
+
+
+
+ @inject IMessageService message;
+
+ @code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    Table<MockUpData>? Table;
+
+    int pageSize = 5;
+
+
+    class MockUpData
+    {
+        public MockUpData(
+            int id,
+            string citizenId,
+            string name,
+            string recordDate,
+            string status,
+            string skip)
+        {
+            Id = id;
+            CitizenId = citizenId;
+            Name = name;
+            RecordDate = recordDate;
+            Status = status;
+            Skip = skip;
+        }
+        public int Id { get; set; }
+        public string CitizenId { get; set; }
+        public string Name { get; set; }
+        public string RecordDate { get; set; }
+        public string Status { get; set; }
+        public string Skip { get; set; }
+    }
+
+
+    MockUpData[] data =
+    {
+    };
+
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+
+    private string? txtValue { get; set; }
+    private bool loading;
+
+    private void Handle(string value)
+    {
+        Console.WriteLine(value);
+    }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public async Task OnSearch()
+    {
+        await message.Loading($"searching {txtValue}", 2);
+    }
+
+    private async Task OnEnter(KeyboardEventArgs e)
+    {
+        Console.WriteLine("Enter pressed");
+        loading = true;
+        await Task.Delay(3000);
+        loading = false;
+    }
+
+    string _size = ButtonSize.Large;
+
+    void handleChange(string value)
+    {
+        Console.WriteLine(value);
+    }
+
+    void handleItemsChange(IEnumerable<string> value)
+    {
+        Console.WriteLine(value);
+    }
+
+    public class Model
+    {
+        public string? installment { get; set; }
+
+        public string? hospitalID { get; set; }
+
+    }
+    private Model model = new Model();
+}

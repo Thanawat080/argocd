@@ -1,0 +1,467 @@
+﻿@using Blazored.LocalStorage;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.helper.ViewModels;
+
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService localStorage
+
+<style>
+    @@font-face {
+        font-family: 'Noto Sans Thai';
+        src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+    }
+
+    .pointer-function {
+        cursor: pointer;
+    }
+
+    .navbar-nav {
+        display: flex;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+        align-content: flex-start;
+        flex-direction: row;
+    }
+
+    .navbar-style {
+        height: auto;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-logo {
+        position: absolute;
+        left: 5.21%;
+        right: 74.93%;
+        top: 7.95%;
+        bottom: 62.33%;
+    }
+
+    .nav-font {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 36px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #909399;
+    }
+
+    .nav-user-font {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .dropbtn {
+        background-color: #FFFFFF;
+        color: white;
+        padding-left: 16px;
+        padding-right: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #FFFFFF;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        right: 10px;
+    }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+            .dropdown-content a:hover {
+                background-color: #FFFFFF;
+            }
+
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #FFFFFF;
+    }
+
+    @@media only screen and (min-width: 440px) {
+        /*    .hr-nav {
+                                display: none;
+                            }*/
+        .wid-banner {
+            width: 286px;
+            height: 52.3px;
+        }
+    }
+
+    @@media only screen and (max-width: 440px) {
+        .wid-banner {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    @@media only screen and (min-width: 768px) {
+        .c-style-content {
+            padding-left: 75px;
+            padding-right: 75px;
+        }
+    }
+
+    @@media only screen and (max-width: 700px) {
+        .flex-col-max700 {
+            flex-direction: column;
+        }
+
+        .nav-bg {
+            height: auto;
+        }
+
+        .float-start-max700 {
+            align-items: flex-start;
+        }
+
+        .px-max700 {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    }
+
+    @@media only screen and (min-width: 700px) {
+
+        .px-min700 {
+            margin-left: 75px;
+            margin-right: 75px;
+        }
+    }
+
+    .nto_page {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+    }
+
+    .d-flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .d-flex-end {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .fa-solid1 {
+        color: #334396;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #FFFFFF;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        right: 10px;
+    }
+
+    .nav-bg {
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+        height: 80px;
+        padding-: 0.5rem;
+    }
+
+    .circleOrange1 {
+        background: red;
+        border-radius: 100%;
+        color: #ffffff;
+        height: 1.5em;
+        width: 1.5em;
+        font-size: 11px;
+        text-align: center;
+        padding-top: 2px;
+    }
+</style>
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-style c-style-content">
+    <div class="row w-100 m-2">
+        <div class="col-sm-6 col-md-6 col-lg-5 col-xl-4 pb-2 d-flex align-items-center" @onclick="GoToHome">
+            <img class="wid-banner pointer-function" src="helper_shared/icon_sso/mms-logo.png" />
+
+            <div style="color: #f0f2f9;font-size: 29px;padding-left: 1rem;">
+                |
+            </div>
+            <div style="color: #909399bd;">
+                @PageCode
+            </div>
+
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-7 col-xl-8">
+            <form class="float-end">
+                <div class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <div class="d-flex align-items-end">
+                        <div class="nav-item px-2" @onclick="GoToHome">
+                            <i class="fa-solid fa-solid1 fa-house pointer-function" style="font-size:32px;color:#334396;"></i>
+                        </div>
+                        @if (permitChat.isRoleRead == true)
+                        {
+                            @if (checkStatusChat != null && openIconChat == true)
+                            {
+                                <div class="nav-item px-2 point-event" @onclick="GoToChatPage">
+                                    @if (ChatNoti > 0)
+                                    {
+                                        <div style="position:absolute;padding-left: 25px;padding-top: 14px;">
+                                            <div class="circleOrange1">@ChatNoti</div>
+                                        </div>
+                                    }
+                                    <i class="fa-solid fa-solid1 fa-comments" data-bs-placement="bottom" title="ออนไลน์แชท" style="font-size:32px;color:#334396;"></i>
+                                </div>
+                            }
+                        }
+                        @{
+                            var count = 0;
+                            if (responseNotiM != null)
+                            {
+                                for (var i = 0; i < responseNotiM.Count(); i++)
+                                {
+                                    count += responseNotiM[i].NotificationTs.Count();
+                                }
+                            }
+
+
+                        }
+                        <div class="nav-item px-2 point-event" @onclick="GoToNotiPage">
+                            @if (responseNotiM != null)
+                            {
+
+                                if (count > 0)
+                                {
+                                    <div style="position:absolute;padding-left: 15px;">
+                                        <div class="circleOrange1">@count</div>
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                if (NotiNo > 0)
+                                {
+                                    <div style="position:absolute;padding-left: 15px;padding-top: 14px;">
+                                        <div class="circleOrange1">@NotiNo</div>
+                                    </div>
+                                }
+                            }
+                            @*@if (NotiNo > 0)
+                            {
+                            <div style="position:absolute;padding-left: 15px;padding-top: 14px;">
+                            <div class="circleOrange1">@NotiNo</div>
+                            </div>
+                            }*@
+                            <i class="fa-solid fa-solid1 fa-bell" data-bs-placement="bottom" title="การแจ้งเตือน" style="font-size:32px;color:#334396;"></i>
+                        </div>
+                        <div class="nav-item">
+                            <hr class="hr-nav" style="margin-top:25px;Width:51px;border: 1px solid #C5CBE6;transform: rotate(90deg);" />
+                        </div>
+                        <div class="nav-item d-flex flex-column align-items-start" style="margin-right:10px">
+                            <div class="nav-user-font">
+                                @Fname &nbsp; @Lname
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <div class="dropdown">
+                                <div class="dropbtn pointer-functiont">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <i class="fa-solid fa-solid1 fa-circle-user" style="font-size:32px;color:#334396;"></i>&nbsp;
+                                        <i class="fa-solid fa-solid1 fa-sort-down" style="font-size:18px;color:#334396;"></i>
+                                    </div>
+                                </div>
+                                <div class="dropdown-content py-2" style="width:300px;">
+                                    <a class="nto_page link-primary pointer-function" @onclick="GoToEditProfile" target="_blank">
+                                        <i style="font-size:24px" class="fa-solid fa-solid1 fa-user-pen"></i> &nbsp;
+                                        ข้อมูลผู้ใช้งาน
+                                    </a>
+                                    <hr />
+                                    <a class="nto_page link-primary pointer-function" @onclick="SignOut">
+                                        <i style="font-size:24px" class="fa-solid fa-solid1 fa-arrow-right-from-bracket"></i>&nbsp;
+                                        ออกจากระบบ
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</nav>
+
+
+@code {
+    [Parameter]
+    public string PageCode { get; set; }
+    [Parameter]
+    public string? Fname { get; set; }
+    [Parameter]
+    public string? Lname { get; set; }
+    private string url;
+    public string? urlChat;
+    public string? env = ConfigureCore.ConfigENV;
+    public string? prefix = "";
+    public string? chatprefix = "";
+    public string? notiprefix = "";
+    public string? editprofileurl = "";
+    public string? loginPrefix = "";
+    //public string? shortToken = "bba2d2c8-aca6-4e3b-a9fa-e36b84238c2e-FECCD19FB46BDB3F3E62165C437F19DA";
+
+    [Parameter]
+    public string? shortToken { get; set; } = "";
+
+    private ResponseLoginHelper getUser { get; set; } = null!;
+    [Parameter]
+    public int? NotiNo { get; set; }
+    [Parameter]
+    public int? ChatNoti { get; set; }
+    [Parameter]
+    public List<NotiM>? responseNotiM { get; set; }
+    public MenuPerMit permitChat = new MenuPerMit();
+    public MenuPerMit permitNoti = new MenuPerMit();
+    CheckSettingModel checkStatusChat = new CheckSettingModel();
+    public UserRole userRole;
+
+    public bool openIconChat { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        editprofileurl = $"{ConfigureCore.redirectPortalExt}editProfile";
+        prefix = ConfigureCore.redirectPortalExt;
+        chatprefix = ConfigureCore.redirectChat;
+        notiprefix = ConfigureCore.redirectNotification;
+        loginPrefix = ConfigureCore.redirectLogin;
+        shortToken = await localStorage.GetItemAsStringAsync("shortToken");
+        userRole = await localStorage.GetItemAsync<UserRole>("userRole");
+
+        try
+        {
+            checkStatusChat = await localStorage.GetItemAsync<CheckSettingModel>("checkstatuschat");
+            if (checkStatusChat != null || shortToken != null)
+            {
+                openIconChat = checkStatusChat!.isactive;
+            }
+
+            if (userRole != null && userRole.role != null)
+            {
+
+                List<MenuPerMit> listPermit = userRole.role.Select(i => i.menu.Where(m => m.menuCode == "PHM004" && m.appCode == "PORTAL-HOS").Select(t => t).ToList()).ToList().SelectMany(list => list).ToList();
+                permitChat = new MenuPerMit
+                    {
+                        isRoleRead = listPermit.Sum(x => (bool?)x.isRoleRead == true ? 1 : 0) >= 1,
+                        isRoleCreate = listPermit.Sum(x => (bool?)x.isRoleCreate == true ? 1 : 0) >= 1,
+                        isRoleUpdate = listPermit.Sum(x => (bool?)x.isRoleUpdate == true ? 1 : 0) >= 1,
+                        isRoleDelete = listPermit.Sum(x => (bool?)x.isRoleDelete == true ? 1 : 0) >= 1,
+                        isRolePrint = listPermit.Sum(x => (bool?)x.isRolePrint == true ? 1 : 0) >= 1,
+                        isRoleApprove = listPermit.Sum(x => (bool?)x.isRoleApprove == true ? 1 : 0) >= 1,
+                        isRoleCancle = listPermit.Sum(x => (bool?)x.isRoleCancle == true ? 1 : 0) >= 1
+                    };
+
+                List<MenuPerMit> listPermitNoti = userRole.role.Select(i => i.menu.Where(m => m.menuCode == "PHM005" && m.appCode == "PORTAL-HOS").
+                                                Select(t => t).ToList()).ToList().SelectMany(list => list).ToList();
+                permitNoti = new MenuPerMit
+                    {
+                        isRoleRead = listPermitNoti.Sum(x => (bool?)x.isRoleRead == true ? 1 : 0) >= 1,
+                        isRoleCreate = listPermitNoti.Sum(x => (bool?)x.isRoleCreate == true ? 1 : 0) >= 1,
+                        isRoleUpdate = listPermitNoti.Sum(x => (bool?)x.isRoleUpdate == true ? 1 : 0) >= 1,
+                        isRoleDelete = listPermitNoti.Sum(x => (bool?)x.isRoleDelete == true ? 1 : 0) >= 1,
+                        isRolePrint = listPermitNoti.Sum(x => (bool?)x.isRolePrint == true ? 1 : 0) >= 1,
+                        isRoleApprove = listPermitNoti.Sum(x => (bool?)x.isRoleApprove == true ? 1 : 0) >= 1,
+                        isRoleCancle = listPermitNoti.Sum(x => (bool?)x.isRoleCancle == true ? 1 : 0) >= 1
+                    };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+
+
+    private async Task SetKeyValueLocalStorageDefault()
+    {
+        await localStorage.SetItemAsync<string>("orgCode", null);
+        await localStorage.SetItemAsync<string>("checkstatuschat", null);
+        await localStorage.SetItemAsync<string>("userdata", null);
+        await localStorage.SetItemAsync<string>("accessToken", null);
+        await localStorage.SetItemAsync<string>("username", null);
+        await localStorage.SetItemAsync<string>("hospitalMCode", null);
+        await localStorage.SetItemAsync<string>("userRole", null);
+        await localStorage.SetItemAsync<string>("roleCodeList", null);
+        await localStorage.SetItemAsync<string>("shortToken", null);
+        await localStorage.SetItemAsync<string>("userType", null);
+
+    }
+    public async void SignOut()
+    {
+        // await localStorage.ClearAsync();
+        // await SetKeyValueLocalStorageDefault();
+        NavigationManager.NavigateTo(prefix);
+    }
+
+    public async void GoToHome()
+    {
+        shortToken = await localStorage.GetItemAsStringAsync("shortToken");
+        NavigationManager.NavigateTo($"{prefix}portal?token={shortToken.Trim('\"')}");
+    }
+    public async void GoToEditProfile()
+    {
+        shortToken = await localStorage.GetItemAsStringAsync("shortToken");
+        getUser = await localStorage.GetItemAsync<ResponseLoginHelper>("userdata");
+        NavigationManager.NavigateTo($"{editprofileurl}?token={shortToken.Trim('\"')}&userid={getUser.Id}");
+    }
+    public async void GoToNotiPage()
+    {
+        shortToken = await localStorage.GetItemAsStringAsync("shortToken");
+        NavigationManager.NavigateTo(notiprefix + $"notification?token={shortToken.Trim('\"')}");
+    }
+    public async void GoToChatPage()
+    {
+        shortToken = await localStorage.GetItemAsStringAsync("shortToken");
+        NavigationManager.NavigateTo(chatprefix + $"chat?token={shortToken.Trim('\"')}");
+    }
+
+}

@@ -1,0 +1,86 @@
+﻿@using System.ComponentModel;
+
+<style>
+    .text-status {
+        text-align: center;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-family: Noto Sans Thai;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%; /* 24px */
+    }
+
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ตามภาระเสี่ยง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">รายงาน</div>
+        <hr />
+        <div class="mms-media-end mb-2">
+            <Space Direction="@DirectionVHType.Vertical" Class="d-flex justify-content-end">
+                <SpaceItem>
+                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                </SpaceItem>
+            </Space>
+        </div>
+        <Table Bordered DataSource="@data" OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" Class="pb-5">
+            <ChildContent>
+                <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="หัวข้อรายงาน" Property="c=>c!.TitleReport" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="" Width="100px" Property="c=>c!.ShowDetail" Align="ColumnAlign.Center">
+                    <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>{ }) />
+                </PropertyColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2" Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+        </Table>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    Table<MockUpData> Table;
+
+    int pageSize = 5;
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+    class MockUpData
+    {
+        public MockUpData(int id, string titleReport, string showDetail)
+        {
+            Id = id;
+            TitleReport = titleReport;
+            ShowDetail = showDetail;
+        }
+        public int Id { get; set; }
+        public string TitleReport { get; set; }
+        public string ShowDetail { get; set; }
+    }
+
+    MockUpData[] data =
+    {
+            new(1, "รายงาน....................",""),
+            new(2, "รายงาน....................",""),
+            new(3, "รายงาน....................",""),
+            new(4, "รายงาน....................",""),
+            new(5, "รายงาน....................",""),
+
+    };
+
+}

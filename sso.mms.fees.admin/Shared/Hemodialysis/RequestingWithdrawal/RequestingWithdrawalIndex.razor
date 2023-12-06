@@ -1,0 +1,233 @@
+﻿
+<style>
+    .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+        border-color: #000;
+        background-color: #FFCC41;
+        color: white
+    }
+
+        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+            color: white;
+        }
+
+    wrapper-checked:not(.ant-radio-button-wrapper-disabled):active {
+        color: white;
+        border-color: black;
+    }
+
+    .ant-radio-button-wrapper {
+        color: #224183;
+        border-color: black !important;
+    }
+
+        .ant-radio-button-wrapper:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .ant-radio-button-wrapper:first-child {
+            
+            border-radius: 10px 0 0 10px;
+        }
+
+    .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+        /* background-color: #1890ff; */
+    }
+</style>
+
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีฟอกเลือดด้วยเครื่องไตเทียม และกรณีการให้ยา Erythropoietin</div>
+    </div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">รายการที่มีใบขอเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">รายการที่รอใบขอเบิก</span>
+                </li>
+
+            </ol>
+        </nav>
+        <div style="padding-top:15px;"> 
+            <div class="row">
+                <div class="d-flex  mms-media-center">
+                    <div class="d-flex col-8">
+                        <RadioGroup @bind-Value="Type" Style="border-radius:10px">
+                            <Radio RadioButton Value=true Class="mms-txt-headdetail mms-media-center " Style="height:50px"><div class="mms-media-center" style="margin-top: 10px;">รายการที่มีใบขอเบิก</div></Radio>
+                            <Radio RadioButton Value=false Class="mms-txt-headdetail mms-media-center" Style="height:50px"><div class="mms-media-center" style="margin-top: 10px;">รายการที่รอใบขอเบิก</div></Radio>
+
+                        </RadioGroup>
+                    </div>
+
+                    <div class="col-4 ">
+                        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12">
+                            <SpaceItem>
+                                <Search Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                            </SpaceItem>
+                        </Space>
+                    </div>
+
+                </div>
+                <div class="d-flex  mms-media-center">
+                     @if (Type == true)
+                    {
+                    <div class="d-flex  mms-media-center">
+                            <Button Type="@(selectedRows!=null && selectedRows.Any()?"primary" :"defult" )" Class="mms-text-header" Style="padding: 4px 30px;" Disabled="@(selectedRows!=null && selectedRows.Any()? false :true )" @onclick=@(() => goViewPage3(3))>เเสดงข้อมูลเบิก</Button>
+                    </div>
+                        
+                    }
+
+                </div>
+            </div>
+           
+
+            <hr />
+            @if (Type == true)
+            {
+            <Table DataSource="@data" DefaultExpandAllRows Bordered @bind-SelectedRows="selectedRows">
+
+                    <Selection Key="@context.id" Width="10%" CheckStrictly Class="bg-color-gray" />
+
+                <PropertyColumn Width="15%" Title="ลำดับ" Property="c=>c.id" Align="ColumnAlign.Center">@context.id</PropertyColumn>
+                <PropertyColumn Width="75%" Title="งวด" Property="c=>c.id" Align="ColumnAlign.Center" Style="color:#3879FA; cursor: pointer;">
+
+                         <div>@context.code</div>
+                </PropertyColumn>
+
+
+            </Table>
+
+            }
+            else if (Type == false)
+            {
+                <Table DataSource="@data2"  Bordered >
+
+                       
+
+                    <PropertyColumn Width="15%" Title="ลำดับ" Property="c=>c.id" Align="ColumnAlign.Center">@context.id</PropertyColumn>
+                    <PropertyColumn Width="75%" Title="งวด" Property="c=>c.id"  Align="ColumnAlign.Center" Style="color:#3879FA; cursor: pointer;">
+                     <div @onclick=@(() => goViewPage2(context.id,2))>@context.code</div>
+                     
+                    </PropertyColumn>
+
+
+                </Table>
+            }
+
+
+
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    [Parameter]
+    public EventCallback<int> GetbyId { get; set; }
+    [Parameter]
+    public int Page { get; set; }
+
+    List<Data> data = new List<Data>();
+    List<Data> data2 = new List<Data>();
+   
+   
+    IEnumerable<Data> selectedRows;
+    bool Type = true;
+    public async Task Indexpage(int usepage)
+    {
+        IndexPage.InvokeAsync(usepage);
+    }
+    public async Task Getbyid(int id)
+    {
+        GetbyId.InvokeAsync(id);
+    }
+    //public void ChangeVariable(bool type)
+    //{
+    //    Type = type;
+    //    StateHasChanged();
+    //}
+    public class Data
+    {
+        public string id { get; set; }
+
+        public string code { get; set; }
+
+
+
+        public string name { get; set; }
+
+        public int count { get; set; }
+        public string price { get; set; }
+
+
+    }
+    private string selectedOption = "option1";
+
+    private void HandleRadioChange(ChangeEventArgs e)
+    {
+        selectedOption = e.Value.ToString();
+    }
+
+    public void goViewPage3(int page)
+    {
+        // Getbyid(Int32.Parse(id));
+        Indexpage(page);
+        StateHasChanged();
+    }
+    public void goViewPage2(string id, int page)
+    {
+        Getbyid(Int32.Parse(id));
+        Indexpage(page);
+        StateHasChanged();
+    }
+    protected override void OnInitialized()
+    {
+        data = new List<Data>
+    {
+    new Data
+    {
+        id = "1",
+        code = "1000",
+        name = "โรงพยาบาลสระบุรี",
+     count = 1,
+     price = "1900"
+    },
+    new Data
+    {
+        id = "2",
+        code = "1001",
+        name = "โรงพยาบาลสระบุรี",
+        count = 1,
+        price = "1900"
+    }
+    };
+        data2 = new List<Data>
+    {
+    new Data
+    {
+     id = "1",
+        code = "1000",
+        name = "โรงพยาบาลสระบุรี",
+        count = 1,
+     price = "1900"
+    },
+
+
+
+    new Data
+    {
+        id = "2",
+        code = "1001",
+        name = "โรงพยาบาลสระบุรี",
+        count = 1,
+        price = "1900"
+    }
+    };
+    }
+}

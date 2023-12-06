@@ -1,0 +1,313 @@
+﻿@using AntDesign.TableModels;
+@using System.Text.Json;
+@inject NavigationManager Navigation;
+
+<div class="site-layout-background">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ประสบอันตรายหรือเจ็บป่วยฉุกเฉิน 72 ชั่วโมง</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-title py-2">ประวัติรายการเบิกจ่ายที่ไม่อนุมัต</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงรายการประวัติรายการเบิกจ่ายที่ไม่อนุมัติ</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+
+        <div class="row py-4 align-items-center">
+            <div class="col-sm-12 col-md-6 py-2"></div>
+            <div class="col-sm-12 col-md-6 py-2">
+                <div class="d-flex justify-content-end">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-75">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DefaultExpandAllRows DataSource="_data" TreeChildren="item=>item.Children" Bordered HidePagination="false" ScrollX="1300">
+            <ColumnDefinitions>
+                @if (context.HosName == null)
+                {
+                    <PropertyColumn Width="90px" Title="ลำดับ" Property="c=>c.Id" ColSpan="@GetColSpan(context.HosStauts , "name")" Style="@GetColColor(context.HosStauts , "name")" />
+                }
+                else
+                {
+                    <PropertyColumn Width="90px" Title="ลำดับ" Property="c=>c.HosName" ColSpan="@GetColSpan(context.HosStauts , "name")" Style="@GetColColor(context.HosStauts , "name")" />
+                }
+                <PropertyColumn Align="@ColumnAlign.Center" Title="เลขประจำตัวประชาชน" Property="c=>c.PersonId" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)" />
+                <PropertyColumn Align="@ColumnAlign.Center" Title="ชื่อ-นามสกุล" Property="c=>c.Name" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)" />
+                <PropertyColumn Align="@ColumnAlign.Center" Title="Admit Date" Property="c=>c.Name" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)" />
+                <PropertyColumn Align="@ColumnAlign.Center" Title="Discharge Date" Property="c=>c.Name" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)" />
+                <PropertyColumn Align="@ColumnAlign.Center" Title="จำนวนชั่วโมงรวม" Width="150px" Property="c=>c.HoursRight" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)">
+                    <div>@context.HoursRight<span class="ps-2">ชั่วโมง</span></div>
+                </PropertyColumn>
+                <PropertyColumn Align="@ColumnAlign.Center" Title="จำนานเงิน (บาท)" Property="c=>c.AmountWithdrawn" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)">
+                    @String.Format("{0:n}",context.AmountWithdrawn)
+                </PropertyColumn>
+                <PropertyColumn Align="@ColumnAlign.Left" Title="สถานะ" Property="c=>c.Stauts" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)">
+                    @if (context.Stauts == "1")
+                    {
+                        <span style="color:darkblue"><span class="status-color-darkblue me-2"></span>รอผลอุทธรณ์</span>
+                    }
+                    else if (context.Stauts == "2")
+                    {
+                        <span style="color:orange"><span class="status-color-orangered me-2"></span>รอพิจารณา</span>
+                    }
+                    else if (context.Stauts == "3")
+                    {
+                        <span style="color:red"><span class="status-color-red me-2"></span>ไม่อนุมัติ</span>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Align="@ColumnAlign.Center" Title="" Property="c=>c.Id" ColSpan="@GetColSpan(context.HosStauts)" Style="@GetColColor(context.HosStauts)">
+                    <img class="mx-1" title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(() => DetailModel(true))" />
+                    <img class="mx-1" title="แจ้งเตือน" src="helper_shared/PortalAdminImage/alert.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(() => AlertModal(true))" />
+                </PropertyColumn>
+            </ColumnDefinitions>
+@*             <PaginationTemplate>
+            <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                    ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate> *@
+        </Table>
+    </div>
+</div>
+
+ @using sso.mms.fees.admin.Shared._72Hours.DisapprovedDisbursements.Modals
+    <DD72H_ModelDetail _visible=@GetM_Detail OnClose="@DetailModel" />
+    <DD72H_AlertProblem _visible=@GetM_Alert OnClose="@AlertModal" />
+
+@code {
+    string txtValue { get; set; }
+    public int page;
+
+    /*-- CallbackModel --*/
+    bool GetM_Alert { get; set; }
+    bool GetM_Detail { get; set; }
+    public async void AlertModal(bool value)
+    {
+        GetM_Alert = value;
+    }
+    public async void DetailModel(bool value)
+    {
+        GetM_Detail = value;
+    }
+    /*-----------------*/
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    /*-- Table --*/
+    Data[] _data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await Task.Delay(500);
+
+        _data = data;
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(500);
+    }
+
+    Data[] data =
+    {
+        new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลลานนา1",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "1",
+                    DisbursementDate  = DateTime.Now
+                },
+    },
+        },
+        new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลดำรงค์1",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "2",
+                    DisbursementDate  = DateTime.Now
+                },
+                  new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "112",
+                    Name = "Jim Green2",
+                    HoursRight = 32,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "3",
+                    DisbursementDate  = DateTime.Now
+                },
+    },
+        },
+         new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลดำรงค์ 2",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "3",
+                    DisbursementDate  = DateTime.Now
+                },
+    },
+        },
+        new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลราม1",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "3",
+                    DisbursementDate  = DateTime.Now
+                },
+
+    },
+        },
+         new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลราม2",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "2",
+                    DisbursementDate  = DateTime.Now
+                },
+    },
+        },
+        new() {
+            HosStauts  = true,
+            HosName = "โรงพยาบาลราม3",
+            Children = new Data[] {
+                new() {
+                    Id = "1",
+                    PersonId = "123456789XXXX",
+                    Key = "11",
+                    Name = "Jim Green",
+                    HoursRight = 42,
+                    HoursAmount = 72,
+                    AmountWithdrawn = 30000,
+                    AmountPaid = 35000,
+                    Address = "London No. 1 Lake Park",
+                    Stauts  = "3",
+                    DisbursementDate  = DateTime.Now,
+                },
+
+    },
+        },
+    };
+
+    private int GetColSpan(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return 9;
+            else
+                return 0;
+        else
+            return 1;
+    }
+    private string GetColColor(bool HosStauts, string columnTitle = "")
+    {
+        if (HosStauts == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+
+    public class Data
+    {
+        public bool HosStauts { get; set; }
+
+        public string Stauts { get; set; }
+
+        public string? HosName { get; set; }
+
+        public string? Id { get; set; }
+
+        public string? Key { get; set; }
+
+        public string? Name { get; set; }
+
+        public string? PersonId { get; set; }
+
+        public int? HoursRight { get; set; }
+
+        public int? HoursAmount { get; set; }
+
+        public string? Address { get; set; }
+
+        public int? AmountWithdrawn { get; set; }
+
+        public int? AmountPaid { get; set; }
+
+        public DateTime DisbursementDate { get; set; }
+
+        public Data[] Children { get; set; }
+    }
+
+}

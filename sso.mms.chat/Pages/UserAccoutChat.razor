@@ -1,0 +1,171 @@
+﻿@using Blazored.LocalStorage
+@using sso.mms.chat.Models.ChatUserDetailList
+@using sso.mms.chat.Services
+@using sso.mms.chat.ViewModels;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.ViewModels
+@inject ChatService chatService;
+@inject ILocalStorageService _localstorage;
+<style>
+    .image-icon-user {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+    }
+
+    .list-group-item.active {
+        background: #C5CBE6 45%;
+        color: #334396;
+        border: none;
+    }
+
+    .user-font {
+        font-family: Noto Sans Thai;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 144%;
+        color: #334396;
+    }
+
+    .txt-detail {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 144%;
+        color: #909399;
+    }
+
+    .txt-subdetail {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 144%;
+        color: #909399;
+    }
+
+    .list-group-item.active {
+        background: #C5CBE6 45%;
+        color: #334396;
+        border: none;
+        border-right-style: solid;
+        border-right-color: #334396;
+        border-right-width: 8px;
+    }
+</style>
+
+<div class="list-group" id="list-tab" role="tablist">
+
+    @if (searchChatRoomList != null)
+    {
+        @foreach (var item in searchChatRoomList.OrderByDescending(o => o.CreateDate))
+        {
+            <div class="list-group-item list-group-item-action" style="border-radius: 0px;" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile" @onclick=@(e => OpenChat(item))>
+                <div class="row">
+                    <div class="col-3">
+                        <img src="Assets/Images/img-user-1.png" style="width:64px;height:64px;" />
+                    </div>
+                    <div class="col">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1 user-font">@item.ChatRoomM.Name</h5>
+                            @if (responseChatNoti != null)
+                            {
+                                int show = 1;
+                                foreach (var item2 in responseChatNoti)
+                                {
+                                    foreach (var item3 in item2.ChatTs)
+                                    {
+                                        if(item3.ChatLogs.Count() != 0 && item.ChatRoomMId == item2.ChatRoomMId)
+                                        {
+                                            if(show == 1)
+                                            {
+                                                <span class="circleOrange1" style="padding-top:3px;"> </span>
+                                                show =0;
+                                            }
+                                            
+                                        }
+
+                                    }
+
+                                }
+                            }
+                           
+                        </div>
+                        <div class="row">
+                            @if (item.ChatTs.Count != 0)
+                            {
+                                var date = item.ChatTs.OrderByDescending(x => x.CreateDate).FirstOrDefault().CreateDate;
+                            <div class="col">
+                                <p class="mb-1 txt-detail">ข้อความใหม่</p>
+                            </div>
+                            <div class="col">
+                                    <ul class="mb-1 txt-subdetail">
+                                        @if(date != null)
+                                        {
+                                            @date?.ToString("HH:mm น.")
+                                        }
+                                </ul>
+                            </div>
+                            }
+                        </div>
+                            
+                    </div>
+                </div>
+
+            </div>
+        }
+    }
+
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<ChatRoom> ChatRoomList { get; set; }
+
+    [Parameter]
+    public List<ChatRoom> searchChatRoomList { get; set; }
+
+    [Parameter]
+    public int ChatRoomId { get; set; }
+
+    [Parameter]
+    public EventCallback<ChatRoom> OnGetChatRoomData { get; set; }
+
+    public List<ChatRoom> responseChatNoti = new List<ChatRoom>();
+    private List<ChatLog> chatLogs = new List<ChatLog>();
+    ResponseLogin getUser;
+    public async Task OpenChat(ChatRoom item)
+    {
+        foreach (var item2 in responseChatNoti)
+        {
+            foreach (var item3 in item2.ChatTs)
+            {
+                if (item3.ChatLogs.Count() != 0 && item.ChatRoomMId == item2.ChatRoomMId)
+                {
+                    chatLogs.AddRange(item3.ChatLogs);
+
+                }
+
+            }
+        }
+        if (chatLogs.Count() != 0)
+        {
+            await chatService.UpdateChatReadStatusNoti(chatLogs);
+        }
+        chatLogs.Clear();
+        responseChatNoti = await chatService.GetChatNotiFromLog(getUser.HospitalMId);
+        StateHasChanged();
+        await OnGetChatRoomData.InvokeAsync(item);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        responseChatNoti = await chatService.GetChatNotiFromLog(getUser.HospitalMId);
+        StateHasChanged();
+    }
+
+}

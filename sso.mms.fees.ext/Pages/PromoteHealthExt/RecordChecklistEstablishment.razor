@@ -1,0 +1,107 @@
+﻿@page "/promoteHealthExt/recordChecklistEstablishment"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+<LayoutIndex ShortToken="@ShortToken" Page="promoteHealthExt">
+    @if (usepageRecordChecklistEstablishment == 1)
+    {
+        <RecordChecklistEstablishmentIndex IndexPage="@((args)=>oncall(args.Item1, args.Item2, args.Item3))" />
+    }
+    else if (usepageRecordChecklistEstablishment == 2 || usepageRecordChecklistEstablishment == 3)
+    {
+        <RecordChecklistEstablishmentDetail IndexPage="@((args)=>oncall1(args.Item1, args.Item2, args.Item3, args.Item4))" Checktype="@usepageRecordChecklistEstablishment" ReserveID="@reserveid" />
+    }
+    else if (usepageRecordChecklistEstablishment == 4)
+    {
+        <RecordChecklistAuthenticate IndexPage="@((args)=>oncall(args.Item1, args.Item2))" Type="@type" IdentificationNumber="@identificationnumber" CheckupId="@checkupId"/>
+    }
+
+    else if (usepageRecordChecklistEstablishment == 5 || usepageRecordChecklistEstablishment == 6)
+    {
+        <RecordChecklistIndividualDetail IndexPage="@Indexpage" Checktype="@usepageRecordChecklistEstablishment" Type="@type" CheckupId="@checkupId" Persons="@person" />
+    }
+
+
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? ShortToken { get; set; } = "";
+
+    public string type = "";
+    public string identificationnumber = "";
+    public decimal reserveid;
+    public int usepageRecordChecklistEstablishment = 1;
+    public string adminusername;
+    public person person;
+    public decimal checkupId;
+
+    public void oncall(int usepage, AuthenPerson person)
+    {
+        this.usepageRecordChecklistEstablishment = usepage;
+        this.adminusername = person == null ? null : person.Adminusername;
+        this.person = person == null ? null : person.Persons;
+        this.type = person == null ? null : person.Type;
+
+    }
+
+    public async Task Indexpage(int usepage)
+    {
+        this.usepageRecordChecklistEstablishment = usepage;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+    public void oncall(int usepage, string type, decimal reserveid)
+    {
+        this.usepageRecordChecklistEstablishment = usepage;
+        this.type = type;
+        this.reserveid = reserveid;
+
+    }
+
+    public void oncall1(int usepage, string identificationnumber, decimal checkupId, string type)
+    {
+        this.usepageRecordChecklistEstablishment = usepage;
+        this.identificationnumber = identificationnumber;
+        this.checkupId = checkupId;
+        this.type = type;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        responseShortToken = await readTokenService.ReadToken(ShortToken!);
+
+        Console.WriteLine("responseShortToken", responseShortToken);
+
+        if (responseShortToken != null)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+            var t = jwt.Payload.ToList();
+            KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+            var username = result.Value.ToString();
+
+            //userRole = await userRoleService.GetRoleByUserName(username);
+            //await _localstorage.SetItemAsync("userRole", userRole);
+
+        }
+    }
+
+}

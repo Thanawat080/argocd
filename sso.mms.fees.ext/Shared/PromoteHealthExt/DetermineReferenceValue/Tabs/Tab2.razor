@@ -1,0 +1,254 @@
+﻿@using sso.mms.fees.ext.Providers.PromoteHealth.DetermineReferenceValue;
+@inject DetermineReferenceServices determineReferenceServices
+@using Blazored.LocalStorage;
+@inject ILocalStorageService _localstorage;
+@inject SweetAlertService Swal;
+<style>
+    html, body {
+        overflow-x: visible;
+    }
+</style>
+
+@if (ListDataCheckListDAndCheckListCfg != null)
+{
+
+    @foreach (var item in ListDataCheckListDAndCheckListCfg.Where(x => x.IsOption == true && x.ChecklistDtStatus == "A").ToList())
+    {
+
+        <br />
+        <div class="mms-media-between pb-3">
+            <span class="mms-txt-headdetail">@item.ChecklistDtName</span>
+            <div>
+                <Button Type="@ButtonType.Primary" style="padding: 4px 30px" @onclick=@(() => addSubItem(item.ChecklistDtId,item.ChecklistId))><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+            </div>
+        </div>
+
+        <Table DataSource='item.CheckListCfgView.Where(x =>x.DeleteStatus != "D")' TItem="CheckListCfgView" Bordered Size="TableSize.Small">
+            <ColumnDefinitions>
+                @{
+                    var setStyle = "";
+                    if (context.Delete == false)
+                    {
+                        setStyle = "text-align: center;";
+                    }
+                    else
+                    {
+                        setStyle = "text-align: center; background-color: #DCDCDC;";
+                    }
+                }
+                <ActionColumn Title="Action" Width="20" Align="ColumnAlign.Center" Style="@setStyle">
+                    <CellRender Context="cellData">
+
+                        <div class="d-flex justify-content-center">
+                            @if (context.Delete == true)
+                            {
+                                <img class="mx-2" src="helper_shared/icon_sso/x-mark.png" width="20px" height="20px" />
+                            }
+                            <div>@String.Format("{0:d}", item.CheckListCfgView.Where(x =>x.DeleteStatus != "D").ToList().IndexOf(context) + 1)</div>
+                        </div>
+                    </CellRender>
+                </ActionColumn>
+                <ActionColumn Title="Action" Width="110" Align="ColumnAlign.Center" Style="@setStyle">
+                    <CellRender Context="cellData">
+                        <div class="mms-media-center">
+                            <Input @bind-Value="context.StartAge" Style="width: 30%; text-align: center" Disabled="context.Delete == true ? true : false" />&nbsp<div>-</div>&nbsp
+                            <Input @bind-Value="context.EndAge" Style="width: 30%; text-align: center" Disabled="context.Delete == true ? true : false" />
+                        </div>
+                    </CellRender>
+                </ActionColumn>
+
+                <ActionColumn Title="Action" Width="110" Align="ColumnAlign.Center" Style="@setStyle">
+                    <CellRender Context="cellData">
+                        <Select TItem="genderData"
+                                TItemValue="string"
+                                DataSource="@genderlist"
+                        @bind-Value="context.Sex"
+                                ValueName="@nameof(genderData.sex)"
+                                LabelName="@nameof(genderData.gender)"
+                                Style="width: 50%"
+                                Placeholder="เลือกเพศ"
+                                Disabled="context.Delete == true ? true : false"
+                                    AllowClear>
+                    </Select>
+                </CellRender>
+            </ActionColumn>
+            <ActionColumn Title="Action" Width="140" Style="@setStyle">
+                <CellRender Context="cellData">
+                    <Input @bind-Value="context.SetRefValue" Style="text-align: center" Disabled="context.Delete == true ? true : false" />
+                </CellRender>
+            </ActionColumn>
+            <ActionColumn Title="Action" Width="20" Align="ColumnAlign.Center" Style="@setStyle">
+                <CellRender Context="cellData">
+                    @if (context.Delete == true)
+                        {
+                            <img class="mx-2" src="helper_shared/icon_sso/delete.png" style="width:24px;height:24px; " />
+                        }
+                        else
+                        {
+                            <img class="mx-2" title="ลบ" src="helper_shared/icon_sso/delete.png" style="width:24px;height:24px; cursor:pointer;"
+                            @onclick=@(() => deleteSubItem(context.SetRefId,context.ChecklistDtId, @String.Format("{0:d}", item.CheckListCfgView.ToList().IndexOf(context)))) />
+                        }
+
+
+                    </CellRender>
+                </ActionColumn>
+            </ColumnDefinitions>
+            <HeaderTemplate>
+                <TableRow>
+
+                    <SimpleTableHeader RowSpan="2">ลำดับ</SimpleTableHeader>
+                    <SimpleTableHeader ColSpan="3">ผลการตรวจ</SimpleTableHeader>
+                    <SimpleTableHeader RowSpan="2"></SimpleTableHeader>
+
+                </TableRow>
+                <TableRow>
+
+                    <SimpleTableHeader>ช่วงอายุ</SimpleTableHeader>
+                    <SimpleTableHeader>เพศ</SimpleTableHeader>
+                    <SimpleTableHeader>ค่าอ้างอิง</SimpleTableHeader>
+                </TableRow>
+
+            </HeaderTemplate>
+        </Table>
+
+
+    }
+
+}
+
+@if (DialogIsOpen)
+{
+    <ModalDelete OnClose="@OnDialogClose" title="ต้องการลบ" description="ต้องการลบข้อมูลหรือไม่">
+    </ModalDelete>
+}
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+@code {
+
+    List<menu> todostab2 = new List<menu>();
+    List<genderData> genderlist = new List<genderData>();
+
+    [Parameter]
+    public List<CheckListDAndManageChecklistCfg> ListDataCheckListDAndCheckListCfg { get; set; }
+    public string hosmCode { get; set; }
+    public string username { get; set; }
+    private bool DialogIsOpen = false;
+    public bool isloading = false;
+    public decimal SetRefId { get; set; }
+    public decimal ChecklistDtId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hosmCode = await _localstorage.GetItemAsync<String>("HospitalMCode");
+        username = await _localstorage.GetItemAsync<String>("username");
+
+        genderlist = new List<genderData>()
+        {
+        new genderData()
+            {
+                Id = 1,
+                gender = "ชาย",
+                sex = "M"
+            },
+        new genderData()
+            {
+                Id = 2,
+                gender = "หญิง",
+                sex = "F"
+            },
+
+        };
+    }
+
+    public async void addSubItem(decimal ChecklistDtId, decimal ChecklistId)
+    {
+        foreach (var item in ListDataCheckListDAndCheckListCfg)
+        {
+            if (item.ChecklistDtId == ChecklistDtId)
+            {
+                item.CheckListCfgView.Add(new CheckListCfgView()
+                    {
+                        SetRefId = 0,
+                        ChecklistId = ChecklistId,
+                        ChecklistDtId = ChecklistDtId,
+                        StartAge = null,
+                        EndAge = null,
+                        Sex = null,
+                        SetRefValue = null,
+                        DeleteStatus = "A",
+                        CreateBy = username,
+                        CreateDate = DateTime.Now,
+                        UpdateBy = username,
+                        UpdateDate = DateTime.Now,
+                        HospitalCode = hosmCode,
+                        Delete = false
+                    });
+            }
+        }
+
+    }
+
+    public async void deleteSubItem(decimal setRefId, decimal checklistDtId, string index)
+    {
+        foreach (var item in ListDataCheckListDAndCheckListCfg)
+        {
+            if (item.ChecklistDtId == checklistDtId)
+            {
+                if (setRefId == 0)
+                {
+                    int index1 = Int32.Parse(index);
+                    var itemToRemove = item.CheckListCfgView.ToList()[index1];
+                    item.CheckListCfgView.Remove(itemToRemove);
+                }
+                else
+                {
+
+                    SetRefId = setRefId;
+                    ChecklistDtId = checklistDtId;
+                    DialogIsOpen = true;
+                    StateHasChanged();
+
+                }
+
+
+            }
+        }
+
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+            foreach (var item in ListDataCheckListDAndCheckListCfg)
+            {
+                if (item.ChecklistDtId == ChecklistDtId)
+                {
+                    item.CheckListCfgView.FirstOrDefault(x => x.SetRefId == SetRefId).Delete = true;
+                }
+            }
+            isloading = false;
+
+        }
+        DialogIsOpen = false;
+        StateHasChanged();
+    }
+
+    public class genderData
+    {
+        public int Id { get; set; }
+        public string gender { get; set; }
+        public string sex { get; set; }
+    };
+
+
+
+}

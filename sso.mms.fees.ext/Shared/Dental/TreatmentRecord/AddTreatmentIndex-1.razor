@@ -1,0 +1,476 @@
+﻿
+<style>
+    .text-end {
+        color: #334396;
+        text-align: right;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 600;
+        margin-bottom: 0px;
+    }
+
+    .btn-appove {
+        width: 185px;
+        height: 51px;
+        flex-shrink: 0;
+        border-radius: 4px 0px 0px 4px;
+        background: #3B6C43;
+        color: white;
+        border: none !important;
+    }
+
+        .btn-appove:hover {
+            border-color: #3B6C43 !important;
+            background: #3B6C43 !important;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+            animation: pop 0.5s linear 1 !important;
+        }
+
+    .step-img {
+        width: 77px;
+        height: 77px;
+    }
+
+    .step-tag {
+        padding-top: 100px !important;
+        font-size: 16px;
+        line-height: 20px;
+        padding-top: 0.8rem;
+        font-weight: 600;
+    }
+
+    .active {
+        color: #005C9E;
+    }
+
+    .noneactive {
+        color: #C4C4C4;
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">กรณีทันตกรรม </div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-success py-2">บันทึกรายการตรวจ</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เพิ่มผู้ใช้บริการ</span>
+                </li>
+
+            </ol>
+        </nav>
+        <hr style="width:100%" />
+        <div class="mms-media-end">
+            <Button Type="@ButtonType.Primary" Class="mms-text-header">
+                <img src="helper_shared/PortalAdminImage/download.png" style="width: 26px">
+                ดาวน์โหลดโปรแกรมอ่านบัตร
+            </Button>
+        </div>
+        <div class="pt-4 mt-4">
+            <div class="container" align="center">
+                <div class="position-relative w-75">
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar w-50"></div>
+                    </div>
+                </div>
+                <div class="container position-relative w-75">
+                    <img class="step-img position-absolute top-0 start-0 translate-middle rounded-pill" src="helper_shared/FeesExtImage/step1-1.png" />
+                    <img class="step-img position-absolute top-0 start-50 translate-middle rounded-pill" src="helper_shared/FeesExtImage/step2-2.png" />
+                    <img class="step-img position-absolute top-0 start-100 translate-middle rounded-pill" src="helper_shared/FeesExtImage/step2-3.png" />
+                </div>
+                <div class="container position-relative w-75">
+                    <div class="row">
+                        <p class="step-tag active position-absolute top-0 start-0 translate-middle rounded-pill">ตรวจสอบสิทธิ์</p>
+                        <p class="step-tag noneactive position-absolute top-0 start-50 translate-middle rounded-pill">บันทึกข้อมูลใช้บริการ</p>
+                        <p class="step-tag noneactive position-absolute top-0 start-100 translate-middle rounded-pill">บันทึกรับเเจ้ง</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-5">
+
+            <div class="row mb-4 ">
+                <div class=" col-lg-1 col-sm-2">
+                </div>
+                <div class="col-lg-3 col-sm-2 text-end" text-end>
+                    <div>เลขประจำตัวประชาชน /<span style="color : red">*</span></div>
+                    <div>เลขบัตรประกันสังคม</div>
+                </div>
+
+                <div class=" col-lg-5 col-sm-2">
+
+                    <Input Placeholder="Basic usage" @bind-Value="@personalId" />
+
+                </div>
+                <div class="col-lg-3 col-sm-2">
+                    @if (isCheckboxChecked == false)
+                    {
+
+                        <Button Type="@ButtonType.Primary" Class="mms-text-header" @onclick=@(() => OpenModalProcess(true))>
+                            <img src="helper_shared/FeesExtImage/readiden.png" style="width: 26px">
+
+                            อ่านบัตร
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class=" col-lg-1 col-sm-2">
+            </div>
+            <div class=" col-lg-3 col-sm-2">
+            </div>
+            <div class=" col-lg-5 col-sm-2">
+                <Checkbox OnChange="(e)=>SwicthPersonId(e)" />
+                <div style="display:inline-block ; font-size : 16px; color : #6A6A6A" class="mms-txt-headdetail">
+                    ต้องการกรอกเลข 13 หลักด้วยตนเอง
+                </div>
+
+            </div>
+            <div class=" col-lg-3 col-sm-2">
+            </div>
+        </div>
+        @if (isCheckboxChecked == true)
+        {
+            <div class="row mb-4">
+                <div class=" col-lg-1 col-sm-2"></div>
+                <div class="col-lg-3 col-sm-2 text-end">
+                    <div>หมายเหตุ<span style="color : red">*</span></div>
+                </div>
+                <div class=" col-lg-5 col-sm-2">
+
+                    <Select TItem="DropdownData"
+                            TItemValue="string"
+                            DataSource="@dropdownlist"
+                    @bind-Value="@reason"
+                            ValueName="@nameof(DropdownData.name)"
+                            LabelName="@nameof(DropdownData.name)"
+                            Placeholder="ระบุสาเหตุที่จะกรอกด้วยตนเอง"
+                                        AllowClear>
+                </Select>
+            </div>
+            <div class=" col-lg-3 col-sm-2"></div>
+        </div>
+            <div class="row mb-4 ">
+                <div class=" col-lg-1 col-sm-2"></div>
+                <div class="col-lg-3 col-sm-2 ">
+                    <div class="text-end">Username Admin สถานพยาบาล<span style="color : red">*</span></div>
+                </div>
+                <div class="col-lg-5 col-sm-2">
+
+                    <Select TItem="AdminHos"
+                            TItemValue="string"
+                            DataSource="@admin"
+                    @bind-Value="@AdminName"
+                            ValueName="@nameof(AdminHos.username)"
+                            LabelName="@nameof(AdminHos.username)"
+                                        AllowClear>
+                </Select>
+            </div>
+            <div class="col-lg-3 col-sm-2"></div>
+        </div>
+            <div class="row mb-4 ">
+                <div class=" col-lg-1 col-sm-2"></div>
+                <div class="col-lg-3 col-sm-2 ">
+                    <div class="text-end">Password Admin สถานพยาบาล<span style="color : red">*</span></div>
+                </div>
+                <div class="col-lg-5 col-sm-2">
+
+                    <Input @bind-Value="@passwordadmin" />
+                </div>
+                <div class="col-lg-3 col-sm-2">
+                </div>
+            </div>
+
+        }
+
+
+
+        <div class="row mb-4">
+            <div class=" col-lg-1 col-sm-2"></div>
+            <div class="col-lg-3 col-sm-2">
+                <div class="text-end">วันที่ใช้สิทธิ</div>
+            </div>
+            <div class=" col-lg-5 col-sm-2">
+                <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" Disabled="true" @bind-Value="today"></DatePicker>
+            </div>
+            <div class=" col-lg-3 col-sm-2"></div>
+
+        </div>
+
+        <div class="row mb-4 ">
+            <div class="col-lg-1 col-sm-2"></div>
+            <div class="col-lg-3 col-sm-2 ">
+                <div class="text-end">เบอร์โทรศัพท์<span style="color : red">*</span></div>
+            </div>
+            <div class="col-lg-5 col-sm-2">
+                <Input Placeholder="Basic usage" @bind-Value="@phone" />
+            </div>
+            <div class="col-lg-3 col-sm-2"></div>
+        </div>
+
+
+
+
+
+        <div class="row mb-3">
+            <div class=" col-lg-1 col-sm-2"></div>
+            <div class=" col-lg-3 col-sm-2">
+                <div class="text-end">ช่องทางการใช้บริการ<span style="color : red">*</span></div>
+            </div>
+
+            <div class=" col-lg-8 col-sm-2">
+
+                <fieldset>
+
+                    @foreach (var portalPort in options)
+                    {
+                        <div class="row">
+
+                            <div class="form-check  col-lg-3 col-sm-4 ">
+                                <input class="form-check-input" type="radio" id="@portalPort" name="selectedOption" value="@portalPort" @onchange="RadioChanged" checked="@isSelected(portalPort)" />
+                                <label class="text-end" style="color:#909399" for="@portalPort">@portalPort</label>
+                            </div>
+                            @if (portalPort.Equals(options.Last()))
+                            {
+                                <div class="col-lg-6">
+                                    <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+                                </div>
+
+                            }
+                        </div>
+                    }
+                </fieldset>
+
+            </div>
+
+        </div>
+
+
+        <div class="mms-media-center justify-content-center">
+            <Button Type="@ButtonType.Default" Class="btn-appove" @onclick=@(() => Submit())>
+                <i class="fas fa-search" style="color:white"></i>
+                <span style="color:white">
+                    ตรวจสอบการใช้สิทธิ์
+                </span>
+
+            </Button>
+        </div>
+
+
+    </div>
+    <Button Type="@ButtonType.Primary" Class="mms-text-header" @onclick=@(() => OpenModal(true))>
+        <i class="fa-solid fa-circle-plus"></i>
+        เปิด modal ตรวจสอบการใช้สิทธิ์
+    </Button>
+    <Button Type="@ButtonType.Primary" Class="mms-text-header" @onclick=@(() => goView(4))>
+        <i class="fa-solid fa-circle-plus"></i>
+        เปิด modal ตรวจสอบการใช้สิทธิ์
+    </Button>
+
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+<Modal_Alert _visible="@openWarning" OnClose="@OpenModal"></Modal_Alert>
+<Modal_Process _visible="@openProcess" OnClose="@OpenModalProcess"></Modal_Process>
+@using sso.mms.fees.ext.Shared.Dental.TreatmentRecord.Modals
+@using sso.mms.fees.api.ViewModels.Dental;
+@using sso.mms.fees.ext.Providers.PromoteHealth.RecordChecklist;
+@using sso.mms.fees.ext.Providers.Dental.TreatmentRecord;
+
+@using sso.mms.helper.Utility;
+@using Blazored.LocalStorage;
+@inject SweetAlertService Swal;
+@inject ILocalStorageService _localstorage;
+@inject RecordChecklistServices recordChecklistServices;
+@inject TreatmentRecordServices treatmentRecordServices;
+
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public AaiDentalCheckHView RegisData { get; set; }
+    [Parameter]
+    public int Page { get; set; }
+    [Parameter]
+    public EventCallback<(AaiDentalCheckHView, int)> OnRegis { get; set; }
+    private string selectedFruit = "";
+    bool openWarning { get; set; }
+    bool openProcess { get; set; }
+    bool openPerson { get; set; }
+
+    List<string> options = new List<string> { "สถานพยาบาล", "รถทันตกรรม", };
+
+    bool isloading;
+    string? reason;
+    string? AdminName;
+    string? passwordadmin;
+
+    string personalId;
+    decimal hospitalId;
+    string phone;
+    string portalPort;
+    string Port;
+
+    string selectedOption = "Option 1";
+    private DateTime? today = DateTime.Now;
+    string Placeholder = "วว/ดด/ปปปป";
+    string txtValue { get; set; } = "xxxx";
+    private bool isCheckboxChecked;
+
+
+    List<AdminHos> admin = new List<AdminHos>();
+    public string hosmCode { get; set; } = "";
+    List<DropdownData> dropdownlist = new List<DropdownData>();
+    apiview850 Api850 = new apiview850();
+    public void SwicthPersonId(bool e)
+    {
+        isCheckboxChecked = e;
+        StateHasChanged();
+    }
+    protected async override void OnInitialized()
+    {
+
+        isloading = true;
+        StateHasChanged();
+
+
+
+        hosmCode = await _localstorage.GetItemAsync<String>("hospitalMCode");
+        admin = await recordChecklistServices.GetAllRoleAdminByHosCode("21059");
+        dropdownlist = new List<DropdownData>()
+        {
+        new DropdownData()
+            {
+                Id = 1,
+                name = "บัตรรุ่นเก่า ไม่สามารถอ่านบัตรได้"
+            },
+        new DropdownData()
+            {
+                Id = 2,
+                name = "เครื่องอ่านบัตรเสีย"
+            },
+        new DropdownData()
+            {
+                Id = 3,
+                name = "โปรแกรมอ่านบัตรไม่สามารถใช้งานได้"
+            },
+        new DropdownData()
+            {
+                Id = 4,
+                name = "กรณีไม่มีหมายเลขบัตรประชาชน"
+            },
+        new DropdownData()
+            {
+                Id = 5,
+                name = "ผู้ประกันจนต่างด้าว"
+            },
+        };
+
+
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+    public async void Submit()
+    {
+        Api850 = await treatmentRecordServices.api850(personalId);
+        AaiDentalCheckHView Form = new AaiDentalCheckHView()
+            {
+                Reason = reason,
+                HospitalId = 0,
+                PhoneNo = phone,
+                PortalPort = Port,
+                CheckDate = DateTime.Today,
+                PersonalId = Api850.personalId,
+                PatientName = Api850.Name + Api850.Sname,
+                BirthDate = Api850.BirthDate,
+                Sex = Api850.Sex,
+                SsoStatus = Api850.statusPerson,
+                BalanceMoney = Api850.price
+            };
+
+        if (isCheckboxChecked == true)
+        {
+            var res = await recordChecklistServices.CheckLoginAdmin(AdminName, passwordadmin);
+            // by pass check password admin
+            res = "success";
+            //-----------------------------
+        }
+        else
+        {
+            Form.Reason = "";
+
+
+        }
+        //if (Api850.statusPerson == "I" || res != "success")
+        //{
+
+        //    OpenModal(true);
+        //}
+        //else
+        //{
+
+        //    RegisData = Form;
+        //    await OnRegis.InvokeAsync((RegisData, Page));
+        //    goView(2);
+        //}
+
+
+    }
+    public async Task goView(int item)
+    {
+
+        await IndexPage.InvokeAsync(item);
+    }
+    bool isSelected(string option) => portalPort == option;
+
+    void RadioChanged(ChangeEventArgs e)
+    {
+        portalPort = e.Value.ToString();
+        if (portalPort == "สถานพยาบาล")
+        {
+            Port = "H";
+        }
+        else
+        {
+            Port = "C";
+        }
+    }
+    public void OpenModal(bool value)
+    {
+        openWarning = value;
+    }
+    public void OpenModalProcess(bool value)
+    {
+        openProcess = value;
+    }
+    public void OpenPersonModal(bool value)
+    {
+        openPerson = value;
+    }
+    public class DropdownData
+    {
+        public int Id { get; set; }
+        public string name { get; set; }
+    };
+}

@@ -1,0 +1,168 @@
+
+.btn-menu {
+    background: #334396;
+    border-radius: 4px;
+    Width:173px ;
+    Height:51px ;
+}
+.btn-font {
+    font-family: 'Noto Sans Thai';
+    text-align: center;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #FFFFFF;
+    top: 30px;
+}
+
+
+.navbar-nav {
+    display: flex;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    align-content: flex-start;
+    flex-direction: row;
+}
+
+.navbar-style {
+    height: auto;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-logo {
+    position: absolute;
+    left: 5.21%;
+    right: 74.93%;
+    top: 7.95%;
+    bottom: 62.33%;
+}
+
+.nav-font {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+.nav-user-font {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    letter-spacing: 0.2px;
+    color: #334396;
+}
+/* Style The Dropdown Button */
+.dropbtn {
+    background-color: #FFFFFF;
+    color: white;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #FFFFFF;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 10px;
+}
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+        .dropdown-content a:hover {
+            background-color: #FFFFFF;
+        }
+
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #FFFFFF;
+}
+
+@media only screen and (min-width: 440px) {
+    .wid-banner {
+        width: 286px;
+        height: 52.3px;
+    }
+}
+@media only screen and (max-width: 581px) {
+    .hr-nav {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 440px) {
+    .wid-banner {
+        width: 100%;
+        height: 100%;
+    }
+
+    /*    .img_a-t {
+        display: none;
+    }*/
+}
+
+@media only screen and (min-width: 768px) {
+    .c-style-content {
+        padding-left: 75px;
+        padding-right: 75px;
+    }
+}
+@media only screen and (max-width: 860px) {
+    .c-style-content {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+@media only screen and (max-width: 406px) {
+    .navbar-nav {
+        display: flex;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+        align-content: flex-start;
+        flex-direction: column;
+    }
+
+    .float-end {
+        float: left;
+    }
+}
+
+.nto_page {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    letter-spacing: 0.2px;
+}

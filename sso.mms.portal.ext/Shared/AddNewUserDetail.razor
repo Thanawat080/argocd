@@ -1,0 +1,633 @@
+﻿@page "/addnewuserdetail/{id}/{status}/{usernameadmin}"
+@using Blazored.LocalStorage;
+@using MatBlazor
+@using AntDesign
+@using sso.mms.helper.Configs;
+@using Microsoft.AspNetCore.WebUtilities
+@using sso.mms.helper.Data;
+@using sso.mms.helper.Utility;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.portal.admin.Services
+@using sso.mms.portal.ext.Services
+@using sso.mms.portal.ext.ViewModels;
+@using System.Security.Cryptography;
+@using sso.mms.login.ViewModels;
+@inject NavigationManager Navigation;
+@inject IJSRuntime JSRuntime;
+@inject ILocalStorageService _localstorage;
+@inject SweetAlertService Swal;
+@inject AddNewUserService AddNewUserService;
+
+<style>
+    body {
+        background: #F5F3F7;
+    }
+
+    .mdc-table, .mdc-table--striped {
+        width: 100%;
+        max-width: 100%;
+        background-color: transparent;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: inline-block;
+        overflow-x: auto;
+        margin: 8px 0 32px;
+        border: 0px solid rgba(0,0,0,.1);
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        align-items: center;
+        color: #1A141F;
+    }
+
+        .mdc-table--striped tr:nth-of-type(odd) {
+            background: #EAE8EC;
+        }
+
+        .mdc-table td {
+            border: 2px solid white;
+            padding: 12px 12px 12px 12px;
+        }
+
+    .mat-paginator .mat-paginator-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+    }
+
+    .mdc-select {
+        min-width: 200px;
+        display: inline-flex;
+        position: relative;
+    }
+
+        .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+            background-color: #ffffff;
+            width: 80px;
+            height: 30px;
+            border-radius: 10px;
+            border: 0px solid #ffffff;
+        }
+
+
+    .mat-paginator .mat-paginator-container .mat-paginator-page-size {
+        display: flex;
+        align-items: center;
+        margin-right: 8px;
+    }
+
+    .mdc-select .mdc-select__anchor {
+        height: 56px;
+        display: flex;
+        align-items: center;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .form-check-input:checked {
+        background-color: #67C23A;
+        border-color: #67C23A;
+    }
+
+    .custom-input-file {
+        position: absolute;
+        background: white;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .div-file-upload {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border-radius: 10px;
+    }
+</style>
+
+
+    <NavbarLoginSSO PageCode="DSR0202" Fname="@getUser?.FirstName" Lname="@getUser?.LastName"></NavbarLoginSSO>
+
+
+<MediaStyle></MediaStyle>
+
+<div class="bg-color pt-5 pb-5">
+    <div class="container">
+        <div class="card-main">
+            <div class="card-title">
+                <p class="f-title">ข้อมูลผู้ใช้งานสถานพยาบาล</p>
+            </div>
+            <form @onsubmit=@UpdateOrSave>
+                <div class="row pt-5 txth-from-reg" style="margin-left:3rem; margin-right:3rem;">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-md-12 col-lg-4 col-xl-4" style="display: flex!important;flex-direction: column;align-items: center;padding-bottom: 15%;">
+                            <div class="m-2">
+                                @if (!string.IsNullOrEmpty(FileName))
+                                {
+                                    <img class="edit-img-user border-img-user" style="border-radius: 16px;" src="@ImageUri" />
+                                }
+                                else
+                                {
+                                    <img class="edit-img-user" src="helper_shared/icon_sso/Edit_user.png" />
+                                }
+
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="div-file-upload">
+                                    <button class="btn btn-adduser">
+                                        <i class="fa-regular fa-image fa-xl p-2"></i>เพิ่มรูปภาพ
+                                    </button>
+                                    <InputFile class="custom-input-file " type="file" OnChange="@LoadImage" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-8 col-xl-8">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">Username<a style="color:red">*</a></label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind-value=@hospitaluser.UserName disabled />
+
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">ตำแหน่ง<a style="color:red">*</a></label>
+                                        <input type="text" id="positionname" class="form-control form-control-lg" @bind-value=@hospitaluser.PositionName
+                                               oninput="this.value = this.value.replace(/[0-9]/g, '')" required />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">เลขบัตรประจำตัวประชาชน<a style="color:red">*</a></label>
+                                        <input type="text" id="identification" class="form-control form-control-lg" @bind-value=@hospitaluser.IdenficationNumber
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);" maxlength="13"
+                                               pattern="[0-9]{13,13}"
+                                               require />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">คำนำหน้า<a style="color:red">*</a></label>
+                                        <select class="form-select" aria-label="Default select example" style="font-size: 1.25rem;padding: 0.5rem;" @bind="@hospitaluser.PrefixMCode" required>
+                                            <option selected value="0">เลือกคำนำหน้า</option>
+                                            @if (prefixs != null)
+                                            {
+                                                @foreach (var item in prefixs)
+                                                {
+                                                    <option value="@item.Code">@item.Name</option>
+                                                }
+                                            }
+
+                                        </select>
+
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ<a style="color:red">*</a></label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind-value=@hospitaluser.FirstName
+                                               oninput="this.value = this.value.replace(/[0-9]/g, '')" required maxlength="50" />
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">ชื่อ กลาง</label>
+                                        <input type="text" id="firstName" class="form-control form-control-lg" @bind-value=@hospitaluser.MiddleName
+                                               oninput="this.value = this.value.replace(/[0-9]/g, '')"  maxlength="50" />
+
+                                    </div>
+                                    <div class="col-md-3 mb-4">
+                                        <label class="form-label">นามสกุล<a style="color:red">*</a></label>
+                                        <input type="text" id="lastName" class="form-control form-control-lg" @bind-value=@hospitaluser.LastName
+                                               oninput="this.value = this.value.replace(/[0-9]/g, '')" required maxlength="50" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">E-mail<a style="color:red">*</a></label>
+                                        <input type="email" id="email" pattern="[A-Za-z\._\-0-9]*[@@][A-Za-z]*[\.][a-z]{2,4}" class="form-control form-control-lg" @bind-value=@hospitaluser.Email required />
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">เบอร์โทรศัพท์<a style="color:red">*</a></label>
+                                        <input type="text" id="phone" class="form-control form-control-lg" @bind-value=@hospitaluser.Mobile
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
+                                               pattern="[0-9]{10,10}" maxlength="10" require />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container">
+                            <div class="form-label">สิทธิ์การเข้าถึง</div>
+                            <div class="txth-from-reg-sub" align="center">
+
+                                <MatTable Items="@roleGroupM" ShowPaging="false" LoadInitialData="true" Striped="true"
+                                          RequestApiOnlyOnce="true" AllowSelection="true" RowClass="tester" PageSize="@pageSize"
+                                          CurrentPage="@pageIndex">
+                                    <MatTableHeader>
+                                        <th class="text-center" style="border-radius:10px 0 0 0;width:102px">ลำดับ</th>
+                                        <th class="text-center" style="width:871px">หัวข้อ</th>
+                                        <th class="text-center" style="border-radius:0 10px 0 0 ; width:200px;">สถานะ</th>
+                                    </MatTableHeader>
+                                    <MatTableRow>
+                                        <td style="width:102px">@String.Format("{0:d}", roleGroupM.IndexOf(context) + 1)</td>
+                                        <td style="width:871px">@context.Name</td>
+                                        <td style="width:200px">
+                                            <div class="form-check form-switch d-flex" style="justify-content: center;">
+                                                <input class="form-check-input" style="width:45px;height:22px;margin-right:0.5rem;" type="checkbox" id="flexSwitchCheckChecked" @bind=@context.IsActive>
+                                                <label class="form-check-label" style="margin-right:0.5rem;" for="flexSwitchCheckChecked">
+
+                                                    @if (context.IsActive != true)
+                                                    {
+                                                        <p>ปิด</p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>เปิด</p>
+                                                    }
+
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </MatTableRow>
+                                </MatTable>
+                                <div>
+                                    <AntDesign.Pagination ShowSizeChanger
+                                                           OnShowSizeChange="OnShowSizeChange"
+                                                           OnChange="OnPage"
+                                                           DefaultCurrent="3"
+                                                           PageSize=@pageSize
+                                                           Total="@roleGroupM.Count()" />
+                                    @* <MatPaginator Length="@roleGroupM.Count()" PageSize="@pageSize" Page="@OnPage"></MatPaginator> *@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center mb-5">
+                            @if (id != null && id != "0")
+                            {
+                                <button class="btn btn-primary btn-lg btn-l-s px-5 mx-2" type="button" @onclick=@opennmodal>
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;รีเซ็ตรหัสผ่าน
+                                </button>
+                            }
+                            <button class="btn btn-lg btn-outline-secondary btn-r-s px-5 mx-2" @onclick=@GoBack type="button">
+                                <i class="fa-regular fa-circle-xmark"></i>&nbsp;ยกเลิก
+                            </button>
+                            <button class="btn btn-primary btn-lg btn-l-s px-5 mx-2" type="submit">
+                                <i class="fa-regular fa-floppy-disk"></i>&nbsp; บันทึก
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<sso.mms.helper.Components.Footer.Footer />
+
+
+
+@if (isloading == true)
+{
+    <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage>
+}
+
+@if (DialogIsOpen)
+{
+    <ModalSaveChange OnClose="@OnDialogClose" title="ยืนยันการบันทึกข้อมูลใช้หรือไม่" description="">
+    </ModalSaveChange>
+}
+
+@if (modalresetpass)
+{
+    <ModalSaveChange OnClose="@SubmitChangePassword" title="ยืนยันการเปลี่ยนพาส" description="">
+    </ModalSaveChange>
+}
+
+
+
+@code {
+    public IBrowserFile ImageFile;
+    public string? FileName = "";
+    public string? ImageUri = "";
+    public bool isloading = false;
+    private bool val1 = true;
+    private bool DialogIsOpen = false;
+    int pageSize = 5;
+    int pageIndex = 0;
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    private ResponseLogin getUser { get; set; } = null!;
+
+    [Parameter]
+    public string? id { get; set; }
+
+    [Parameter]
+    public string? status { get; set; }
+
+    [Parameter]
+    public string? usernameadmin { get; set; }
+
+    HospitalUserM admin = new HospitalUserM();
+    List<RoleUserMapping> roleUserMapping = new List<RoleUserMapping>();
+    List<RoleUserMapping> roleUserMappingByusername = new List<RoleUserMapping>();
+    List<RoleGroupM> roleGroupM = new List<RoleGroupM>();
+    HospitalUserM hospitaluser = new HospitalUserM();
+    HospitalM hospital = new HospitalM();
+    List<PrefixM> prefixs = new List<PrefixM>();
+
+    public string? usernameForSaveUser { get; set; }
+    public bool modalresetpass { get; set; } = false;
+
+
+    void OnPage(PaginationEventArgs e)
+    {
+
+        Console.WriteLine(e);
+        pageSize = e.PageSize;
+        pageIndex = e.Page;
+    }
+
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        admin = await AddNewUserService.gethospitaluserbyusername(usernameadmin);
+        url = ConfigureCore.redirectPortalExt;
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        roleGroupM = await AddNewUserService.GetRoleGroupMByType("HOS");
+        prefixs = await AddNewUserService.getPrefixs();
+
+        // get data case edit
+        if (id != null && id != "0")
+        {
+            hospitaluser = await AddNewUserService.GetHospitalUser(Int32.Parse(id));
+            FileName = hospitaluser.ImageName;
+            ImageUri = hospitaluser.ImagePath;
+
+            hospitaluser.IsActive = bool.Parse(status);
+            roleUserMappingByusername = await AddNewUserService.getRoleUserMapping(hospitaluser.UserName);
+            for (var i = 0; i < roleGroupM.Count(); i++)
+            {
+                for (var j = 0; j < roleUserMappingByusername.Count(); j++)
+                {
+                    if (roleGroupM[i].Id == roleUserMappingByusername[j].RoleGroupId)
+                    {
+                        roleGroupM[i].IsActive = roleUserMappingByusername[j].IsActive;
+
+                    }
+                }
+            }
+        }
+        // get data case insert
+        else
+        {
+            hospital = await AddNewUserService.getHospitalCode(admin.HospitalMId);
+            hospitaluser.HospitalMId = admin.HospitalMId;
+
+        }
+
+        isloading = false;
+        StateHasChanged();
+    }
+
+    void OnPage(MatPaginatorPageEvent e)
+    {
+        pageSize = e.PageSize;
+        pageIndex = e.PageIndex + 1;
+    }
+
+    private async void nextpage()
+    {
+        await JSRuntime.InvokeVoidAsync("open", "/detail", "_blank");
+        //Navigation.NavigateTo("/detail");
+    }
+
+    private async void GoBack()
+    {
+        Navigation.NavigateTo($"{url}/addnewuser?token={shortToken}");
+    }
+
+    private async void ChangePrefix(ChangeEventArgs e)
+    {
+        hospitaluser.PrefixMCode = e.Value.ToString();
+    }
+
+    public async Task UpdateOrSave()
+
+    {
+        DialogIsOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+            // case update
+            if (id != null && id != "0")
+            {
+                foreach (var item in roleGroupM)
+                {
+                    RoleUserMapping res = new RoleUserMapping();
+                    res.RoleGroupId = item.Id;
+                    res.UserName = hospitaluser.UserName;
+                    res.CreateBy = "MMS-USER";
+                    res.UpdateBy = "MMS-USER";
+                    res.UserType = "HOS";
+                    res.IsActive = item.IsActive;
+
+                    roleUserMapping.Add(res);
+                }
+                await AddNewUserService.insertRoleUserMapping(roleUserMapping, hospitaluser.UserName);
+                var res1 = await AddNewUserService.updateHospitalM(hospitaluser, ImageFile);
+                if (res1 == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                        "บันทึกสำเร็จ",
+                        null,
+                        SweetAlertIcon.Success
+                        );
+                    Navigation.NavigateTo($"{url}/addnewuser?token={shortToken}");
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                        "บันทึกไม่สำเร็จ",
+                        null,
+                        SweetAlertIcon.Error
+                        );
+                    DialogIsOpen = false;
+                }
+            }
+            //case add new user
+            else
+            {
+                foreach (var item in roleGroupM)
+                {
+                    RoleUserMapping res = new RoleUserMapping();
+                    res.RoleGroupId = item.Id;
+                    res.UserName = hospitaluser.UserName;
+                    res.CreateBy = "MMS-USER";
+                    res.UpdateBy = "MMS-USER";
+                    res.UserType = "HOS";
+                    res.IsActive = item.IsActive;
+
+                    roleUserMapping.Add(res);
+                }
+                string response = await AddNewUserService.addNewHosUser(hospitaluser, admin.HospitalMId, hospital.Code, admin.Id, ImageFile);
+                if (response != "fail" && response != "usernameisnotexit")
+                {
+                    var ress = await AddNewUserService.insertRoleUserMapping(roleUserMapping, response);
+                    if (ress == "success")
+                    {
+                        isloading = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                            "บันทึกสำเร็จ",
+                            null,
+                            SweetAlertIcon.Success
+                            );
+
+                        Navigation.NavigateTo($"{url}/addnewuser?token={shortToken}");
+
+                    }
+                    else
+                    {
+                        isloading = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                            "บันทึกไม่สำเร็จ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+                        DialogIsOpen = false;
+                    }
+                }
+                else
+                {
+                    if (response == "usernameisnotexit")
+
+                    {
+                        isloading = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                            "username ซ้ำ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+                        DialogIsOpen = false;
+                    }
+                    else
+                    {
+                        isloading = false;
+                        StateHasChanged();
+                        await Swal.FireAsync(
+                            "บันทึกไม่สำเร็จ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+                        DialogIsOpen = false;
+                    }
+                }
+            }
+
+        }
+        isloading = false;
+        DialogIsOpen = false;
+    }
+
+    private async Task SubmitChangePassword(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+            var result = await AddNewUserService.changepassword(hospitaluser);
+            if (result == "changepasswordsuccess")
+
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                    "เปลี่ยนพาสเวิร์ดสำเร็จ",
+                    null,
+                    SweetAlertIcon.Success
+                    );
+
+                modalresetpass = false;
+            }
+            else
+            {
+
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                    "เปลี่ยนพาสเวิร์ดไม่สำเร็จ",
+                    null,
+                    SweetAlertIcon.Error
+                    );
+
+                modalresetpass = false;
+            }
+
+        }
+        StateHasChanged();
+    }
+
+    public void opennmodal()
+
+    {
+        modalresetpass = true;
+        StateHasChanged();
+    }
+
+    public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+
+        FileName = inputFileChangeEventArgs.File.Name;
+        ImageFile = inputFileChangeEventArgs.File;
+        var image = await inputFileChangeEventArgs.File.RequestImageFileAsync("image/png", 600, 600);
+        using Stream imageStream = image.OpenReadStream(1024 * 1024 * 10);
+        using MemoryStream ms = new();
+        await imageStream.CopyToAsync(ms);
+        ImageUri = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+        StateHasChanged();
+    }
+
+}

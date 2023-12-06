@@ -1,0 +1,167 @@
+﻿@using AntDesign.TableModels;
+@using System.Text.Json;
+@inject NavigationManager Navigation;
+
+<div class="site-layout-background">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ประสบอันตรายหรือเจ็บป่วยฉุกเฉิน 72 ชั่วโมง</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-title py-2">สร้างใบคำสั่งจ่าย</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เเสดงรายการใบคำสั่งจ่าย</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-2 mms-txt-headdetail">
+            <div class="col-sm-12 col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto text-end">วันที่ประมวลผล :</div><div class="col-6"> <Input Placeholder="onblur change" @bind-Value="@txtValue" Disabled /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto text-end">วันที่ประมวลผล :</div><div class="col-6"> <Input Placeholder="onblur change" @bind-Value="@txtValue" Disabled /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row py-4">
+            <div class="col-sm-12 col-md-6"></div>
+            <div class="col-sm-12 col-md-6">
+                <div class="d-flex align-items-center">
+                    <Button Type="@ButtonType.Primary" Disabled="@(selectedRows?.Count() == 0 || selectedRows == null)" @onclick="(() => OMCompleted(true))">
+                        <i class="fa-solid fa-file-arrow-down"></i> &nbsp; อนุมัติคำสั่งจ่าย
+                    </Button>
+                    &nbsp;&nbsp;
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <Table DataSource="listOfData" TItem="ItemData" Bordered @bind-SelectedRows="selectedRows" ScrollX="1000">
+            <ChildContent Context="data">
+                <Selection Width="3%" Key="@data.Id.ToString()" />
+                <Column TData="string" Title="ลำดับ" Style="text-align:center;">
+                    @String.Format("{0:d}", listOfData.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="เลขที่ชุดคำสั่งจ่าย" Style="text-align:center;">
+                    @data.OrderNumber
+                </Column>
+                <Column TData="string" Title="จำนวนสถานพยาบาล" Style="text-align:center;">
+                    @data.HosCount
+                </Column>
+                <Column TData="string" Title="จำนวนรายการเบิก" Style="text-align:center;">
+                    @data.OrderList
+                </Column>
+                <Column TData="string" Title="ยอดเงินรวม(บาท)" Style="text-align:center;">
+                    @String.Format("{0:n0}", data.PayAmount)
+                </Column>
+                <Column TData="string" Width="12%" Title="สถานะ" Style="text-align:start;">
+                    @if (data.StatusType == "1")
+                    {
+                        <span style="color:black"><span class="status-color-black me-2"></span>รอส่งลงลายมือชื่อ</span>
+                    }
+                    else if (data.StatusType == "2")
+                    {
+                        <span style="color:orangered"><span class="status-color-orangered me-2"></span>รอลงลายมือชื่อ</span>
+                    }
+                    else if (data.StatusType == "3")
+                    {
+                        <span style="color:green"><span class="status-color-green me-2"></span>ลงลายมือชื่อแล้ว</span>
+                    }
+                </Column>
+                <Column TData="string" Width="8%" Style="text-align:start;">
+                    <img class="mx-1" title="เรียกดู" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px; cursor:pointer;" @onclick="(()=>goEdit(2))" />
+                    @if (data.StatusType == "1")
+                    {
+                        <img class="mx-1" title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" />
+                    }
+                </Column>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2"
+                            Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+            </Table>
+        </div>
+    </div>
+
+
+    @using sso.mms.fees.admin.Shared._72Hours.CreatePaymentOrder.Modals
+    <CPO72H_Confirm _visible=@completedmodal OnClose="@OMCompleted" />
+
+    @code {
+    string txtValue { get; set; }
+    public int page;
+    /*-- CallbackModel --*/
+    bool completedmodal { get; set; }
+    public async void OMCompleted(bool value)
+    {
+        completedmodal = value;
+    }
+    /*-----------------*/
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    IEnumerable<ItemData> selectedRows;
+    List<ItemData> listOfData = new List<ItemData>();
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    private int total => listOfData.Count();
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string StatusType { get; set; }
+        public string OrderNumber { get; set; }
+        public string HosCount { get; set; }
+        public string OrderList { get; set; }
+        public int PayAmount { get; set; }
+
+    };
+
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>()
+            {
+                new ItemData{
+                Id = 1,
+                OrderNumber = "10001",
+                HosCount = "4",
+                OrderList = "10",
+                PayAmount = 100000,
+                StatusType = "1",
+            },
+              new ItemData{
+                Id = 2,
+                OrderNumber = "10002",
+                HosCount = "3",
+                OrderList = "7",
+                PayAmount = 200000,
+                StatusType = "2",
+            },
+              new ItemData{
+                Id = 3,
+                OrderNumber = "10003",
+                HosCount = "5",
+                OrderList = "8",
+                PayAmount = 1000000,
+                StatusType = "3",
+            }
+        };
+
+
+    }
+}

@@ -1,0 +1,73 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">การปลูกถ่ายอวัยวะ/บันทึกรายการเบิก/รายการผู้ใช้บริการ </div>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-md-12 col-lg-9 float-start">
+        <Button Type="@ButtonType.Primary" @onclick=@(() => OpenViewModal(true))><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+    </div>
+    <div class="col-md-12 col-lg-3 float-end">
+        <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+            <SpaceItem>
+                <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+            </SpaceItem>
+        </Space>
+    </div>
+</div>
+
+<Button @onclick=@(() => OpenViewModal(true))></Button>
+<ViewModal _visible="@openViewModal" OnClose="@OpenViewModal"></ViewModal>
+
+@using MatBlazor
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@using sso.mms.fees.ext.Shared.OrganTransplantation.Modals
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    bool openViewModal { get; set; }
+
+    bool ModalAlert = false;
+    string Placeholder = "วว/ดด/ปปปป";
+    string style = "height:30px;line-height:30px;";
+
+    bool loading = false;
+    public async Task goPage(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    List<ItemData> listOfData = new List<ItemData>
+    {
+        new ItemData
+        {
+
+        }
+    };
+    string _selectedValue;
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+}

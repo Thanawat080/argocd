@@ -1,0 +1,196 @@
+﻿@using System.Text;
+<style>
+    @@media screen and (max-width: 900px) {
+        .mms-media-end {
+            display: flex;
+            justify-content: start !important;
+            align-items: start;
+        }
+    }
+</style>
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ส่งเสริมสุขภาพและป้องกันโรคกรณีวัคซีน</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-sucress py-2">รายการใช้สิทธิ์วัคซีนเชิงรุก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">เพิ่มสถานประกอบการจองสิทธิ์</span>
+                </li>
+            </ol>
+        </nav>
+        <div class="py-4">
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-2 mms-media-end">
+                    <div class="mms-txt-headdetail">
+                        ชื่อสถานประกอบการ : <span class="star-comment">*</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-10">
+                    <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 mms-media-end">
+                            <div class="mms-txt-headdetail">
+                                เลขนิติบุคคล :<span class="star-comment">*</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4 mms-media-end">
+                            <div class="mms-txt-headdetail">
+                                สาขา :<span class="star-comment">*</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4 mms-media-end">
+                            <div class="mms-txt-headdetail">
+                                วันที่จอง :<span class="star-comment">*</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Placeholder="phoder" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-2 mms-media-end align-items-start">
+                    <div class="mms-txt-headdetail">
+                        ที่อยู่ : <span class="star-comment">*</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-10">
+                    <TextArea Rows="4" Class="txtarea-from" />
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 mms-media-end">
+                            <div class="mms-txt-headdetail">
+                                เบอร์โทรศัพท์ :<span class="star-comment">*</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (!String.IsNullOrEmpty(FileName))
+            {
+                <div class="row py-2">
+                    <div class="col-sm-12 col-md-2 mms-media-end">
+                        <div class="mms-txt-headdetail">
+                            อัปโหลดไฟล์รายชื่อ :<span class="star-comment">*</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <a class="mms-txt-headdetail">@FileName</a>
+                    </div>
+                </div>
+            }
+            <div class="row py-2">
+                <div class="col-sm-12 col-md-2 mms-media-end align-items-start">
+                    <div class="mms-txt-headdetail">
+                        เพิ่มไฟล์รายชื่อ :<span class="star-comment">*</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-10">
+                    <div class="banner-box-upload">
+                        <div class="div-file-upload">
+                            <InputFile accept=".csv,.xlsx" class="custom-input-file " type="file" OnChange="@LoadImage" required />
+                            <div class="container mms-media-center">
+                                <div class="py-4 d-flex flex-column mms-media-center">
+                                    <i class="fa-solid fa-file-arrow-up pb-2" style="font-size:40px; color:#334396;"></i>
+                                    <span class="mms-txt-headdetail pb-2">วางไฟล์ที่นี่</span>
+                                    <div class="upload-btn">อัปโหลด</div>
+                                    <span>(ขนาด 5 MB)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container p-4 mms-media-end">
+        <Button Type="@ButtonType.Default" OnClick="@GoBack"><i class="fa-solid fa-circle-xmark"></i>&nbsp; ยกเลิก</Button> &nbsp;
+        <Button Type="@ButtonType.Primary" OnClick="@GoNext" Style="width:200px;"><i class="fa-solid fa-forward-step"></i>&nbsp; นำเข้ารายชื่อ</Button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string txtValue { get; set; }
+    string phoder = "วว/ดด/ปป";
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+
+    List<UploadFileItem> fileList = new List<UploadFileItem>();
+    public IBrowserFile bannerFile;
+
+    private async void GoNext()
+    {
+        await IndexPage.InvokeAsync(4);
+    }
+    private async void GoBack()
+    {
+        await IndexPage.InvokeAsync(1);
+    }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+
+    }
+    public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+
+        FileName = inputFileChangeEventArgs.File.Name;
+        bannerFile = inputFileChangeEventArgs.File;
+        // Handle CSV file
+        if (inputFileChangeEventArgs.File.ContentType == "text/csv")
+        {
+            using Stream csvStream = inputFileChangeEventArgs.File.OpenReadStream();
+            using StreamReader reader = new StreamReader(csvStream);
+            string csvContent = await reader.ReadToEndAsync();
+            var CsvContent = csvContent; // You can handle the CSV content as needed
+            var CsvBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csvContent));
+        }
+
+        // Handle XLSX file
+        if (inputFileChangeEventArgs.File.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            using Stream xlsxStream = inputFileChangeEventArgs.File.OpenReadStream();
+            using MemoryStream ms = new MemoryStream();
+            await xlsxStream.CopyToAsync(ms);
+            var XlsxBytes = ms.ToArray();
+            var XlsxBase64 = Convert.ToBase64String(XlsxBytes);
+        }
+
+        StateHasChanged();
+    }
+}

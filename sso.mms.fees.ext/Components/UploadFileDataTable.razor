@@ -1,0 +1,218 @@
+﻿@using NPOI.SS.UserModel
+@using NPOI.XSSF.UserModel
+
+@using System.Data
+
+
+@{
+    RenderFragment footer = @<Template>
+        <div class="mms-media-end pe-2">
+            <Button OnClick="@HandleCancel" @key="@( "back" )" style="padding: 4px 30px"><i class="fa-regular fa-circle-xmark"></i>&nbsp; ยกเลิก</Button>
+            <Button OnClick="@HandleOk" @key="@( "submit" )" Type="primary" style="padding: 4px 30px"><i class="fa-regular fa-circle-check"></i>&nbsp; ยืนยัน</Button>
+        </div>
+    </Template>;
+}
+
+
+<Modal Title="@("อัพไฟล์เอกสาร")"
+       Visible="true"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer">
+
+    <p>วางไฟล์เอกสารที่ต้องการ (.xlsx, .csv)</p>
+    <div class="container banner-box-upload">
+        <div class="d-flex justify-content-center align-item-center ">
+            <div class="div-file-upload">
+
+                <div class="d-flex flex-column justify-content-center align-items-center ">
+                    <InputFile accept=".csv,.xlsx" class="custom-input-file " type="file" OnChange="@LoadFile" required />
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-center py-4">
+                    <i class="fa-solid fa-upload" style="font-size:51.432px;color:#334396"></i>
+                    <h5 class="pt-4">วางไฟล์ที่นี่เพื่ออัปโหลด</h5>
+                    <h5>(ขนาดไฟล์ไม่เกิน 10 MB)</h5>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    @if (selectedFile != null)
+    {   
+        <div class="d-flex justify-content-center align-items-center pt-4">
+        <div>@selectedFileName</div>
+        @*<button @onclick="DeleteFile">Delete File</button>*@
+        @if (xmark == true)
+        {
+            <div @onclick="DeleteFile" class="px-2" style="color:red;cursor:pointer"><i class="fa-solid fa-circle-xmark"></i></div>
+        }
+        </div>
+    }
+
+</Modal>
+
+
+@code {
+    //[Parameter]
+    //public bool _visible1 { get; set; }
+
+
+    [Parameter]
+    public EventCallback<(List<DataTable>, bool)> DataTable { get; set; }
+
+    string selectedFileName;
+    IBrowserFile selectedFile;
+
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+    private bool xmark;
+    private IWorkbook workbook;
+    bool active = true;
+    public IBrowserFile bannerFile;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    List<DataTable> send = new List<DataTable>();
+
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+
+        await DataTable.InvokeAsync((send, true));
+
+    }
+
+    private async void HandleCancel(MouseEventArgs e)
+    {
+        await DataTable.InvokeAsync((send, false));
+    }
+
+    void DeleteFile()
+    {
+        xmark = false;
+        selectedFile = null;
+        selectedFileName = null;
+        send = new List<DataTable>();
+    }
+
+    public async Task LoadFile(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        xmark = true;
+        selectedFile = inputFileChangeEventArgs.GetMultipleFiles().FirstOrDefault();
+        if (selectedFile != null)
+        {
+            selectedFileName = selectedFile.Name;
+        }
+        send = new List<DataTable>();
+        FileName = inputFileChangeEventArgs.File.Name;
+        bannerFile = inputFileChangeEventArgs.File;
+        // Handle CSV file
+        if (inputFileChangeEventArgs.File.ContentType == "text/csv")
+        {
+            DataTable datatable = new DataTable();
+            using Stream csvStream = inputFileChangeEventArgs.File.OpenReadStream();
+            using StreamReader reader = new StreamReader(csvStream);
+            string csvContent = await reader.ReadToEndAsync();
+            //string thaiText = Convert.ToBase64String(Encoding.UTF8.GetString(csvContent));
+
+            var lines = csvContent.Split("\r");
+            if (lines.Length > 0)
+            {
+                // Parse header row
+                var headers = lines[0].Split(",");
+                foreach (var item in headers)
+                {
+                    datatable.Columns.Add(item);
+                }
+
+                // Parse data rows
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var data = lines[i].Split(",");
+                    datatable.Rows.Add(data);
+                }
+            }
+            var CsvBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csvContent));
+            Console.WriteLine(datatable);
+        }
+
+        // Handle XLSX file
+        if (inputFileChangeEventArgs.File.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            if (inputFileChangeEventArgs.File != null)
+            {
+                var filestream = inputFileChangeEventArgs.File.OpenReadStream();
+                var ms = new MemoryStream();
+                await filestream.CopyToAsync(ms);
+                ms.Position = 0;
+                ISheet sheet;
+                var xsswwb = new XSSFWorkbook(ms);
+                int countpage = xsswwb.NumberOfSheets;
+                for (var k = 0; k < countpage; k++)
+                {
+                    DataTable datatable = new DataTable();
+                    sheet = xsswwb.GetSheetAt(k);
+                    IRow hr = sheet.GetRow(0);
+                    List<string?> Item = new List<string?>();
+                    int cc = hr.LastCellNum;
+
+                    for (var j = 0; j < cc; j++)
+                    {
+                        ICell cell = hr.GetCell(j);
+                        datatable.Columns.Add(cell.ToString());
+                    }
+
+                    for (var j = (sheet.FirstRowNum + 1); j < sheet.LastRowNum + 1; j++)
+                    {
+
+                        var r = sheet.GetRow(j);
+                        int countnull = 0;
+                        for (var i = r.FirstCellNum; i < cc; i++)
+                        {
+                            if (r.GetCell(i) == null || r.GetCell(i).ToString() == "")
+                            {
+                                countnull += 1;
+                                Item.Add(null);
+                            }
+                            else
+                            {
+                                Item.Add(r.GetCell(i).ToString());
+                            }
+                        }
+                        if (Item.Count > 0)
+                        {
+                            
+                            bool allNull = Item.ToArray().All(item => item == null || item == "");
+
+                            if (allNull)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                datatable.Rows.Add(Item.ToArray());
+                            }
+                            //if (countnull == cc)
+                            //{
+                            //    continue;
+                            //}
+                            //else
+                            //{
+                            //    datatable.Rows.Add(Item.ToArray());
+                            //}
+                            
+                        }
+                        Item.Clear();
+
+                    }
+                    send.Add(datatable);
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+
+
+}

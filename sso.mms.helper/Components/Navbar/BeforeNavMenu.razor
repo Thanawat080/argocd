@@ -1,0 +1,120 @@
+﻿@using sso.mms.helper.Configs;
+@inject NavigationManager NavigationManager
+
+<style>
+    .c-style-content {
+        padding-left: 75px;
+        padding-right: 75px;
+    }
+
+    .navbar-style {
+        height: 80px;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-logo {
+        position: absolute;
+        left: 5.21%;
+        right: 74.93%;
+        top: 7.95%;
+        bottom: 62.33%;
+    }
+
+    .nav-font-nbf {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 36px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #909399;
+    }
+
+    .nav-user-font {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .nav-login {
+        background: #334396;
+        border-radius: 4px;
+    }
+
+    .text-title-nbf {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #FFFFFF;
+    }
+    .pointer{
+        cursor:pointer;
+
+    }
+</style>
+@*Navbar goes here.*@
+<nav class="navbar sticky-top navbar-expand-lg navbar-style c-style-content">
+    <div class="row w-100 m-2">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 pb-2 d-flex align-items-center">
+            <img class="wid-banner pointer" href="#" src="helper_shared/icon_sso/mms-logo.png" @onclick=@GoToHome />
+
+            <div style="color: #f0f2f9;font-size: 29px;padding-left: 1rem;">
+                |
+            </div>
+            <div style="color: #909399bd;">
+                @PageCode
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-8">
+            <div class="float-end">
+                <ul class="navbar-nav me-auto mb-2">
+                    <li class="nav-item">
+                        <a style="color:rgb(205 205 205);" class="nav-link nav-font-nbf" aria-current="page" href="#">ระบบการให้บริการทางการแพทย์</a>
+                    </li>
+                    <li class="nav-item hr-active">
+                        <hr style="margin-top:25px;Width:51px;border: 1px solid #C5CBE6;transform: rotate(90deg);" />
+                    </li>
+                    <li class="" style="margin-right:10px">
+                        <button class="btn btn-primary nav-login text-title-nbf p-2" type="button" @onclick="OnToLoginPage"><img src="helper_shared/icon_sso/login.png" style="width:28px; height:28px" /> เข้าสู่ระบบสถานพยาบาล</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+@code {
+
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url;
+    [Parameter]
+    public string PageCode { get; set;}
+
+    protected override void OnInitialized()
+    {
+        url = ConfigureCore.redirectLogin;
+    }
+
+    public void OnToLoginPage()
+    {
+        NavigationManager.NavigateTo(url);
+    }
+    public void GoToHome()
+    {
+        NavigationManager.NavigateTo("/portal/");
+    }
+
+}
+
+
+
+
+

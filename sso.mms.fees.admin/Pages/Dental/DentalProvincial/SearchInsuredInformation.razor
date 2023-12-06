@@ -1,0 +1,62 @@
+﻿@page "/Dental/SearchInsuredInformation"
+@using System.IdentityModel.Tokens.Jwt;
+@using AntDesign;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.Dental.DentalProvincial.SearchInsuredInformation
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage
+@inject IconService iconService
+
+<LayoutIndex ShortToken="@shortToken" Page="Dental">
+    @if(page == 1){
+        <SearchInsuredInformationIndex PageIndex="GetPage"></SearchInsuredInformationIndex>
+    }else if (page == 2)
+    {
+        <SearchInsuredInformationDetail PageIndex="GetPage"></SearchInsuredInformationDetail>
+    }
+
+</LayoutIndex>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    public int page=1;
+
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+    private async void GetPage(int page)
+    {
+        this.page = page;
+    }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+    //    Console.WriteLine("responseShortToken", responseShortToken);
+
+    //    if (responseShortToken != null)
+    //    {
+    //        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+    //        JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+    //        var t = jwt.Payload.ToList();
+    //        KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+    //        var username = result.Value.ToString();
+
+    //        userRole = await userRoleService.GetRoleByUserName(username);
+    //        await _localstorage.SetItemAsync("userRole", userRole);
+
+    //    }
+    //}
+}

@@ -1,0 +1,193 @@
+﻿@using sso.mms.fees.admin.Providers.PromoteHealth.ReportsPromoteAIList
+@using sso.mms.fees.admin.ViewModels.Responses;
+@using ClosedXML.Report;
+@using ClosedXML.Excel;
+@inject ReportsPromoteAIListServices reportsPromoteAIListServices
+@inject IJSRuntime JsRuntime
+<style>
+    .hover-custom:hover, .hover-custom:hover > td {
+        background-color: #EAE8EC !important;
+    }
+
+    input {
+        color: black !important;
+    }
+</style>
+<div class="container">
+    <div class="row pb-3">
+        <div class="col-xl-3 mms-media-start">
+            <div class="mms-txt-headdetail" style="width:50%;">รหัสสถานพยาบาล</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@HosCode" Disabled="true" Style="width:30%;" />
+        </div>
+        <div class="col-xl-6 mms-media-center">
+            <div class="mms-txt-headdetail" style="width:30%;">ชื่อสถานพยาบาล</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@HosName" Disabled="true"  />
+        </div>
+        <div class="col-xl-3 mms-media-end">
+            <div class="mms-txt-headdetail" style="width:55%;">จำนวนผู้ป่วยทั้งหมด</div>&nbsp;
+            @if (Persons != null)
+            
+            {
+                <Input Placeholder="Basic usage" @bind-Value="@Persons.AllpersonByHos" Disabled="true" Style="width:30%;" />
+            }
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10"></div>
+        <div class="col" style="padding-left:31px;">
+            <Button Type="@ButtonType.Default" style="padding: 4px 30px; margin-right: 2%; color:#334396; border-color:#334396;" @onclick="(() => download())"><i class="fa-solid fa-cloud-arrow-down"></i>Export to Excel</Button>
+        </div>
+    </div>
+    @if (Persons != null)
+    {
+        <Table DataSource="Persons.personAiList" TItem="PersonAiList" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Style="text-align:center;">
+                @String.Format("{0:d}", Persons.personAiList.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="รายชื่อผู้ประกันตน" Style="text-align:center;">
+                    @data.Fullname
+                </Column>
+                <Column TData="string" Title="รหัสบัตรประชาชน" Style="text-align:center;">
+                    @data.Personalid
+                </Column>
+                <Column TData="string" Title="วันที่เข้าตรวจ" Style="text-align:center;">
+                    @data.CheckIndate.Value.AddYears(543).ToString("dd/MM/yyyy")
+                </Column>
+                <Column TData="string" Title="ประเภทการตรวจ" Style="text-align:center;">
+                    @if(data.ProActive == "0")
+                    {
+                        <div>Walk-in</div>
+                    }
+                    else
+                    {
+                        <div>เชิงรุก</div>
+                    }
+                    
+                </Column>
+                <Column TData="string"  Title="ผลการตรวจสอบ" Style="text-align:center; border-top-right-radius:8px;">
+                    @if (data.OutlierType == 0)
+                    {
+                        <div>ปกติ</div>
+                    }
+                    else if(data.OutlierType == 1)
+                    {
+                        <div>น่าสงสัย</div>
+                    }
+                    else if (data.OutlierType == 2)
+                    {
+                        <div>ไม่วิเคราะห์</div>
+                    }
+                    else if (data.OutlierType == 3)
+                    {
+                        <div style="color: red">Error</div>
+                    }
+                </Column>
+                <Column TData="string" Title="MESSAGE" Style="text-align:center; border-top-right-radius:8px;">
+                    @if(data.OutlierType == 3)
+                    {
+                        <div style="color: red">@data.Message</div>
+                    }
+                    else
+                    {
+                        <div>@data.Message</div>
+                    }
+                    
+                </Column>
+            </ChildContent>
+        </Table>
+    
+    }
+
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+@code {
+
+    [Parameter]
+    public string HosCode { get; set; }
+    [Parameter]
+    public string HosName { get; set; }
+    [Parameter]
+    public PersonForAi Persons { get; set; }
+
+    public bool isloading = false;
+    public int iditem;
+    public int idpage;
+    string _okText = "ยืนยัน";
+    string desAi = "";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+
+    public async void opendModal(string desAii)
+    {
+        desAi = desAii;
+        _visible1 = true;
+    }
+
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+
+        if(Persons != null)
+        {
+            isloading = false;
+            StateHasChanged();
+        }
+    }
+
+    public async Task download()
+    {
+
+        isloading = true;
+        await Task.Delay(3000);
+        var datetime = DateTime.Now.ToString("yyyyMMdd|HHmmss");
+        var date = datetime.Split('|')[0];
+        var time = datetime.Split('|')[1];
+        var fileName = "AI" + "_" + date + "_" + time + ".xlsx";
+
+        var path = Path.Combine("wwwroot", "download", fileName);
+        var pathTemplate = Path.Combine("wwwroot", "AI_TEMPLATE.xlsx");
+        var outputFile = path;
+        var template = new XLTemplate(pathTemplate);
+
+
+
+        List<PersonAiList> personAi = new List<PersonAiList>();
+        personAi = Persons.personAiList;
+        template.AddVariable("rptSummary", personAi);
+        template.Generate();
+
+        template.SaveAs(outputFile);
+
+
+        isloading = false;
+        StateHasChanged();
+        await JsRuntime.InvokeAsync<object>("open", "download/" + fileName, "_blank");
+
+
+
+    }
+
+}

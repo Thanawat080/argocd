@@ -1,0 +1,67 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ กรณี Package โรคหัวใจและหลอดเลือด กับสถานพยาบาลในความตกลง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">ประวัตการเบิกจ่าย</div>
+        <hr />
+        <div>
+            <div class="d-flex justify-content-end">
+                <Space Direction="@DirectionVHType.Horizontal">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                     </SpaceItem>
+                 </Space>
+             </div>
+         </div>
+         <div class="mt-3">
+             <Table DataSource="data" OnChange="OnChange" TItem="Data">
+                 <Column Title="ลำดับ" DataIndex="No" TData="int" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="เลขประจำตัวประชาชน" DataIndex="ID" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="ชื่อ-นามสกุล" DataIndex="Name" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="รหัสสถานพยาบาล" DataIndex="HosCode" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="ชื่อสถานพยาบาล" DataIndex="HosName" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="วันที่รักษา" DataIndex="treatmentDate" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="วันที่จ่าย" DataIndex="paymentDate" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column Title="จำนวนเงิน(บาท)" DataIndex="SumAmount" TData="string" Align="ColumnAlign.Center" Style="background: #EAE8EC;" />
+                 <Column TData="string" DataIndex="Status" Title="วินิจฉัย" Style="text-align:center; background: #EAE8EC;">
+                     @if (context.Status == "จ่ายแล้ว")
+                    {
+                        <span style="color: green;"></span><span>จ่ายแล้ว</span>
+                    }
+                    else
+                    {
+                        <span style="color: red;"></span><span>รอจ่าย</span>
+                    }
+                </Column>
+                <Column Title="" DataIndex="Detail" TData="string" Align="ColumnAlign.Center" Width="80px" Style="background: #EAE8EC;">
+                    <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png" style="width:24px;height:24px;" @onclick=@(() => Detail(2)) />
+                </Column>
+            </Table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task Detail(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public record Data(int No, string ID, string Name, string HosCode, string HosName, string treatmentDate, string PaymentDate, string SumAmount, string Status, string Detail);
+
+    public Data[] data =
+    {
+        new(1,"110121267891","นายเมธี ส่องแสง", "25665" ,"จุฟาภรณ์", "25/05/2566","128,000.00" , "30 เม.ย 66","รอจ่าย",""),
+        new(2,"110121289251","นายบรง มีศักดิ์", "25665" ,"จุฟาภรณ์", "15/07/2566","128,000.00" , "30 เม.ย 66","จ่ายแล้ว",""),
+        new(3,"110121225795","นายยิ้มแย้ม แจ่มใส", "25665" ,"จุฟาภรณ์", "05/01/2566","128,000.00" , "30 เม.ย 66","จ่ายแล้ว",""),
+    };
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+}

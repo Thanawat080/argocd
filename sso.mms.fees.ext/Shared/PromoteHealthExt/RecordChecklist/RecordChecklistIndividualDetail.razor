@@ -1,0 +1,881 @@
+﻿@using System.Text;
+@using Blazored.LocalStorage;
+@using sso.mms.fees.api.ViewModels.PromoteHealth;
+@inject ILocalStorageService _localstorage;
+@using sso.mms.fees.ext.Providers.PromoteHealth.DetermineReferenceValue;
+@inject DetermineReferenceServices determineReferenceServices
+@using sso.mms.helper.Utility;
+@inject SweetAlertService Swal;
+@using sso.mms.fees.ext.Providers.PromoteHealth.RecordChecklist;
+@inject RecordChecklistServices recordChecklistServices
+@using sso.mms.fees.ext.Providers.PromoteHealth.BookHealthCheckup;
+
+@inject BookHealthCheckupServices bookHealthCheckupServices;
+<style>
+    html, body {
+        overflow-x: visible;
+    }
+
+    input {
+        color: black !important;
+    }
+
+    .ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+        display: inline-block;
+        margin-right: 12px;
+        font-size: 19px;
+        vertical-align: -1px;
+    }
+
+    .ant-collapse-header-text {
+        font-size: 19px;
+    }
+
+    .ant-modal-footer {
+        padding: 10px 16px 50px;
+        text-align: right;
+        background: transparent;
+        border-top: 1px solid #f0f0f0;
+        border-radius: 0 0 2px 2px;
+    }
+
+    .icon-container {
+        position: relative;
+        height: 100px;
+    }
+
+    .icon1, .icon2 {
+        position: absolute;
+    }
+
+    .icon1 {
+        background: url('icon1.png') center center no-repeat; /* Use your icon image here */
+        z-index: 1; /* This sets the stacking order, icons with higher z-index values appear on top */
+    }
+
+    .icon2 {
+        background: url('icon2.png') center center no-repeat; /* Use your icon image here */
+        z-index: 2; /* Icons with higher z-index values appear on top of icons with lower values */
+    }
+
+    .p-txt {
+        color: #1A141F;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%; /* 36px */
+        letter-spacing: -0.456px;
+    }
+
+    .p-text {
+        color: #334396;
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 0.2px;
+    }
+
+    .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+        border-radius: 6px;
+        height: 40px
+    }
+
+    .ant-collapse > .ant-collapse-item {
+        border-bottom: 1px solid #d9d9d9;
+        border-radius: 10px;
+    }
+
+    .ant-collapse {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
+        font-variant: tabular-nums;
+        line-height: 1.5715;
+        list-style: none;
+        font-feature-settings: 'tnum';
+        background-color: #fafafa;
+        border: 1px solid #d9d9d9;
+        border-bottom: 0;
+        border-radius: 10px !important;
+    }
+
+        .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+            color: white !important;
+            background: #3B6C43 !important;
+            border-radius: 0px 0px 0 0 !important;
+            height: 60px !important;
+            align-items: center !important;
+        }
+</style>
+
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ส่งเสริมสุขภาพและป้องกันโรค</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page" @onclick="()=> goEdit()">
+                    @if (Type == "Individual")
+                    {
+                        <span class="breadcum-sucress py-2">บันทึกรายการตรวจ/รายบุคคล</span>
+                    }
+                    else
+                    {
+                        <span class="breadcum-sucress py-2">บันทึกรายการตรวจ/รายสถานประกอบการ</span>
+                    }
+
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">@fullname</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row pb-4">
+            <div class="col-xl-3 mms-media-start">
+                <div class="mms-txt-headdetail" style="width: 55%">วันที่สร้าง</div>&nbsp;
+                <Input @bind-Value="@createDate" Disabled />
+            </div>
+            <div class="col-xl-4 mms-media-center">
+                <div class="mms-txt-headdetail" style="width: 70%">วันที่แก้ไขล่าสุด</div>&nbsp;
+                <Input @bind-Value="@updateDate" Disabled />
+            </div>
+            <div class="col-xl-5 mms-media-end">
+                <div class="mms-txt-headdetail" style="width: 45%">แก้ไขล่าสุดโดย</div>&nbsp;
+                <Input @bind-Value="@username" Disabled />
+            </div>
+        </div>
+
+        <div class="row pb-4">
+
+            <div class="col-xl-6 mms-media-start">
+                <div class="mms-txt-headdetail" style="width: 50%">เลขประจำตัวประชาชน</div>&nbsp;
+                <Input @bind-Value="@personalId" Disabled />
+
+            </div>
+            <div class="col-xl-6 mms-media-center" style="padding-left: 3%">
+                <div class="mms-txt-headdetail" style="width: 30%">ชื่อ-นามสกุล</div>&nbsp;
+                <Input @bind-Value="@fullname" Disabled />
+            </div>
+        </div>
+
+        <div class="row pb-4">
+            <div class="col-xl-6 mms-media-start">
+                <div class="mms-txt-headdetail" style="width: 50%">วันที่ตรวจ</div>&nbsp;
+                <Input @bind-Value="@showCheckDate" Disabled />
+            </div>
+            <div class="col-xl-6 mms-media-center" style="padding-left: 3%">
+                <div class="mms-txt-headdetail" style="width: 30%">เลขใบตรวจ</div>&nbsp;
+                <Input @bind-Value="@recordChecklist.RecordCheckupHView.CheckupNo" Disabled />
+            </div>
+        </div>
+        <EditForm Model=@Validate>
+            <DataAnnotationsValidator />
+            <div class="row pb-4">
+                <div class="col-xl-3 ">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">น้ำหนัก <div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@personweigth" Disabled='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false' />
+                            <ValidationMessage For="@(() => Validate.PatientWeigth)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 ">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">ส่วนสูง<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@personheigth" Disabled='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false' />
+                            <ValidationMessage For="@(() => Validate.PatientHeigth)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 ">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="mms-txt-headdetail">ความดัน<div class="mms-txt-headdetail" style="color: red; display: inline-block;">*</div></div>&nbsp;
+                        </div>
+                        <div class="col-sm-12 col-md-8">
+                            <Input @bind-Value="@personpressure" Disabled='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false' />
+                            <ValidationMessage For="@(() => Validate.PatientPressure)" style="padding: 0 2%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-4">
+                <div class="mms-media-start">
+                    <div class="mms-txt-headdetail" style="width: 10%">โรคประจำตัว</div>&nbsp;
+
+                    <RadioGroup @bind-Value="@recordChecklist.RecordCheckupHView.IsUd" Disabled='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false'>
+                        <Radio Value="@(false)" TValue="bool?">ไม่เป็น</Radio>
+                        <Radio Value="@(true)" TValue="bool?">เป็น</Radio>
+                    </RadioGroup>
+                    @*
+                    @if (recordChecklist.RecordCheckupHView.IsUd == true)
+                    {
+                    <Select Style="width: 30%; margin-left: 2%" Placeholder="เลิอก" TItemValue="string" TItem="string">
+                    <SelectOptions>
+                    <SelectOption TItemValue="string" TItem="string" Style="background-color:white; font-weight:600; color:#334396; text-align:start; line-height:20px; letter-spacing:0.2px; font-size: 18px;" />
+                    @foreach (var item in dropdownlist)
+                    {
+                    <div>
+                    <div class="row p-2">
+                    <div class="col-1" style="text-align:center;"><span><Checkbox Style="border-block-color:#334396;" ValueChanged="@OnChanged" @bind-Checked="@item.active"></Checkbox></span></div>
+                    <div class="col"><div class="mms-txt-headdetail">@item.value</div></div>
+                    </div>
+                    </div>
+                    }
+                    </SelectOptions>
+                    </Select>
+                    }
+
+                    @if (dropdownlist.Where(x => x.value == "เป็นอื่นๆ").FirstOrDefault().active && recordChecklist.RecordCheckupHView.IsUd == true)
+                    {
+                    <Input @bind-Value="@remarkdisease" Style="width: 20%; margin-left: 2%" Placeholder="ระบุ" ReadOnly='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false' />
+                    }*@
+                </div>
+
+            </div>
+            @if (recordChecklist.RecordCheckupHView.IsUd == true)
+            {
+                <div class="row">
+
+                    @foreach (var item in dropdownlist)
+                    {
+
+                        <div style="display:flex;" class="col-4">
+                            <div class="col-1" style="text-align:center;"><span><Checkbox Style="border-block-color:#334396;" ValueChanged="@OnChanged" @bind-Checked="@item.active" Disabled='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false'></Checkbox></span></div>
+                            <div class="col"><div class="mms-txt-headdetail">@item.value</div></div>
+                            @if ((item.value == "เป็นอื่นๆ" && item.active) && recordChecklist.RecordCheckupHView.IsUd == true)
+                            {
+                                <Input @bind-Value="@remarkdisease" Style="width: 70%; margin-left: 2%" Placeholder="ระบุ" ReadOnly='((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment")) ? true : false' />
+                            }
+                        </div>
+
+                    }
+                </div>
+
+            }
+            @if ((Checktype == 3 && Type == "Individual") || (Checktype == 5 && Type == "Establishment"))
+            {
+                @if (Person.Count() > 0)
+                {
+                    <Table DataSource="Person[0].checklistMs" TItem="ChecklistM" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000" @bind-PageSize="pageSize">
+                        <ChildContent Context="data">
+                            <Column TData="string" Title="" Width="5%">
+                                <Checkbox @bind-Checked="@data.statuscheck" Disabled="@(data.DefaultStatuscheck == false)">
+
+                                </Checkbox>
+                            </Column>
+                            @*<Selection Key="@(data.ChecklistId.ToString())" Width="10%" Disabled="@(data.statuscheck == false)" />*@
+                            <Column TData="string" Title="ลำดับ" Width="10%" Style="text-align:center;">
+                                @String.Format("{0:d}", Person[0].checklistMs.IndexOf(data) + 1)
+                            </Column>
+                            <Column TData="string" Title="รายการตรวจ" Width="80%">
+                                @data.ChecklistName
+                            </Column>
+                        </ChildContent>
+                    </Table>
+                }
+            }
+            @if ((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment"))
+            {
+                <div class="row align-items-center py-4">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="mms-txt-headdetail">รายการตรวจสุขภาพ</div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="mms-media-end align-items-center">
+                            <Button Type="@ButtonType.Default"> <i class="fa-solid fa-cloud-arrow-down"></i> &nbsp; ดาวน์โหลด Template</Button> &nbsp;&nbsp;
+                            <Button Type="@ButtonType.Primary"> <i class="fa-solid fa-upload"></i> &nbsp; นำเข้าผลการตรวจ</Button>
+                        </div>
+                    </div>
+                </div>
+                <Collapse ExpandIcon="caret-right">
+                    <ChildContent>
+                        @foreach (var item in recordChecklist.ChecklistMViews.Where(x => x.StatusCheck == true))
+                        {
+                            <Panel Header="@item.ChecklistName" Key="@String.Format("{0:d}", @recordChecklist.ChecklistMViews.IndexOf(item) + 1)" Class="site-collapse-custom-panel" Disabled="item.IsCheck == false ? true: false" Active="item.IsCheck == true ? true : false">
+                                <ExtraTemplate>
+                                    @if (item.IsCheck == false)
+                                    {
+                                        <div @onclick:stopPropagation><Button Type="@ButtonType.Default" style="padding: 4px 30px" OnClick="@(()=> openModal(Decimal.ToInt32(item.ChecklistId)))"><i class="fa-solid fa-check"></i> &nbsp; ตรวจแล้ว</Button></div>
+                                    }
+                                </ExtraTemplate>
+                                <ChildContent>
+                                    @if (item.IsSetRef == false)
+                                    {
+                                        <Table DataSource="@item.ChecklistDViews" TItem="RecordChecklistDView" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+                                            <ChildContent Context="data">
+                                                <Column TData="string" Title="ลำดับ" Width="10%" Style="text-align:center;">
+                                                    @String.Format("{0:d}", @item.ChecklistDViews.IndexOf(data) + 1)
+                                                </Column>
+                                                <Column TData="string" Title="รายการ" Width="20%">
+                                                    @if (data.IsOption == false)
+                                                    {
+                                                        <div>@data.ChecklistDtName <div style="display: inline-block; color:red">*</div></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        @data.ChecklistDtName
+                                                    }
+                                                </Column>
+                                                <Column TData="string" Title="ผลการตรวจ" Width="20%" Style="text-align:center;">
+                                                    <RadioGroup @bind-Value="@data.IsNormal" Disabled="item.isExport == true ? true : false">
+                                                        <Radio Value="@(true)" TValue="bool?">ปกติ</Radio>
+                                                        <Radio Value="@(false)" TValue="bool?">ผิดปกติ</Radio>
+                                                    </RadioGroup>
+                                                </Column>
+                                                <Column TData="string" Title="คำแนะนำ" Width="50%" Style="text-align:center;">
+                                                    <Input @bind-Value="@data.Suggestion" Disabled="item.isExport == true ? true : false" />
+                                                </Column>
+
+                                            </ChildContent>
+                                        </Table>
+                                    }
+                                    @if (item.IsSetRef == true)
+                                    {
+                                        <Table DataSource="@item.ChecklistDViews" TItem="RecordChecklistDView" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+                                            <ChildContent Context="data">
+
+                                                <Column TData="string" Title="ลำดับ" Width="10%" Style="text-align:center;">
+                                                    @String.Format("{0:d}", @item.ChecklistDViews.IndexOf(data) + 1)
+                                                </Column>
+                                                <Column TData="string" Title="รายการ" Width="15%">
+
+                                                    @if (data.RecordSetRefNickNameView.SetRefName == null)
+                                                    {
+                                                        if (data.IsOption == false)
+                                                        {
+                                                            <div>@data.ChecklistDtName <div style="display: inline-block; color:red">*</div></div>
+                                                        }
+                                                        else
+                                                        {
+                                                            @data.ChecklistDtName
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        if (data.IsOption == false)
+                                                        {
+                                                            <div>@data.RecordSetRefNickNameView.SetRefName <div style="display: inline-block; color:red">*</div></div>
+                                                        }
+                                                        else
+                                                        {
+                                                            @data.RecordSetRefNickNameView.SetRefName
+                                                        }
+
+                                                    }
+
+
+                                                </Column>
+                                                <Column TData="string" Title="ค่าอ้างอิง" Width="15%" Style="text-align:center;">
+                                                    @if (data.RecordSetRefChecklistCfgView == null)
+                                                    {
+                                                        <div></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        @data.RecordSetRefChecklistCfgView.SetRefValue
+                                                    }
+
+                                                </Column>
+                                                <Column TData="string" Title="ผลการตรวจ" Width="15%" Style="text-align:center;" HeaderColSpan="2">
+
+                                                    <Input @bind-Value="@data.CheckValue" Style="width: 100%" Disabled="item.isExport == true ? true : false" />
+
+
+                                                </Column>
+                                                <Column TData="string" Title="" Width="20%" Style="text-align:center;" HeaderColSpan="0">
+                                                    <RadioGroup @bind-Value="@data.IsNormal" Style="margin-left: 2%" Disabled="item.isExport == true ? true : false">
+                                                        <Radio Value="@(true)" TValue="bool?">ปกติ</Radio>
+                                                        <Radio Value="@(false)" TValue="bool?">ผิดปกติ</Radio>
+                                                    </RadioGroup>
+                                                </Column>
+                                                <Column TData="string" Title="คำแนะนำ" Width="30%" Style="text-align:center;">
+                                                    <Input @bind-Value="@data.Suggestion" Disabled="item.isExport == true ? true : false" />
+                                                </Column>
+
+                                            </ChildContent>
+                                        </Table>
+                                    }
+
+                                    <div class="mms-media-start">
+                                        <div class="mms-txt-headdetail">สรุปผลการตรวจ</div>
+                                        <RadioGroup @bind-Value="@item.ResultStatus" Style="margin-left: 2%" Disabled="item.isExport == true ? true : false">
+                                            <Radio Value="@("Y")">ปกติ</Radio>
+                                            <Radio Value="@("N")">ผิดปกติ</Radio>
+                                        </RadioGroup>
+                                        <div class="mms-txt-headdetail" style="margin-left: 7%">ผู้วินิจฉัย/อ่านผล</div>
+                                        <Select Style="width: 20%; margin-bottom: 8px; margin-left: 2%" Placeholder="Please select" TItem="RecordSetRefDoctorView" Disabled="item.isExport == true ? true : false"
+                                                TItemValue="decimal?"
+                                                DataSource="@item.SetRefDoctorViews"
+                                        @bind-Value="@item.SelectDoctorId"
+                                                ValueName="@nameof(RecordSetRefDoctorView.SetRefDoctorId)"
+                                                LabelName="@nameof(RecordSetRefDoctorView.DoctorName)"
+                                                                DefaultActiveFirstOption>
+                                    </Select>
+                                </div>
+                            </ChildContent>
+
+                        </Panel>
+                        }
+                    </ChildContent>
+                </Collapse>
+            }
+
+            <div class="mms-media-end pt-5">
+                <div>
+                    <Button Type="@ButtonType.Default" @onclick=@(() => goEdit()) style="padding: 4px 30px; margin-left: -10%;"><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+                </div>
+                <div>
+                    <Button Type="@ButtonType.Primary" @onclick=@(() => save()) HtmlType="submit" style="padding: 4px 30px"><i class="fa-regular fa-floppy-disk"></i> &nbsp; บันทึก</Button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@{
+    RenderFragment footer = @<Template>
+        <div class="justify-content-center align-content-center" style="display: flex">
+            <Button OnClick="@HandleCancel" @key="@( "back" )" style="padding: 4px 30px"><i class="fa-regular fa-circle-xmark"></i>&nbsp; ยกเลิก</Button>
+            <Button OnClick="changeActive" @key="@( "submit" )" Type="primary" style="padding: 4px 30px"><i class="fa-regular fa-circle-check"></i>&nbsp; ยืนยัน</Button>
+        </div>
+    </Template>;
+}
+
+<Modal Title="@("")"
+       Visible="@_visible1"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Closable
+       CloseIcon="closeIcon"
+       Width="500">
+
+    <div class="mms-media-center icon-container">
+        <i class="fa-solid fa-circle icon1" style="color: #C5CBE6; font-size: 90px"></i>
+        <i class="fa-solid fa-check icon2" style="color: #334396; font-size: 58px"></i>
+    </div>
+    <div class="mms-media-center">
+        <p class="p-text">ตรวจแล้ว</p>
+    </div>
+    <div class="mms-media-center">
+        <p class="p-txt">ต้องการยืนยันรายการนี้เพื่อกรอกผลการตรวจหรือไม่</p>
+    </div>
+
+
+
+</Modal>
+@if (DialogIsOpenSave)
+{
+    <ModalSaveChange OnClose="@OnDialogCloseSave" title="ยืนยันการบันทึกข้อมูลใช่หรือไม่" description="">
+    </ModalSaveChange>
+}
+
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    [Parameter]
+    public string AdminUsername { get; set; }
+
+    [Parameter]
+    public int Checktype { get; set; }
+
+    [Parameter]
+    public string Type { get; set; }
+
+    [Parameter]
+    public decimal CheckupId { get; set; }
+
+    [Parameter]
+    public person Persons { get; set; }
+
+    // add Individual 3
+    // edit Individual 4
+    // add Establishment 5
+    // edit Establishment 6
+    ManageRecordChecklistView recordChecklist = new ManageRecordChecklistView();
+    string _selected;
+    List<UploadFileItem> fileList = new List<UploadFileItem>();
+    public IBrowserFile bannerFile;
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+    public string personpressure = "";
+    public string personweigth = "";
+    public string personheigth = "";
+    public string remarkdisease = "";
+    List<CheckPermissionCheckListView> Person = new List<CheckPermissionCheckListView>();
+    CheckPermissionCheckListView Validate = new CheckPermissionCheckListView();
+    List<diseaseView> dropdownlist = new List<diseaseView>();
+    bool active = true;
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    bool isChecked = false;
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    public int panelId;
+
+    private int pageSize = 14;
+    int _value = 1;
+    List<string> _items;
+    IEnumerable<string> _selectedValues1;
+    private string _sizeValue = AntSizeLDSType.Default;
+    public bool isloading = false;
+    string txtValue { get; set; } = "";
+    string Value { get; set; } = "DevTest";
+    public string username { get; set; } = "";
+    public string hosmCode { get; set; } = "";
+    public string? createDate;
+    public string? updateDate;
+    public bool DialogIsOpenSave = false;
+    saverecord saverec = new saverecord();
+    public int age { get; set; }
+    public string? fullname = "";
+    public string personalId;
+    public string showCheckDate;
+    public DateTime checkDate;
+
+    private async Task OnDialogCloseSave(bool isOk)
+    {
+        if (isOk)
+        {
+            if ((Checktype == 3 && Type == "Individual"))
+            {
+                isloading = true;
+                saverec.remarkdisease = remarkdisease;
+                Person[0].PatientWeigth = personweigth;
+                Person[0].PatientHeigth = personheigth;
+                Person[0].PatientPressure = personpressure;
+                Person[0].CheckupDate = checkDate;
+                saverec.person = Person;
+                saverec.diseaseView = dropdownlist;
+                saverec.hoscode = hosmCode;
+                saverec.usernameupdate = username;
+                saverec.isDisease = dropdownlist.Where(x => x.value == "เป็นอื่นๆ").FirstOrDefault().active;
+
+                var res = await recordChecklistServices.Saverecord(saverec);
+                if (res == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลสำเร็จ",
+                            null,
+                            SweetAlertIcon.Success
+                            );
+                    await IndexPage.InvokeAsync((1));
+                }
+                else
+                {
+                    isloading = false;
+                    DialogIsOpenSave = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลไม่สำเร็จ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+
+                }
+            }
+            else if ((Checktype == 5 && Type == "Establishment"))
+
+            {
+
+                isloading = true;
+                saverec.remarkdisease = remarkdisease;
+                Person[0].PatientWeigth = personweigth;
+                Person[0].PatientHeigth = personheigth;
+                Person[0].PatientPressure = personpressure;
+                Person[0].CheckupDate = checkDate;
+                saverec.person = Person;
+                saverec.diseaseView = dropdownlist;
+                saverec.usernameupdate = username;
+                saverec.isDisease = dropdownlist.Where(x => x.value == "เป็นอื่นๆ").FirstOrDefault().active;
+
+                var res = await recordChecklistServices.UpdateRecord(saverec);
+                if (res == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลสำเร็จ",
+                            null,
+                            SweetAlertIcon.Success
+                            );
+                    await IndexPage.InvokeAsync((2));
+                }
+                else
+                {
+                    isloading = false;
+                    DialogIsOpenSave = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลไม่สำเร็จ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+
+                }
+            }
+            else if ((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment"))
+            {
+                isloading = true;
+                var res = await recordChecklistServices.UpdateResult(recordChecklist);
+                if (res == "success")
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลสำเร็จ",
+                            null,
+                            SweetAlertIcon.Success
+                            );
+                    await IndexPage.InvokeAsync((1));
+                }
+                else
+                {
+                    isloading = false;
+                    DialogIsOpenSave = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                            "บันทึกข้อมูลไม่สำเร็จ",
+                            null,
+                            SweetAlertIcon.Error
+                            );
+
+                }
+            }
+        }
+        DialogIsOpenSave = false;
+    }
+
+
+    void OnChanged()
+    {
+        if (dropdownlist.Where(x => x.Id == 4).FirstOrDefault().active)
+        {
+            Console.WriteLine("Other");
+        }
+    }
+
+    public void openModal(int Id)
+    {
+        panelId = Id;
+        _visible1 = true;
+    }
+
+    public void changeActive()
+    {
+        recordChecklist.ChecklistMViews.Where(x => x.ChecklistId == panelId).FirstOrDefault().IsCheck = true;
+        _visible1 = false;
+
+    }
+
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            files.Add(file);
+        }
+        //TODO upload the files to the server
+
+        fileList = files.Select(file => new UploadFileItem { FileName = file.Name, Size = file.Size }).ToList();
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+    }
+
+
+    public async Task goEdit()
+    {
+        if (Type == "Establishment")
+
+        {
+            await IndexPage.InvokeAsync(2);
+        }
+        else
+        {
+            await IndexPage.InvokeAsync(1);
+        }
+    }
+    public async Task save()
+    {
+        Validate.PatientWeigth = personweigth;
+        Validate.PatientHeigth = personheigth;
+        Validate.PatientPressure = personpressure;
+        DialogIsOpenSave = true;
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+    RenderFragment closeIcon =@<div><i class="fa-regular fa-circle-xmark" style="font-size: 24px; color: #224183;"></i></div>;
+
+    private void OnChangeSize(string value)
+    {
+        _sizeValue = value;
+        Console.WriteLine($"selected size: ${value}");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        if (Persons != null)
+        {
+            Persons.CheckChecklistM = true;
+            List<person> personssend = new List<person>();
+            personssend.Add(Persons);
+            Person = await bookHealthCheckupServices.CheckPermission(personssend);
+        }
+        checkDate = DateTime.Now;
+        showCheckDate = checkDate.ToString("dd/MM/yyyy");
+        dropdownlist = new List<diseaseView>
+        {
+        new diseaseView() {
+                Id = 1,
+                value = "โรคเบาหวาน",
+                active = false
+            },
+        new diseaseView() {
+                Id = 2,
+                value = "โรคไขมันในเลือดสูง",
+                active = false
+            },
+        new diseaseView() {
+                Id = 3,
+                value = "โรคอ้วน",
+                active = false
+            },new diseaseView() {
+                Id = 4,
+                value = "โรคความดันโลหิตสูง",
+                active = false
+            },new diseaseView() {
+                Id = 5,
+                value = "โรคทางเดินหายใจเรื้อรัง",
+                active = false
+            }
+            ,new diseaseView() {
+                Id = 6,
+                value = "โรคไตวายเรื้อรัง",
+                active = false
+            }
+            ,new diseaseView() {
+                Id = 7,
+                value = "โรคมะเร็ง",
+                active = false
+            }
+            ,new diseaseView() {
+                Id = 12,
+                value = "โรคหัวใจและหลอดเลือด",
+                active = false
+            }
+
+            ,new diseaseView() {
+                Id = 8,
+                value = "โรคถุงลมโป่งพอง",
+                active = false
+            }
+            ,new diseaseView() {
+                Id = 9,
+                value = "โรคกระเพาะอาหาร",
+                active = false
+            }
+
+            ,new diseaseView() {
+                Id = 10,
+                value = "โรคโลหิตจาง",
+                active = false
+            }
+            ,new diseaseView() {
+                Id = 11,
+                value = "เป็นอื่นๆ",
+                active = false
+            }
+        };
+
+        if ((Checktype == 4 && Type == "Individual") || (Checktype == 6 && Type == "Establishment"))
+        {
+            recordChecklist = await recordChecklistServices.GetChecklistByCheckupId(CheckupId);
+            fullname = recordChecklist.RecordCheckupHView.PatientName + " " + recordChecklist.RecordCheckupHView.PatientSurname;
+            remarkdisease = recordChecklist.DiseaseReason;
+            if (recordChecklist.DiseaseViews != null)
+            {
+                dropdownlist = recordChecklist.DiseaseViews;
+            }
+            personweigth = recordChecklist.RecordCheckupHView.PatientWeight.ToString();
+            personheigth = recordChecklist.RecordCheckupHView.PatientHeight.ToString();
+            personpressure = recordChecklist.RecordCheckupHView.PatientPressure;
+            personalId = recordChecklist.RecordCheckupHView.PersonalId;
+        }
+        if ((Checktype == 3 && Type == "Individual") || (Checktype == 5 && Type == "Establishment"))
+        {
+            fullname = $"{Person[0].PatientName} {Person[0].PatientSurname}";
+            personalId = Person[0].PersonalId;
+        }
+
+
+
+        updateDate = DateTime.Now.ToString("dd/MM/yyyy");
+        createDate = DateTime.Now.ToString("dd/MM/yyyy");
+        //if(Person == null)
+        //{
+        //    Person = new List<CheckPermissionCheckListView>();
+        //}
+        hosmCode = await _localstorage.GetItemAsync<String>("hospitalMCode");
+        username = await _localstorage.GetItemAsync<String>("username");
+        Console.WriteLine(Person);
+        const int min = 10;
+        const int max = 36;
+        _items = new List<string>();
+
+        for (var i = min; max > i; i++)
+        {
+            var value = Convert.ToString(i, 16).PadLeft(2, '0') + i.ToString();
+            _items.Add(value);
+        }
+
+
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+
+
+
+}

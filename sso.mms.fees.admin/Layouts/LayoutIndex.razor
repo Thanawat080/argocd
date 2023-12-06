@@ -1,0 +1,39 @@
+﻿@using sso.mms.fees.admin.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.fees.admin.Shared.Dental.DentalCentralPublic;
+
+<NavbarLoginAdmin ShortToken="@ShortToken"></NavbarLoginAdmin>
+
+@if (Page == "DentalCentral")
+{
+    <HeaderContent SelectUnit="Select" CheckStatus="PageNo"> </HeaderContent>
+}
+<SlideBar Page="@Page" ShortToken="@ShortToken">
+    @ChildContent
+</SlideBar>
+
+
+<footer>
+    <sso.mms.helper.Components.Footer.Footer>
+    </sso.mms.helper.Components.Footer.Footer>
+</footer>
+
+@code {
+
+    [Parameter] public string ShortToken { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public string Page { get; set; }
+    [Parameter] public int PageNo { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SelectUnit { get; set; }
+
+    public async Task Select(int select)
+    {
+
+        await SelectUnit.InvokeAsync(select);
+    }
+
+}

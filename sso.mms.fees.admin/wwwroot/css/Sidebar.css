@@ -1,0 +1,159 @@
+﻿@font-face {
+    font-family: 'Noto Sans Thai';
+    src: url('../fonts/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+* {
+    font-family: 'Noto Sans Thai';
+}
+
+.ant-layout-sider {
+    border-radius: 8px;
+    background: #ffffff !important;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.ant-layout {
+    background: #F5F3F7 !important;
+}
+
+.ant-layout-content {
+    flex: auto !important;
+    min-height: 0 !important;
+    margin: 0px !important;
+}
+
+.ant-layout-sider-children {
+    padding-top: 10px !important;
+}
+
+.ant-layout-sider-trigger {
+    position: relative !important;
+    bottom: 0;
+    z-index: 1;
+    height: 48px;
+    color: #fff;
+    line-height: 48px;
+    text-align: center;
+    background: #fff !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ant-layout-sider-zero-width-trigger {
+    position: absolute;
+    top: 10px !important;
+    right: -36px;
+    z-index: 1;
+    width: 36px;
+    height: 42px;
+    color: #fff;
+    font-size: 22px !important;
+    line-height: 42px;
+    text-align: center;
+    background: #334396 !important;
+    border-radius: 0 4px 4px 0 !important;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+@media only screen and (min-width: 1199) {
+
+    .ant-layout-sider-trigger {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1199) {
+
+    .ant-menu-inline {
+        width: 300px !important;
+        height: 100% !important;
+        box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+@media only screen and (max-width: 1199) {
+    .media-menu {
+        width: 0px !important;
+    }
+}
+
+.ant-menu {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-variant: tabular-nums;
+    line-height: 1.5715;
+    font-feature-settings: 'tnum';
+    margin-bottom: 0;
+    padding-left: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    line-height: 0;
+    text-align: left;
+    list-style: none;
+    background: #fff;
+    outline: none;
+    transition: all 0s !important;
+}
+
+.ant-menu-inline {
+    width: 300px !important;
+}
+
+.ant-layout-sider-has-trigger {
+    padding-bottom: 48px;
+    overflow: initial;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    z-index:999;
+}
+
+.ant-menu-item-selected {
+    color: #1890ff;
+    background: #C5CBE673 !important;
+}
+
+.ant-menu-submenu, .ant-menu-submenu-inline {
+    transition: all 0s !important;
+}
+
+.ant-menu-title-content {
+    color: #334396;
+    font-weight: 600;
+}
+
+.ant-menu-inline .ant-menu-item::after {
+    border-right: 5px solid #334396 !important;
+}
+
+.ant-menu-item > span > i {
+    font-size: 20px;
+    padding-right: 15px;
+}
+
+.ant-menu-item > span > span {
+    font-size: 18px;
+}
+
+.ant-menu-item {
+    height: 50px !important;
+}
+
+.ant-menu.ant-menu-inline-collapsed > .ant-menu-item {
+    display: flex;
+    align-items: center;
+}
+
+.ant-menu-item a {
+    color: #334396 !important;
+    font-size: 16px !important;
+}
+
+.ant-menu-item-selected a, .ant-menu-item-selected a:hover {
+    color: #096dd9 !important;
+    font-size: 17px !important;
+}
+.ant-layout-sider-children .ant-menu.ant-menu-inline-collapsed {
+    width: 0px !important;
+}

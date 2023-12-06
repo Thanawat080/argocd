@@ -1,0 +1,97 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0bcccc07-4fba-4fa4-8eca-cf356dc52405</UserSecretsId>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Shared\AdjRW\DisburseMentList\**" />
+    <Compile Remove="Shared\AdjRW\PaymentOrdersList\**" />
+    <Compile Remove="Shared\AdjRW\Reports\**" />
+    <Compile Remove="Shared\FactorDrug\FactorDrugDisbursementHistoryList\**" />
+    <Compile Remove="Shared\FactorDrug\Modals\**" />
+    <Content Remove="Shared\AdjRW\DisburseMentList\**" />
+    <Content Remove="Shared\AdjRW\PaymentOrdersList\**" />
+    <Content Remove="Shared\AdjRW\Reports\**" />
+    <Content Remove="Shared\FactorDrug\FactorDrugDisbursementHistoryList\**" />
+    <Content Remove="Shared\FactorDrug\Modals\**" />
+    <EmbeddedResource Remove="Shared\AdjRW\DisburseMentList\**" />
+    <EmbeddedResource Remove="Shared\AdjRW\PaymentOrdersList\**" />
+    <EmbeddedResource Remove="Shared\AdjRW\Reports\**" />
+    <EmbeddedResource Remove="Shared\FactorDrug\FactorDrugDisbursementHistoryList\**" />
+    <EmbeddedResource Remove="Shared\FactorDrug\Modals\**" />
+    <None Remove="Shared\AdjRW\DisburseMentList\**" />
+    <None Remove="Shared\AdjRW\PaymentOrdersList\**" />
+    <None Remove="Shared\AdjRW\Reports\**" />
+    <None Remove="Shared\FactorDrug\FactorDrugDisbursementHistoryList\**" />
+    <None Remove="Shared\FactorDrug\Modals\**" />
+    <None Remove="Providers\PromoteHealth\DisbursementHistoryPromoteList\" />
+    <None Remove="ViewModels\Responses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Shared\Disability\WorkOrders\ApprovePaymentOrder.razor" />
+    <Content Remove="Shared\RiskExposure\Formula\MatTableRow.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Shared\RiskExposure\ChoronicDisease\ChoronicDiseaseIndex.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AntDesign" Version="0.15.5" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="bootstrap" Version="5.3.2" />
+    <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
+    <PackageReference Include="ClosedXML" Version="0.97.0" />
+    <PackageReference Include="ClosedXML.Report" Version="0.2.6" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\sso.mms.fees.api\sso.mms.fees.api.csproj" />
+    <ProjectReference Include="..\sso.mms.helper\sso.mms.helper.csproj" />
+    <ProjectReference Include="..\sso.mms.login\sso.mms.login.csproj" />
+    <ProjectReference Include="..\sso.mms.portal.admin\sso.mms.portal.admin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Shared\AdjRW\HospitalTypes\" />
+	<Folder Include="Shared\AdjRW\RateFees\" />
+    <Folder Include="Shared\Disability\WithdrawalHistory\" />
+    <Folder Include="Shared\Disability\ReportPay\" />
+    <Folder Include="Shared\RiskExposure\WithDrawRequestList\Modals\" />
+    <Folder Include="Providers\PromoteHealth\DisbursementHistoryPromoteList\" />
+    <Folder Include="ViewModels\Responses\" />
+    <Folder Include="wwwroot\download\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Shared\AdjRW\ReportAdjRW\ReportAdjRWIndex.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Shared\OrganMaintenance\ExpensesRecord\Modals\ERViewDetail.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Shared\Disability\WorkOrders\ApprovePaymentOrder.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Shared\Disability\WorkOrders\ApprovePaymentOrder.razor" />
+  </ItemGroup>
+</Project>

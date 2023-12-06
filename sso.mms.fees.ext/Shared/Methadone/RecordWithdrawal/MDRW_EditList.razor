@@ -1,0 +1,193 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์เมทาโดน</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-div="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page" @onclick="() =>Navigate(1)">
+                    <span class="breadcum-sucress py-2">บันทึกรายการเบิก</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">แก้ไขรายการเบิก</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4">
+            <div class="col-sm-12 col-md-4 py-2">
+                <div class="row align-items-center">
+                    <div class="col-sm-12 col-md-6 mms-txt-headdetail text-md-end">วันที่สร้าง</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled ReadOnly /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 py-2">
+                <div class="row align-items-center">
+                    <div class="col-sm-12 col-md-6 mms-txt-headdetail text-md-end">วันที่แก้ไขล่าสุด</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled ReadOnly /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 py-2">
+                <div class="row align-items-center">
+                    <div class="col-sm-12 col-md-6 mms-txt-headdetail text-md-end">แก้ไขล่าสุดโดย</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled ReadOnly /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-2 mms-txt-headdetail pLayers-2">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">เลขประจำตัวประชาชน<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">ชื่อ-นามสกุล<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-2 mms-txt-headdetail pLayers-2">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">เลข ว.</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">ชื่อแพทย์</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-2 mms-txt-headdetail pLayers-2">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">Admit Date<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">Discharge Date<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-2 mms-txt-headdetail pLayers-2">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">จำนวนวัน<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">จำนวนยา</div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-2 mms-txt-headdetail pLayers-2">
+            <div class="col-sm-12 col-md-6">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 text-md-end">จำนวนเงินขอเบิก<span class="star-comment">*</span></div>
+                    <div class="col-sm-12 col-md-6"><Input Placeholder="Basic usage" @bind-Value="@txtValue" /></div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+            </div>
+        </div>
+        <div class="mms-media-end mt-5">
+            <AntDesign.Button Type="@AntDesign.ButtonType.Default" Class="ant-btn-default" @onclick="() =>Navigate(1)"><i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ</AntDesign.Button> &nbsp;&nbsp;
+            <AntDesign.Button Type="@AntDesign.ButtonType.Primary" OnClick="() => IsSave(true)"><i class="fa-solid fa-floppy-disk"></i>&nbsp;บันทึก</AntDesign.Button>
+        </div>
+    </div>
+</div>
+
+
+@using sso.mms.fees.ext.Shared.Methadone.RecordWithdrawal.Modals
+<ModalSave _visible=@save OnClose="@IsSave" />
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    List<ItemData> listOfData = new List<ItemData>();
+    public bool _visible = false;
+    string txtValue { get; set; }
+
+    /*------------- Call Modal ---------*/
+    bool save { get; set; }
+    public void IsSave(bool value)
+    {
+        save = value;
+    }
+    /*------------- Navigate Page ---------*/
+    public async Task Navigate(int page)
+    {
+        await IndexPage.InvokeAsync(page);
+
+    }
+    /*------------- Navigate Page ---------*/
+
+    public class ItemData
+    {
+        public int? Id { get; set; }
+        public string Hours { get; set; }
+        public string CardId { get; set; }
+        public string MedType { get; set; }
+        public List<DateTime?> MedDate { get; set; }
+        public int Price { get; set; }
+        public int Total { get; set; }
+        public string PayType { get; set; }
+        public DateTime AdmitDate { get; set; }
+        public DateTime DischargeDate { get; set; }
+    }
+    public int GetPrice;
+
+    protected override void OnInitialized()
+    {
+        listOfData = new List<ItemData>()
+    {
+    new ItemData{
+    Id = 1,
+    MedType = "range",
+    Hours = "24",
+    PayType = "1",
+    CardId = "157998956234",
+    MedDate = new List<DateTime?>()
+    {
+    new DateTime(2023, 11, 1),
+    new DateTime(2023, 11, 3),
+    },
+    Price = 2000,
+    AdmitDate = DateTime.Now,
+    DischargeDate = DateTime.Now,
+    },
+    new ItemData{
+    Id = 3,
+    MedType = "multi",
+    Hours = "48",
+    PayType = "2",
+    CardId = "157998956234",
+    MedDate = new List<DateTime?>()
+    {
+    new DateTime(2023, 11, 7),
+    new DateTime(2023, 11, 8),
+    new DateTime(2023, 11, 9),
+    new DateTime(2023, 11, 10),
+    new DateTime(2023, 11, 15),
+    },
+    Price = 500,
+    AdmitDate = DateTime.Now,
+    DischargeDate = DateTime.Now,
+    },
+    };
+
+    }
+}

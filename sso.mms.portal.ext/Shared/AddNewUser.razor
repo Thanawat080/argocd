@@ -1,0 +1,547 @@
+﻿@page "/addnewuser"
+
+@using Blazored.LocalStorage;
+@using MatBlazor
+@using AntDesign
+@using Microsoft.AspNetCore.WebUtilities
+@using sso.mms.helper.Configs;
+@using sso.mms.login.ViewModels;
+@using sso.mms.helper.Utility;
+@using sso.mms.helper.Data;
+@using sso.mms.login.Services;
+@using sso.mms.helper.ViewModels;
+@using sso.mms.portal.ext.Services;
+@using sso.mms.portal.ext.ViewModels;
+@using sso.mms.login.ViewModels.KeyCloak;
+@using sso.mms.portal.admin.Services
+@using sso.mms.helper.PortalModel;
+@inject ILocalStorageService _localstorage;
+@inject NavigationManager Navigation;
+@inject ManageMentMenuService ManageMentMenuService;
+@inject AddNewUserService AddNewUserService;
+@inject IJSRuntime JSRuntime;
+@inject KeyCloakService KeyCloakService;
+@inject SweetAlertService Swal;
+@inject UserRoleService userRoleService
+<style>
+    body {
+        background: #F5F3F7;
+    }
+
+    .text-title-1 {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 150%;
+        letter-spacing: -0.019em;
+        color: #334396;
+    }
+
+    .text-detail {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 150%;
+        letter-spacing: -0.019em;
+        color: #334396;
+    }
+
+    .serch-bg-1 {
+        background: #334396;
+        flex: none;
+        order: 1;
+        align-self: stretch;
+        flex-grow: 0;
+        height: 36px;
+        color: white;
+    }
+
+    .mdc-table th {
+        font-size: 1.143rem;
+        color: #334396;
+        border: 2px solid rgb(255 255 255);
+        padding: 12px 12px 12px 24px;
+        background: #FFCC41;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 27px;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .mdc-table, .mdc-table--striped {
+        width: 100%;
+        max-width: 100%;
+        background-color: transparent;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: inline-block;
+        overflow-x: auto;
+        margin: 8px 0 32px;
+        border: 0px solid rgba(0,0,0,.1);
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        align-items: center;
+        color: #1A141F;
+    }
+
+        .mdc-table td {
+            border: 2px solid white;
+            padding: 12px 12px 12px 24px;
+        }
+
+        .mdc-table--striped tr:nth-of-type(odd) {
+            background: #EAE8EC;
+        }
+
+    .from-style {
+        background: #FFFFFF;
+        border-radius: 8px;
+    }
+
+    .mdc-select__dropdown-icon {
+        margin-left: 1px;
+        margin-right: 1px;
+        display: inline-flex;
+        position: relative;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+
+    .mdc-select .mdc-select__anchor {
+        height: 56px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+
+    .mat-paginator .mat-paginator-container .mat-paginator-page-size {
+        display: flex;
+        margin-right: 8px;
+        align-items: center
+    }
+
+    .mat-paginator .mat-paginator-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+        background-color: #ffffff;
+        width: 80px;
+        height: 30px;
+        border-radius: 10px;
+        border: 0px solid #ffffff;
+    }
+
+    .card-news {
+        border-radius: 10px;
+        background: #FFF;
+        min-height: 550px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    .btn-back {
+        background: #FFFFFF;
+        border: 2px solid #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #334396;
+        width: 173px;
+    }
+
+    .btn-adduser {
+        background: #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #FFFFFF;
+        width: 173px;
+    }
+
+    .text-login-title {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 48px;
+        line-height: 73px;
+        text-align: center;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .text-subtitle {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 150%;
+        text-align: center;
+        letter-spacing: -0.019em;
+        color: #1A141F;
+    }
+
+    .btn-style-white {
+        background: #FFFFFF;
+        border: 2px solid #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #334396;
+        Width: 173px;
+        Height: 51px;
+    }
+
+    .btn-style-blue {
+        background: #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #FFFFFF;
+        Width: 173px;
+        Height: 51px;
+    }
+
+    .modal-content {
+        background: #F5F3F7;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+    }
+
+    .form-check-input:checked {
+        background-color: #67C23A;
+        border-color: #67C23A;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+</style>
+
+<NavbarLoginSSO PageCode="DSR0201" Fname="@getUser?.FirstName" Lname="@getUser?.LastName"></NavbarLoginSSO>
+
+
+<MediaStyle></MediaStyle>
+
+<div class="container pt-5">
+
+    <div class="card-news pt-3">
+        <div style="margin:34px;">
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <button class="btn btn-back btn-secondary" @onclick=@GoBack><i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ</button>&nbsp;
+                    @if (permit.isRoleCreate == true && permit.isRoleCreate != null)
+                    {
+                        <button class="btn btn-primary btn-adduser" @onclick=@nextpage><i class="fa-solid fa-user-plus"></i>&nbsp; เพิ่มผู้ใช้งาน</button>
+                    }
+                </div>
+                <div class="input-group w-50">
+                    <input type="search" class="form-control" style="height: 48px;" @bind-value=@text placeholder="ข้อมูลที่ต้องการค้นหา" aria-label="Search" aria-describedby="search-addon" />
+                    <button type="button" class="btn serch-bg-1" style="height: 48px;width:48px;" @onclick=@search><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+            <MatTable Items="@userlistSearch" ShowPaging="false" LoadInitialData="true" Striped="true"
+                      @bind-CurrentPage="@pageIndex" RequestApiOnlyOnce="true" AllowSelection="true" RowClass="tester" PageSize="@pageSize">
+                <MatTableHeader>
+                    <th class="text-center" style="border-radius:10px 0 0 0;width:76px">ลำดับ</th>
+                    <th class="text-center" style="width:380px">ชื่อ - นามสกุล</th>
+                    <th class="text-center" style="width:163px">ตำแหน่ง</th>
+                    <th class="text-center" style="width:195px">วันที่สร้าง</th>
+                    <th class="text-center" style="width:195px">วันที่แก้ไข</th>
+                    <th class="text-center" style="border-radius:0 10px 0 0 ; width:210px;"></th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td style="width:76px">@String.Format("{0:d}", userlistSearch.IndexOf(context) + 1)</td>
+                    <td style="width:380px">@context.FirstName &nbsp @context.LastName</td>
+                    <td style="width:163px">@context.PositionName</td>
+                    <td style="width:195px">@ThaiDateFormat.FormattedDate(context.CreateDate)</td>
+                    <td style="width:195px">@ThaiDateFormat.FormattedDate(context.UpdateDate)</td>
+                    <td style="width:210px">
+                        <div class="form-check form-switch">
+                            @if (permit.isRoleUpdate == true && permit.isRoleUpdate != null)
+                            {
+                                <input class="form-check-input" style="width:45px;height:22px;margin-right:0.5rem;" type="checkbox"
+                                       id="@String.Format("{0:d}", userlistSearch.IndexOf(context))" @bind-value="@context.IsActive" checked="@context.IsActive">
+                            }
+                            <label class="form-check-label" style="margin-right:0.5rem;" for="@String.Format("{0:d}", userlistSearch.IndexOf(context))">
+
+                                @if (@context.IsActive != true)
+                                {
+                                    <p>ปิด</p>
+                                }
+                                else
+                                {
+                                    <p>เปิด</p>
+                                }
+
+                            </label>
+                            @if (permit.isRoleUpdate == true && permit.isRoleUpdate != null)
+                            {
+                                <img class="pe-auto" style="width:32px;height:32px;" src="helper_shared/icon_sso/save.png" data-bs-placement="bottom" title="แก้ไข" @onclick="()=>GoEdit(context.Id, context.IsActive)" />
+                            }
+                            &nbsp;
+                            @if (permit.isRoleDelete == true && permit.isRoleDelete != null)
+                            {
+                                <img class="pe-auto" style="width:32px;height:32px;" src="helper_shared/icon_sso/delete.png" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" title="ลบ" @onclick="()=>opennmodaldelete(context.Id)" />
+                            }
+
+                        </div>
+                    </td>
+                </MatTableRow>
+            </MatTable>
+            <div class="py-2">
+                 <AntDesign.Pagination
+                        ShowSizeChanger
+                                 OnShowSizeChange="OnShowSizeChange"
+                                 OnChange="OnPage"
+                                 DefaultCurrent="3"
+                                 PageSize=@pageSize
+                             Total="@userlistSearch.Count()" />
+                @* <MatPaginator Length="@userlist.Count" PageSize="@pageSize" Page="@OnPage"></MatPaginator> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding-top:6%;">
+     <sso.mms.helper.Components.Footer.Footer />
+</div>
+
+@*<ModalDelete></ModalDelete>*@
+
+@*<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex;justify-content: flex-end;border-bottom:0px solid">
+                <button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.227 19.7727L19.7737 12.226M19.7737 19.7727L12.227 12.226M16.0003 29.3327C23.3337 29.3327 29.3337 23.3327 29.3337 15.9993C29.3337 8.66602 23.3337 2.66602 16.0003 2.66602C8.66699 2.66602 2.66699 8.66602 2.66699 15.9993C2.66699 23.3327 8.66699 29.3327 16.0003 29.3327Z" stroke="#224183" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body mb-4" align="center">
+                <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="48" cy="48" r="48" fill="#C5CBE6" />
+                    <path d="M48.0003 61.3327C46.5858 61.3327 45.2293 60.7708 44.2291 59.7706C43.2289 58.7704 42.667 57.4138 42.667 55.9994C42.667 53.0393 45.0403 50.666 48.0003 50.666C49.4148 50.666 50.7714 51.2279 51.7716 52.2281C52.7718 53.2283 53.3337 54.5849 53.3337 55.9994C53.3337 57.4138 52.7718 58.7704 51.7716 59.7706C50.7714 60.7708 49.4148 61.3327 48.0003 61.3327ZM64.0003 69.3327V42.666H32.0003V69.3327H64.0003ZM64.0003 37.3327C65.4148 37.3327 66.7714 37.8946 67.7716 38.8948C68.7718 39.895 69.3337 41.2515 69.3337 42.666V69.3327C69.3337 70.7472 68.7718 72.1037 67.7716 73.1039C66.7714 74.1041 65.4148 74.666 64.0003 74.666H32.0003C30.5858 74.666 29.2293 74.1041 28.2291 73.1039C27.2289 72.1037 26.667 70.7472 26.667 69.3327V42.666C26.667 39.706 29.0403 37.3327 32.0003 37.3327H34.667V31.9993C34.667 28.4631 36.0717 25.0717 38.5722 22.5713C41.0727 20.0708 44.4641 18.666 48.0003 18.666C49.7513 18.666 51.4851 19.0109 53.1028 19.681C54.7204 20.351 56.1903 21.3331 57.4284 22.5713C58.6665 23.8094 59.6487 25.2792 60.3187 26.8969C60.9888 28.5146 61.3337 30.2484 61.3337 31.9993V37.3327H64.0003ZM48.0003 23.9993C45.8786 23.9993 43.8438 24.8422 42.3435 26.3425C40.8432 27.8428 40.0003 29.8776 40.0003 31.9993V37.3327H56.0003V31.9993C56.0003 29.8776 55.1575 27.8428 53.6572 26.3425C52.1569 24.8422 50.1221 23.9993 48.0003 23.9993Z" fill="#334396" />
+                </svg>
+                <div class="container">
+                    <div>
+                        <p class="text-login-title">ลบบัญชี</p>
+                        <p class="text-subtitle" for="form2Example1">ต้องการลบบัญชีผู้ใช้นี้หรือไม่ ?</p>
+                    </div>
+                    <div class="mt-4 pt-2">
+                        <button class="btn btn-outline-secondary btn-style-white">
+                            <i class="fa-regular fa-circle-xmark"></i>&nbsp; ยกเลิก
+                        </button>
+                        <button class="btn btn-outline-primary btn-style-blue" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="fa-regular fa-trash-can"></i>&nbsp; ลบข้อมูล
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+@if (isloading == true)
+{
+    <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage>
+}
+
+
+@if (modaldelete)
+{
+    <ModalDelete OnClose="@SubmitDelete" title="ยืนยันการลบ" description="">
+    </ModalDelete>
+}
+
+@code {
+    public bool isloading = false;
+    public bool modaldelete = false;
+    private bool val1 = true;
+    public string? env = ConfigureCore.ConfigENV;
+    public string? url = "";
+    int pageSize = 5;
+    int pageIndex = 1;
+
+    public int iduser { get; set; } = 0;
+    public string? text { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+
+    List<HospitalUserM> userlist = new List<HospitalUserM>();
+
+    List<HospitalUserM> userlistSearch = new List<HospitalUserM>();
+
+    HospitalUserM specifiuser = new HospitalUserM();
+
+    private ResponseLogin getUser { get; set; } = null!;
+    private ViewModelGetUsername getusername { get; set; } = null!;
+
+    public UserRole userRole;
+    public MenuPerMit permit = new MenuPerMit();
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+        url = ConfigureCore.redirectPortalExt;
+        getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+        getusername = await _localstorage.GetItemAsync<ViewModelGetUsername>("userRole");
+        specifiuser = await AddNewUserService.gethospitaluserbyusername(getusername.username);
+
+        userlist = await AddNewUserService.GetUserHos(specifiuser.HospitalMId, specifiuser.Id);
+        userlistSearch = userlist;
+        userRole = await _localstorage.GetItemAsync<UserRole>("userRole");
+        if (userRole != null && userRole.role != null)
+        {
+            try
+            {
+                permit = await userRoleService.GetUserAuth(userRole, "PHM006", "PORTAL-HOS");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+        isloading = false;
+        StateHasChanged();
+    }
+
+    void OnPage(PaginationEventArgs e)
+    {
+
+        Console.WriteLine(e);
+        pageSize = e.PageSize;
+        pageIndex = e.Page;
+    }
+
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+
+
+    private async void nextpage()
+    {
+        string status = "0";
+        string id = "0";
+        Navigation.NavigateTo($"{url}/addnewuserdetail/{id}/{status}/{getusername.username}" + $"?token={shortToken}");
+    }
+    private async void GoBack()
+    {
+        Navigation.NavigateTo($"{url}/portal?token={shortToken}");
+    }
+    private async void GoEdit(int id, bool? status)
+    {
+        Navigation.NavigateTo($"{url}/addnewuserdetail/{id}/{status}/{getusername.username}" + $"?token={shortToken}");
+    }
+
+
+    public async void search()
+    {
+
+        userlistSearch = userlist.Where(x => (x.FirstName.ToLower()).Contains(text.ToLower()) || (x.LastName.ToLower()).Contains(text.ToLower())).ToList();
+        pageIndex = 1;
+        StateHasChanged();
+        if(userlistSearch.Count == 0){
+            userlistSearch = userlist;
+            await Swal.FireAsync(
+                "ไม่พบข้อมูล",
+                null,
+                SweetAlertIcon.Error
+                );
+        }
+    }
+
+
+    private async Task SubmitDelete(bool isOk)
+
+    {
+        if (isOk)
+        {
+            isloading = true;
+            ResponseModel res = await AddNewUserService.changeStatusToDelete(iduser);
+            if ((bool)res.issucessStatus)
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                    "บันทึกสำเร็จ",
+                    null,
+                    SweetAlertIcon.Success
+                    );
+                userlist = await AddNewUserService.GetUserHos(specifiuser.HospitalMId, specifiuser.Id);
+                userlistSearch = userlist;
+            }
+            else
+
+            {
+                isloading = false;
+                StateHasChanged();
+                await Swal.FireAsync(
+                    "บันทึกไม่สำเร็จ",
+                    null,
+                    SweetAlertIcon.Error
+                    );
+                userlist = await AddNewUserService.GetUserHos(specifiuser.HospitalMId, specifiuser.Id);
+                userlistSearch = userlist;
+            }
+
+
+            modaldelete = false;
+            StateHasChanged();
+        }
+    }
+
+
+    public void opennmodaldelete(int id)
+
+    {
+        iduser = id;
+        modaldelete = true;
+        StateHasChanged();
+    }
+
+
+}

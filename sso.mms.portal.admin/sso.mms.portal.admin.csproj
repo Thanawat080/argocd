@@ -1,0 +1,122 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>f8269644-e013-4c25-9526-a97b5db29606</UserSecretsId>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'protal.admin.production' " />
+  <ItemGroup>
+    <None Remove="Pages\Audit\AuditMainPage.razor.css" />
+    <None Remove="Pages\Broadcast\BroadcastMain.razor.css" />
+    <None Remove="Pages\EditBanner\AddBanner.razor.css" />
+    <None Remove="Pages\EditBanner\Banner.razor.css" />
+    <None Remove="Pages\EditBanner\ViewBanner.razor.css" />
+    <None Remove="Pages\Login.razor.css" />
+    <None Remove="Pages\LoginAudit.razor.css" />
+    <None Remove="Pages\MainPage.razor.css" />
+    <None Remove="Pages\ManageAccess\ListMenu.razor.css" />
+    <None Remove="Pages\ManageAccess\MAcategory.razor.css" />
+    <None Remove="Pages\ManageAccess\MAHospitalRoles.razor.css" />
+    <None Remove="Pages\ManageAccess\MAHospitalRolesAddData.razor.css" />
+    <None Remove="Pages\ManageAccess\MainMenu.razor.css" />
+    <None Remove="Pages\ManageAccess\MAManageMenu.razor.css" />
+    <None Remove="Pages\ManageAccess\MAManageMenuSubDetail.razor.css" />
+    <None Remove="Pages\ManageAccess\ManageAccessMainMenu.razor.css" />
+    <None Remove="Pages\ManageAccess\ManageMain.razor.css" />
+    <None Remove="Pages\ManageAccess\ManageSetting.razor.css" />
+    <None Remove="Pages\ManageAccess\MARights.razor.css" />
+    <None Remove="Pages\ManageAccess\MARightsAddData.razor.css" />
+    <None Remove="Pages\ManageAccess\MARolesAddData.razor.css" />
+    <None Remove="Pages\Navbar\NavbarLoginAdmin.razor.css" />
+    <None Remove="Pages\Nnnounce\EditNnnounce.razor.css" />
+    <None Remove="Pages\Nnnounce\Nnnounce.razor.css" />
+    <None Remove="Pages\Noti\NotificationCategories.razor.css" />
+    <None Remove="Pages\Noti\NotificationDetail.razor.css" />
+    <None Remove="Pages\Noti\NotificationList.razor.css" />
+    <None Remove="Pages\OpenData\OpenDataMainPage.razor.css" />
+    <None Remove="Pages\OpenData\OpenDataSetting.razor.css" />
+    <None Remove="Pages\StatisticalDataReport\Reportstatistics.razor.css" />
+    <None Remove="Pages\ReportMainPage.razor.css" />
+    <None Remove="Pages\Report\ReportUseDataHistory.razor.css" />
+    <None Remove="Pages\Report\ReportDataUpdate.razor.css" />
+    <None Remove="Pages\Report\Reportstatistics.razor.css" />
+    <None Remove="Pages\Report\ReportLog.razor.css" />
+    <None Remove="Shared\AddNewsAdmin.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <Content Include="Pages\Audit\AuditMainPage.razor.css" />
+
+    <Content Include="Pages\Broadcast\BroadcastMain.razor.css" />
+
+    <Content Include="Pages\EditBanner\AddBanner.razor.css" />
+
+    <Content Include="Pages\EditBanner\ViewBanner.razor.css" />
+
+    <Content Include="Pages\EditBanner\Banner.razor.css" />
+
+    <Content Include="Pages\LoginAudit.razor.css" />
+
+    <Content Include="Pages\MainPage.razor.css" />
+    <Content Include="Pages\Login.razor.css" />
+    <Content Include="Pages\ManageAccess\ListMenu.razor.css" />
+    <Content Include="Pages\ManageAccess\ManageSetting.razor.css" />
+    <Content Include="Pages\Navbar\NavbarLoginAdmin.razor.css" />
+    <Content Include="Pages\Nnnounce\EditNnnounce.razor.css" />
+    <Content Include="Pages\Nnnounce\Nnnounce.razor.css" />
+    <Content Include="Pages\Noti\NotificationCategories.razor.css" />
+    <Content Include="Pages\Noti\NotificationDetail.razor.css" />
+    <Content Include="Pages\Noti\NotificationList.razor.css" />
+    <Content Include="Pages\OpenData\OpenDataSetting.razor.css" />
+    <Content Include="Pages\OpenData\OpenDataMainPage.razor.css" />
+    <Content Include="Pages\StatisticalDataReport\Reportstatistics.razor.css" />
+    <Content Include="Pages\Report\ReportUseDataHistory.razor.css" />
+    <Content Include="Pages\Report\ReportDataUpdate.razor.css" />
+    <Content Include="Pages\Report\Reportstatistics.razor.css" />
+    <Content Include="Pages\Report\ReportLog.razor.css" />
+    <Content Include="Pages\ReportMainPage.razor.css" />
+    <Content Include="Shared\AddNewsAdmin.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AntDesign" Version="0.15.5" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="Blazorise.Components" Version="1.2.4" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="wwwroot\Files\" />
+    <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\Report\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\scrollToBottom.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\sso.mms.chat\sso.mms.chat.csproj" />
+    <ProjectReference Include="..\sso.mms.helper\sso.mms.helper.csproj" />
+    <ProjectReference Include="..\sso.mms.login\sso.mms.login.csproj" />
+    <ProjectReference Include="..\sso.mms.news\sso.mms.news.csproj" />
+    <ProjectReference Include="..\sso.mms.notification\sso.mms.notification.csproj" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

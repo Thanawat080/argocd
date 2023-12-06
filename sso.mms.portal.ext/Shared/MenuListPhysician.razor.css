@@ -1,0 +1,22 @@
+.b-btn {
+    background: #FFFFFF;
+    border: 3px solid #334396;
+    border-radius: 24px;
+    color: #334396;
+    font-weight: 500;
+}
+
+    .b-btn:hover {
+        background-color: #FFFFFF;
+        color: #334396;
+        font-weight: 600;
+        border: 3px solid #334396;
+        box-shadow: 0px 0px 0px 7px #dbdbdb;
+        background: #ffffff;
+    }
+
+.button-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}

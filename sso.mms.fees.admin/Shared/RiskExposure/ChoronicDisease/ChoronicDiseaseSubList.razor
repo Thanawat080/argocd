@@ -1,0 +1,69 @@
+﻿@using System.ComponentModel;
+@using sso.mms.fees.admin.Shared.RiskExposure.ChoronicDisease.Components.ChoronicDiseaseSubList
+@using sso.mms.fees.admin.Shared.RiskExposure.ChoronicDisease.Modals
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ตามภาระเสี่ยง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">กำหนดคะแนนโรคเรื้อรัง</div>
+        <hr />
+
+        <div class="mms-txt-headdetail row py-3 mb-3">
+            <div class="mms-media-start col-xl-8">
+                <span class="w-25">โรคเรื้อรัง<span class="star-comment">*</span></span> &nbsp;
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+            <div class="mms-media-start col-xl-4">
+                <span class="w-25">คะแนน<span class="star-comment">*</span></span> &nbsp;
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+        </div>
+
+        <div class="mms-txt-headdetail row py-3 mb-3 px-1">
+            <div class="mms-media-start">
+                สถานะการใช้งาน<span class="star-comment">*</span> &nbsp;
+                <RadioGroup @bind-Value="@_value">
+                    <Radio Value="1">ใช้</Radio>
+                    <Radio Value="2">ไม่ใช้</Radio>
+                </RadioGroup>
+            </div>
+        </div>
+
+        <div class="p-1">
+            
+                <ChronicDiseaseTable></ChronicDiseaseTable>
+            
+                <ComplicationsTable></ComplicationsTable>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+@code {
+    string? txtValue { get; set; }
+    bool openComplicationsModal { get; set; }
+    
+    int _value = 1;
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+   
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+  
+
+  
+}

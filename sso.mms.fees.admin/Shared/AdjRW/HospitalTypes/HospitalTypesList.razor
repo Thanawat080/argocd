@@ -1,0 +1,228 @@
+﻿<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ AdjRW</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page" @onclick=@(() => goEdit(1))>
+                    <span class="breadcum-sucress py-2">ช้อมูลสถานพยาบาลรายปี</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" @onclick=@(() => goEdit(2))>
+                    <span class="breadcum-sucress py-2">กำหนดประเภทสถานพยาบาล</span>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ประเภทสถานพยาบาล</span>
+                </li>
+            </ol>
+        </nav>
+        <hr />
+        <div class="row pb-4">
+            <div class="col-xl-3 mms-media-start">
+                <div class="mms-txt-headdetail pe-2 text-end w-50">ปีงบประมาณ</div>
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+            </div>
+            <div class="col-xl-4 mms-media-center">
+                <div class="mms-txt-headdetail pe-2 text-end w-50">วันที่แก้ไขล่าสุด</div>
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+            </div>
+            <div class="col-xl-5 mms-media-end">
+                <div class="mms-txt-headdetail pe-2 text-end w-50">แก้ไขล่าสุดโดย</div>
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+            </div>
+        </div>
+        <div class="row pb-4">
+            <div class="col-xl-7 mms-media-start">
+                <div class="mms-txt-headdetail pe-2 text-end w-30">ประเภทสถานพยาบาล</div>
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+            <div class="col-xl-5 mms-media-center">
+                <div class="mms-txt-headdetail pe-2 text-end w-50">อัตราค่าบริการ</div>
+                <Input Placeholder="Basic usage" @bind-Value="@txtValue" />
+            </div>
+        </div>
+        <div class="mms-media-start pb-4">
+            <div class="mms-txt-headdetail pe-2 text-end">สถานะการใช้งาน<span class="star-comment">*</span></div>
+            <RadioGroup @bind-Value="@SelectStatusCheck">
+                <Radio Value="1">ใช้</Radio>
+                <Radio Value="2">ไม่ใช้</Radio>
+            </RadioGroup>
+        </div>
+        <div class="row pb-4">
+            <div class="col-sm-12 col-md-8 mms-media-start">
+                <Button Style="width:200px;" Type="@ButtonType.Primary" OnClick="@(()=>{ _visible1 = true; })"><i class="fa-solid fa-upload"></i> &nbsp; อัปโหลด</Button>
+                &nbsp;&nbsp;
+                <Button Type="@ButtonType.Primary"><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="listOfData" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <PropertyColumn Property="c=>c.Id" Title="ลำดับ" Width="8%" Align="ColumnAlign.Center" />
+            <PropertyColumn Property="c=>c.HosCode" Title="รหัสสถานพยาบาล" Align="ColumnAlign.Center" />
+            <PropertyColumn Property="c=>c.HosName" Title="ชื่อสถานพยาบาล" Align="ColumnAlign.Center" />
+            <PropertyColumn Property="c=>c.switchValue" Title="สถานะการใช้งาน" Width="15%" Align="ColumnAlign.Center">
+                <div class="mms-media-center">
+                    <Switch @bind-Checked="context.switchValue" />
+                    @if (context.switchValue == true)
+                    {
+                        <span class="ps-2" style="color:green">ใช้งาน</span>
+                    }
+                    else
+                    {
+                        <span class="ps-2" style="color:red">ไม่ใช้งาน</span>
+                    }
+                </div>
+            </PropertyColumn>
+        </Table>
+    </div>
+</div>
+
+
+@* MODAL UPLOAD FILE *@
+
+<Modal Title="@("อัปโหลดเอกสาร")"
+       Visible="@_visible1"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+
+    <p>วางไฟล์เอกสารที่ต้องการ (.xlsx, .csv)</p>
+    <div class="container banner-box-upload">
+        <div class="d-flex justify-content-center align-item-center ">
+            <div class="div-file-upload">
+                <InputFile accept=".csv,.xlsx" class="custom-input-file " style="top:0;left:0" type="file" OnChange="@LoadImage" required />
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <i class="fa-solid fa-upload mt-4" style="font-size:60px;color:#334396"></i>
+                    <p class="mt-2">วางไฟล์ที่นี่เพื่ออัปโหลด</p>
+                    <Button Style="width:200px;" Type="@ButtonType.Primary"><i class="fa-solid fa-upload"></i> &nbsp; อัปโหลด</Button>
+                    <p class="mt-2">(ขนาดไม่เกิน 10 MB)</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+    string _okText = "ยืนยัน";
+    string _cancelText = "ยกเลิก";
+    bool _visible1 = false;
+    bool _visible2 = false;
+    List<UploadFileItem> fileList = new List<UploadFileItem>();
+    public IBrowserFile bannerFile;
+    public string FileName = "";
+    public string ImageUri = "";
+    public string imgpreview = "";
+
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            files.Add(file);
+        }
+        //TODO upload the files to the server
+
+        fileList = files.Select(file => new UploadFileItem { FileName = file.Name, Size = file.Size }).ToList();
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+        _visible2 = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible1 = false;
+        _visible2 = false;
+    }
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+    public string txtValue { get; set; }
+    public int SelectStatusCheck = 1;
+    public class ItemData
+    {
+        public string Id { get; set; }
+        public string HosCode { get; set; }
+        public string HosName { get; set; }
+        public int Frees { get; set; }
+        public bool switchValue = false;
+    };
+    List<ItemData> listOfData = new List<ItemData>
+        {
+            new ItemData
+            {
+                Id = "1",
+                HosCode = "11546",
+                HosName = " โรงพยาบาลบี เอ็น เอช",
+                Frees = 15000,
+                switchValue = true
+            },
+            new ItemData
+            {
+                Id = "2",
+                HosCode = "11607",
+                HosName = " โรงพยาบาลเปาโลเมโมเรียล",
+                Frees = 15000,
+                switchValue = false
+            },
+             new ItemData
+            {
+                Id = "3",
+                HosCode = "11630",
+                HosName = " โรงพยาบาลกรุงเทพ",
+                Frees = 15000,
+                switchValue = true
+            },
+            new ItemData
+            {
+                Id = "4",
+                HosCode = "11687",
+                HosName = " โรงพยาบาลเกษมราษฎร์ ประชาชื่น",
+                Frees = 15000,
+                switchValue = false
+            },
+        };
+
+    public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+
+        FileName = inputFileChangeEventArgs.File.Name;
+        bannerFile = inputFileChangeEventArgs.File;
+        // Handle CSV file
+        if (inputFileChangeEventArgs.File.ContentType == "text/csv")
+        {
+            using Stream csvStream = inputFileChangeEventArgs.File.OpenReadStream();
+            using StreamReader reader = new StreamReader(csvStream);
+            string csvContent = await reader.ReadToEndAsync();
+            var CsvContent = csvContent; // You can handle the CSV content as needed
+            var CsvBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csvContent));
+        }
+
+        // Handle XLSX file
+        if (inputFileChangeEventArgs.File.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            using Stream xlsxStream = inputFileChangeEventArgs.File.OpenReadStream();
+            using MemoryStream ms = new MemoryStream();
+            await xlsxStream.CopyToAsync(ms);
+            var XlsxBytes = ms.ToArray();
+            var XlsxBase64 = Convert.ToBase64String(XlsxBytes);
+        }
+
+        StateHasChanged();
+    }
+}

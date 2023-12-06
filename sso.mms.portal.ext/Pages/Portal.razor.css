@@ -1,0 +1,26 @@
+﻿
+@media screen and (max-width: 628px) {
+    .d-none-ative {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 391px) {
+    .main-menu {
+        padding-left: 11.3%;
+        padding-right: 11.3%;
+    }
+    .pd-class {
+        padding-left: 11.3%;
+        padding-right: 11.3%;
+    }
+}
+.echo-news {
+    width: 50px;
+    height: 20px;
+    left: 477px;
+    top: 110px;
+    background: #F56C6C;
+    border-radius: 4px;
+}
+

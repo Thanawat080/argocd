@@ -1,0 +1,81 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using sso.mms.fees.admin.Shared.PocketBook.ViewModal;
+
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Width="1500">
+    <div class="site-layout-background" style="padding: 24px;">
+
+        <div class="container py-4">
+            <Table DataSource="propListOfData" Bordered TItem="MockDataItem" ScrollX="1000">
+                 <ColumnDefinitions>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Id" Title="ลำดับ"></PropertyColumn>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Name" Title="ชื่อ-นามสกุล"></PropertyColumn>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.InsuredID" Title="เลขประกันสังคม"></PropertyColumn>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Passport" Title="Passport"></PropertyColumn>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.WorkPermitID" Title="ใบอนุญาติทำงาน"></PropertyColumn>
+                     <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.NoContent" Title="">
+                         <Button Type="@ButtonType.Primary" OnClick="(() => IndexPage(2))"><i class="fa-solid fa-magnifying-glass"></i></Button>
+                     </PropertyColumn>
+                 </ColumnDefinitions>
+                 @*                 <PaginationTemplate>
+                <Pagination Class="pt-2"
+                Total="context.Total"
+                PageSize="context.PageSize"
+                Current="context.PageIndex"
+                ShowSizeChanger
+                OnChange="context.HandlePageChange" />
+                </PaginationTemplate>*@
+             </Table>
+         </div>
+         <div class="mt-3 text-end" style="margin-right: 100px;">
+             <Button OnClick="@HandleCancel"><i class="fa-regular fa-circle-xmark"></i>&nbsp;ยกเลิก</Button>
+         </div>
+     </div>
+ </Modal>
+
+ @code {
+    string title = "รายละเอียดข้อมูล";
+    RenderFragment footer =
+    @<div></div>;
+
+    [Parameter]
+    public bool _visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    [Parameter]
+    public List<MockDataItem> propListOfData { get; set; } = new List<MockDataItem>();
+
+    [Parameter]
+    public EventCallback<int> usePage { get; set; }
+
+    Table<MockDataItem>? Table;
+
+
+    private async Task IndexPage(int page)
+    {
+        await usePage.InvokeAsync(2);
+    }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+        _visible = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+}

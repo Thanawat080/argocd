@@ -1,0 +1,56 @@
+﻿
+<style>
+    .text-lable-disbursement-history {
+        width: 135px;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        color: #334396;
+        font-size: 16px;
+        font-weight: bold;
+        padding-right: 5px;
+    }
+</style>
+
+<div class="d-flex justify-content-center pt-5">
+    <div class="text-lable-disbursement-history">ช่วงวันที่ :</div>
+    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Style="width: 226px;" />
+    <div class="text-lable-disbursement-history">ถึง :</div>
+    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Style="width: 226px;" />
+    <Button Type="@ButtonType.Primary">
+        <i class="fa fa-search"></i>
+    </Button>
+</div>
+<hr>
+
+<Table DataSource="data" OnChange="OnChange" TItem="Data" HidePagination Bordered>
+    <PropertyColumn Title="ลำดับ" Property="c=>c.No" />
+    <PropertyColumn Title="ค่าบริการ" Property="c=>c.ServiceFees" />
+    <PropertyColumn Title="ชื่อสถานพยาบาล" Property="c=>c.HospitalName" />
+    <PropertyColumn Title="วันที่จ่าย" Property="c=>c.PaymentDate" />
+    <PropertyColumn Title="จำนวนเงิน" Property="c=>c.AmountOfMoney" />
+    <PropertyColumn Title="สถานะเบิกจ่าย" Property="c=>c.Status" />
+</Table>
+
+
+@code {
+
+    public record Data(
+        string No,
+        string ServiceFees,
+        string HospitalName,
+        string PaymentDate,
+        string AmountOfMoney,
+        string Status);
+
+    public Data[] data =
+    {
+        new("1","ค่าทันตกรรม","โรงพยาบาลลานนา1","28  ธ.ค  65","900.00","เสร็จสิ้น"),
+        new("2","ไข้หวัด","ป่วยนอก","โรงพยาบาลลานนา1","1  ก.พ  66","เสร็จสิ้น"),
+    };
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+}

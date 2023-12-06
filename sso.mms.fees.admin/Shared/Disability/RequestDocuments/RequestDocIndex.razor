@@ -1,0 +1,237 @@
+﻿@using System.ComponentModel;
+@using sso.mms.fees.admin.Shared.Disability.RequestDocuments.Modals
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์กรณีทุพพลภาพ  / ขอเอกสารเพิ่มเติม</div>
+    </div>
+    <div class="container py-4">
+        <div class="row pb-3" style="padding: 24px; justify-content:center;">
+            <div class="col-xl-3">
+                <div class="mms-txt-headdetail w-50 pb-2">งวดที่</div>&nbsp;
+                <Input Placeholder="ระบุงวด" @bind-Value="@txtValue" Style="width:80%" />
+            </div>
+            <div class="col-xl-4">
+                <div class="mms-txt-headdetail w-50 pb-2">รหัสสถานพยาบาล</div>&nbsp;
+                <Input Placeholder="ระบุข้อมูล" @bind-Value="@txtValue" Style="width:80%" />
+            </div>
+            <div class="col-xl-4 ">
+                <div class="mms-txt-headdetail w-50 pb-2">เลขประจำตัวประชาชน</div>&nbsp;
+                <Space Direction="@DirectionVHType.Horizontal">
+                    <SpaceItem>
+                        <Search Placeholder="ระบุข้อมูล" EnterButton="true" AllowClear />
+                     </SpaceItem>
+                 </Space>
+             </div>
+         </div>
+         <div class="row pb-3">
+             <div class="col-xl-10 mms-media-center">
+                 <Button Class="me-2" Type="@ButtonType.Primary" OnClick="@(()=> OpenModalConfirmTenPercentModal(true))">ยืนยันการวินิจฉัย</Button>
+             </div>
+         </div>
+     </div>
+        <hr />
+     <div class="px-3">
+         <Table Bordered DataSource=@data OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" Class="pb-3">
+             <ChildContent>
+                 <Selection Align="ColumnAlign.Center" Key="@(context.Id.ToString())" />
+                 <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="งวด" Property="c=>c!.Installment" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="เลขที่ประจำตัวประชาชน" Property="c=>c!.CitizenId" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="ชื่อนามสกุล" Property="c=>c!.Name" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="วันที่เข้ารักษา" Property="c=>c!.AdmitDate" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="วันที่สิ้นสุดการรักษา" Property="c=>c!.TerminateDate" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="ชื่อ รพ" Property="c=>c!.HospitalName" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="ค่า RW" Property="c=>c!.RWValue" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="เงินค่ารักษา" Property="c=>c!.TreatmentFee" Width="100px" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="เงินที่คำนวณได้" Property="c=>c!.CalculateFee" Align="ColumnAlign.Center" />
+                 <PropertyColumn Title="สถานะ" Property="c=>c!.Status" Width="100px" Align="ColumnAlign.Center">
+
+                     @if (@context.Status == "รอวินิจฉัย")
+                    {
+                        <div class="text-status" style="color:#F56C6C">@context.Status</div>
+                    }
+                    else if (@context.Status == "ว่าง")
+                    {
+                        <div class="text-status" style="color:#009934">@context.Status</div>
+                    }
+                    else
+                    {
+                        <div class="text-status" style="color:#0000FF">@context.Status</div>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Title="" Width="200px" Property="c=>c!.ShowDetail">
+                    @if (@context.Status == "รอวินิจฉัย")
+                    {
+                        <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>{ OpenModalDiagnoseFileModal(true); }) />
+                        <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick="@(()=> {})" />
+                        <img class="mx-2" src="helper_shared/PortalAdminImage/alert.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick="@(()=> OpenModalAlertModal(true))" />
+                    }
+                    else
+                    {
+                        <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>{ OpenModalDiagnoseFileModal(true); }) />
+                        <img class="mx-2" title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png"
+                             style="width:24px;height:24px; cursor:pointer;" @onclick="@(()=> {})" />
+                    }
+                </PropertyColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination  Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                             OnChange="context.HandlePageChange" />
+             </PaginationTemplate>
+         </Table>
+        </div>
+</div>
+
+ <ModalConfirmTenPercent _visible=@openModalConfirmTenPercentModal OnClose="@OpenModalConfirmTenPercentModal" />
+ <ModalEditDiagnoseFile _visible=@openModalDiagnoseFileModal OnClose="@OpenModalDiagnoseFileModal" />
+ @* <ModalEditDiagnoseFile _visible=@openModalDiagnoseFileModal OnClose="@OpenModalDiagnoseFileModal" /> *@
+ <ModalAlert _visible=@openModalAlertModal OnClose="@OpenModalAlertModal" />
+
+
+@inject IMessageService message;
+
+ @code {
+    bool openModalConfirmTenPercentModal { get; set; }
+
+    bool openModalDiagnoseFileModal { get; set; }
+
+    bool openModalAlertModal { get; set; }
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    Table<MockUpData>? Table;
+
+    int pageSize = 5;
+
+
+    class MockUpData
+    {
+        public MockUpData(
+            int id, 
+            string installment, 
+            string citizenId, 
+            string name, 
+            string admitDate, 
+            string terminateDate, 
+            string hospitalName, 
+            string rwValue, 
+            string treatementFee, 
+            string calculateFee, 
+            string status,
+            string showDetail)
+        {
+            Id = id;
+            Installment = installment;
+            CitizenId = citizenId;
+            Name = name;
+            AdmitDate = admitDate;
+            TerminateDate = terminateDate;
+            HospitalName = hospitalName;
+            RWValue = rwValue;
+            TreatmentFee = treatementFee;
+            CalculateFee = calculateFee;
+            Status = status;
+            ShowDetail = showDetail; 
+        }
+        public int Id { get; set; }
+        public string Installment { get; set; }
+        public string CitizenId { get; set; }
+        public string Name { get; set; }
+        public string AdmitDate { get; set; }
+        public string TerminateDate { get; set; }
+        public string HospitalName { get; set; }
+        public string RWValue { get; set; }
+        public string TreatmentFee { get; set; }
+        public string CalculateFee { get; set; }
+        public string Status { get; set; }
+        public string ShowDetail { get; set; }
+ 
+    }
+
+    MockUpData[] data =
+    {
+        new(1,"6701","12467890","ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท","12","55000","45000", "ว่าง", "" ),
+        new(1,"6701","12467890","ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท","12","55000","45000", "ว่าง","" ),
+        new(1,"6701","12467890","ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท","12","55000","45000", "รอวินิจฉัย","" ),
+        new(1,"6701","12467890","ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท","12","55000","45000", "รอวินิจฉัย","" ),
+        new(1,"6701","12467890","ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท","12","55000","45000", "มีสิทธิ์","" ),
+    };
+
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+
+    private string? txtValue { get; set; }
+    private bool loading;
+
+    private void Handle(string value)
+    {
+        Console.WriteLine(value);
+    }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    public async Task OnSearch()
+    {
+        await message.Loading($"searching {txtValue}", 2);
+    }
+
+    private async Task OnEnter(KeyboardEventArgs e)
+    {
+        Console.WriteLine("Enter pressed");
+        loading = true;
+        await Task.Delay(3000);
+        loading = false;
+    }
+
+    string _size = ButtonSize.Large;
+
+    void handleChange(string value)
+    {
+        Console.WriteLine(value);
+    }
+
+    void handleItemsChange(IEnumerable<string> value)
+    {
+        Console.WriteLine(value);
+    }
+
+    public class Model
+    {
+        public string? installment { get; set; }
+
+        public string? hospitalID { get; set; }
+
+    }
+    private Model model = new Model();
+
+    public void OpenModalConfirmTenPercentModal(bool value)
+    {
+        openModalConfirmTenPercentModal = value;
+    }
+
+    public void OpenModalDiagnoseFileModal(bool value)
+    {
+        openModalDiagnoseFileModal = value;
+    }
+
+    public void OpenModalAlertModal(bool value)
+    {
+        openModalAlertModal = value;
+    }
+}

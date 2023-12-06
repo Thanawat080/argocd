@@ -1,0 +1,87 @@
+﻿@using sso.mms.fees.admin.Shared.CardiovascularDisease.WithdrawalRequest.Modals
+
+<style>
+.mms-outer-container {
+   border: 1px solid transparent; 
+   padding: 5px; 
+}
+
+.mms-nav-title-adjust {
+   background-color: #FFCC41;
+   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
+   padding: 10px;
+   margin-bottom: 0px; 
+}
+
+.custom-checkbox {
+        background-color: transparent; /* Set background color to transparent */
+}
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+         <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ กรณี Package โรคหัวใจและหลอดเลือด กับสถานพยาบาลในความตกลง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">รายการขอเบิก</div>
+        <hr />
+     </div>
+    <div class="row pb-4" style="padding: 24px;">
+         <div class="col-xl-2 mms-media-start">
+             <div class="mms-txt-headdetail w-50">งวดที่</div>&nbsp;
+             <Input @bind-Value="@txtValue" Disabled />
+         </div>
+         <div class="col-xl-3 mms-media-center">
+             <div class="mms-txt-headdetail white-space: nowrap">จำนวน(รายการ)</div>&nbsp;
+             <Input @bind-Value="@txtValue" Disabled />
+         </div>
+         <div class="col-xl-3 mms-media-start">
+             <div class="mms-txt-headdetail white-space: nowrap">จำนวนผู้ป่วยทั้งหมด</div>&nbsp;
+             <Input @bind-Value="@txtValue" Disabled />
+         </div>
+         <div class="col-xl-3 mms-media-start">
+             <div class="mms-txt-headdetail white-space: nowrap">ยอดเงินรวม</div>&nbsp;
+             <Input @bind-Value="@txtValue" Disabled />
+         </div>
+     </div>
+     <div class="d-flex justify-content-end">
+         <Button Class="me-2" Type="@ButtonType.Primary"><i class="fa-regular fa-square-caret-right"></i> ส่งรายการที่เลือกเพื่อออกใบคำสั่งจ่าย</Button>
+         <Space Direction="@DirectionVHType.Horizontal">
+             <SpaceItem>
+                 <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+             </SpaceItem>
+         </Space>
+     </div>
+     <div class="container py-4">
+         <div class="mms-txt-header py-2">รายการเบิกที่ผ่านการประมวลผล</div>
+     </div>
+     @for (int i = 0; i < 5; i++)
+    {
+        <div class="mms-outer-container">
+        <div class="mms-nav-title-adjust">
+            <div class="d-flex align-items-center">
+                    <input type="checkbox" class="me-2 custom-checkbox" @onclick="@(()=> OpenWithdrawalPeriodModal(true))" />
+                <div class="mms-txt-headdetail">4565@((i + 1)) โรงพยาบาล@(i + 1)</div>
+            </div>
+        </div>
+        </div>
+        <br />
+    }
+
+ </div>
+ <WithdrawalPeriod _visible=@openWithdrawalPeriodModal OnOpen="@OpenWithdrawalPeriodModal" ></WithdrawalPeriod>
+
+@code {
+
+    bool openWithdrawalPeriodModal { get; set; }
+
+    string txtValue { get; set; }
+
+
+    public async Task OpenWithdrawalPeriodModal(bool value)
+    {
+        openWithdrawalPeriodModal = value;
+    }
+
+
+}

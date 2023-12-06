@@ -1,0 +1,18 @@
+﻿<Result  Title="Your operation has been executed"
+        Extra=extra />
+@code {
+
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    RenderFragment  extra =
+    @<Button Type="primary">
+        Go Console
+    </Button>;
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+}

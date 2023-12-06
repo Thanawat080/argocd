@@ -1,0 +1,102 @@
+﻿@using System.ComponentModel;
+
+<style>
+    .text-status {
+        text-align: center;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-family: Noto Sans Thai;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%; /* 24px */
+    }
+
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ตามภาระเสี่ยง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">ผลการประมวลด้วย AI</div>
+        <hr />
+        <div class="mms-media-end mb-2">
+            <Space Direction="@DirectionVHType.Vertical" Class="d-flex justify-content-end">
+                <SpaceItem>
+                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                </SpaceItem>
+            </Space>
+        </div>
+        <Table Bordered DataSource="@data" OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" Class="pb-5">
+            <ChildContent>
+                <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="งวดที่" Property="c=>c!.Installment" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="วันที่นำเข้าข้อมูล" Property="c=>c!.ImportDate" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="วันที่ประมวลผล" Property="c=>c!.ProgressDate" Align="ColumnAlign.Center" />
+                <PropertyColumn Title="สถานะ" Property="c=>c!.Status" Align="ColumnAlign.Center" />
+                
+                <PropertyColumn Title="" Width="100px" Property="c=>c!.ShowDetail" Align="ColumnAlign.Center">
+                    <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                          style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>OnPage(2,context.Installment)) />
+                </PropertyColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2" Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+        </Table>
+    </div>
+</div>
+
+ @code {
+    [Parameter]
+    public EventCallback<(int,string)> IndexPage { get; set; }
+
+    Table<MockUpData> Table;
+
+    int pageSize = 5;
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+
+    public async Task OnPage(int page,string installment)
+    {
+        await IndexPage.InvokeAsync((page,installment));
+    } 
+
+    class MockUpData
+    {
+        public MockUpData(int id, string installment, string importDate, string progressDate, string status, string showDetail)
+        {
+            Id = id;
+            Installment = installment;
+            ImportDate = importDate;
+            ProgressDate = progressDate;
+            Status = status;
+            ShowDetail = showDetail;
+        }
+        public int Id { get; set; }
+        public string Installment { get; set; }
+        public string ImportDate { get; set; }
+        public string ProgressDate { get; set; }
+        public string Status { get; set; }
+        public string ShowDetail { get; set; }
+    }
+
+    MockUpData[] data =
+    {
+            new(1, "2566/5","25/05/2566","-","รอประมวลผล",""),
+            new(2, "2566/4","25/04/2566","-","รอประมวลผล",""),
+            new(3, "2566/3","25/03/2566","12/04/2566","ประมวลผลแล้ว",""),
+            new(4, "2566/2","25/02/2566","12/03/2566","ดำเนินการเสร็จสิ้น",""),
+            new(5, "2566/1","25/01/2566","12/02/2566","ดำเนินการเสร็จสิ้น",""),
+            new(5, "2566/1","25/01/2566","12/02/2566","ดำเนินการเสร็จสิ้น",""),
+    };
+
+}

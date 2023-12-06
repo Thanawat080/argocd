@@ -1,0 +1,1049 @@
+﻿@page "/addnewsadmin"
+@using System.Net.Http.Headers;
+@using Newtonsoft.Json;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.helper.ViewModels
+@using sso.mms.login.Services;
+@using sso.mms.portal.admin.ViewModels
+@using sso.mms.news.Services;
+@using sso.mms.news.ViewModels
+@using sso.mms.helper.Utility;
+@using sso.mms.portal.admin.Pages.Navbar
+@using System.Text.RegularExpressions;
+@inject IJSRuntime JsRuntime
+@inject NewsService newsService
+@inject NavigationManager navigaTion
+@inject HttpClient httpClient
+@inject SweetAlertService Swal;
+@inject ReadTokenService readTokenService
+
+<style>
+    :root {
+        --mdc-theme-primary: #334396;
+    }
+
+    .form-control, .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #9e9e9e;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: var(--bs-border-radius-sm);
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        height: 3rem;
+    }
+
+    .ck.ck-editor__editable_inline > :last-child {
+        margin-bottom: var(--ck-spacing-large);
+        height: 500px;
+    }
+
+    .ck-rounded-corners .ck.ck-editor__top .ck-sticky-panel .ck-toolbar,
+    .ck.ck-editor__top .ck-sticky-panel .ck-toolbar.ck-rounded-corners {
+        border-radius: var(--ck-border-radius);
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        border-color: #d8d8d8;
+    }
+
+    .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+        border-color: #d8d8d8;
+        border-radius: 0px 0px 8px 8px;
+    }
+
+    .mdc-elevation--z2,
+    .mat-file-upload,
+    .mat-elevation-z2 {
+        box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 0%), 0px 0px 0px 0px rgb(0 0 0 / 0%), 0px 0px 0px 0px rgb(0 0 0 / 0%);
+    }
+
+        .mat-file-upload input[type=file] {
+            background: #334396;
+            border-radius: 4px;
+            font-family: 'Noto Sans Thai';
+            font-style: normal;
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 144%;
+            color: #FFFFFF;
+            Width: 182.5px;
+            Height: 52.63px;
+        }
+
+    .mat-file-upload {
+        background: #334396;
+        border-radius: 4px;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 144%;
+        color: #FFFFFF;
+        Width: 182.5px;
+        Height: 52.63px;
+    }
+
+    .mat-file-upload-content {
+        display: flex;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .custom-input-file {
+        position: absolute;
+        background: white;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .suggestion-container {
+        position: relative;
+    }
+
+    .tagsinput, .tagsinput * {
+        box-sizing: border-box
+    }
+
+    .tagsinput {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        background: #fff;
+        font-size: 14px;
+        line-height: 20px;
+        padding-left: 10px;
+        border: 1px solid #ced4da;
+        font-family: 'Noto Sans Thai';
+        align-items: center;
+        border-radius: 0.25rem;
+    }
+
+        .tagsinput.focus {
+            border-color: #ccc
+        }
+
+        .tagsinput .tag {
+            position: relative;
+            background: #334396;
+            display: block;
+            max-width: 100%;
+            word-wrap: break-word;
+            color: #fff;
+            padding: 5px 30px 5px 5px;
+            border-radius: 0.25rem;
+            margin: 0 5px 5px 0
+        }
+
+            .tagsinput .tag .tag-remove {
+                position: absolute;
+                background: 0 0;
+                display: block;
+                width: 30px;
+                height: 30px;
+                top: 0;
+                right: 0;
+                cursor: pointer;
+                text-decoration: none;
+                text-align: center;
+                color: #ff6b6b;
+                line-height: 30px;
+                padding: 0;
+                border: 0
+            }
+
+                .tagsinput .tag .tag-remove:after, .tagsinput .tag .tag-remove:before {
+                    background: #ff6b6b;
+                    position: absolute;
+                    display: block;
+                    width: 10px;
+                    height: 2px;
+                    top: 14px;
+                    left: 10px;
+                    content: ''
+                }
+
+                .tagsinput .tag .tag-remove:before {
+                    -webkit-transform: rotateZ(45deg);
+                    transform: rotateZ(45deg)
+                }
+
+                .tagsinput .tag .tag-remove:after {
+                    -webkit-transform: rotateZ(-45deg);
+                    transform: rotateZ(-45deg)
+                }
+
+        .tagsinput div {
+            -webkit-box-flex: 1;
+            -webkit-flex-grow: 1;
+            -ms-flex-positive: 1;
+            flex-grow: 1
+        }
+
+            .tagsinput div input {
+                background: 0 0;
+                display: block;
+                width: 100%;
+                font-size: 14px;
+                line-height: 20px;
+                padding: 5px;
+                border: 0;
+                margin: 0 5px 5px 0;
+                height: 2.6rem;
+            }
+
+                .tagsinput div input:focus {
+                    color: #495057;
+                    background-color: #fff;
+                    border-color: #80bdff;
+                    outline: 0;
+                    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+                }
+
+                .tagsinput div input.error {
+                    color: #ff6b6b
+                }
+
+                .tagsinput div input::-ms-clear {
+                    display: none
+                }
+
+                .tagsinput div input::-webkit-input-placeholder {
+                    color: #ccc;
+                    opacity: 1
+                }
+
+                .tagsinput div input:-moz-placeholder {
+                    color: #ccc;
+                    opacity: 1
+                }
+
+                .tagsinput div input::-moz-placeholder {
+                    color: #ccc;
+                    opacity: 1
+                }
+
+                .tagsinput div input:-ms-input-placeholder {
+                    color: #ccc;
+                    opacity: 1
+                }
+
+    .options {
+        width: -webkit-fill-available;
+        position: absolute;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 8px 8px;
+        background: #ffffff;
+        display: block;
+    }
+
+    .swal2-container.swal2-center > .swal2-popup {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        border-radius: 16px;
+    }
+
+    .swal2-title {
+        position: relative;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.8em 1em 0;
+        color: inherit;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        text-transform: none;
+        word-wrap: break-word;
+        color: #334396;
+        font-family: Noto Sans Thai;
+    }
+
+    .swal2-styled.swal2-confirm {
+        border: 0;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        background: #334396;
+        width: 150px;
+    }
+</style>
+
+    <NavbarLoginAdmin ShortToken=@shortToken PageCode="@codeName"></NavbarLoginAdmin>
+
+<MediaStyle></MediaStyle>
+
+<div class="container pt-4 pl-3 my-5">
+    <div class="card-title-m w-100">
+        @if (getNewsMid == "1")
+        {
+            <p class="txt-title pt-3 px-2">เพิ่ม ประกาศ / ระเบียบ / พระราชบัญญัติ</p>
+        }
+        else
+        {
+            <p class="txt-title pt-3 px-2">เพิ่ม ข่าวสาร / ประชาสัมพันธ์</p>
+        }
+    </div>
+    <div class="card-body">
+        <div class="container p-4 px-4">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+                    <label class="form-label txt-label">หัวข้อ<div style="color:#FF0000">*</div></label>
+                    <input class="form-control w-100" @bind="@title" />
+
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+                    <label class="form-label txt-label">แท็ก<div style="color:#FF0000">*</div></label>
+                    @*<input class="form-control w-100" @bind="@Tag"/>*@
+
+                    <div class="suggestion-container w-100">
+                        <div id="@($"{Id}_tagsinput")" class="tagsinput">
+
+                            @if (Tags != null && Tags.Any())
+                            {
+                                @foreach (var tag in Tags)
+                                {
+
+                                    <span class="@(Tags != null ? "tag" : null)">
+                                        <span class="tag-text">@tag</span>
+                                        <span class="tag-remove" @onclick="() => DeleteTag(tag)" />
+                                    </span>
+                                }
+                            }
+
+
+                            <div id="@($"{Id}_addTag")">
+                                <div class="@(IsContainSpecialCharacter ? "tag-tooltip" : string.Empty)" data-toggle="dropdown">
+                                    <input id="@($"{Id}_tag")"
+                                           class="tag-input"
+                                           placeholder="Add tags"
+                                           autocomplete="on"
+                                    @bind-value="tagValue"
+                                    @oninput="HandleInput"
+                                    @onkeyup="AddTagsWithKeyEnter" />
+
+                                    @if (uniqueList is not null)
+                                    {
+                                        <ul class="options">
+                                            @if (uniqueList.Any())
+                                            {
+                                                @foreach (var list in uniqueList)
+                                                {
+                                                    <li class="option p-2" @onclick=@(_ => SelectTagList(list.Id.ToString(),list.TagName))>
+                                                        <span class="option-text">@list.TagName</span>
+                                                    </li>
+                                                }
+                                            }
+
+                                        </ul>
+                                    }
+
+
+                                    @if (IsContainSpecialCharacter)
+                                    {
+                                        <div class="error-right d-inline-flex p-2" style="position: absolute;">
+                                            <i class="oi oi-warning text-warning p-1"></i>
+                                            <p class="text-left m-0 p-1">คุณเลือกแท็คซ้ำกรุณาเลือกแท็คอื่น</p>
+                                            <i></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @if (getNewsMid == "1")
+            {
+                <div class="row">
+                    <div class="col-sm-1 col-md-12 mb-3">
+                        <div class="row ">
+                                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+                                    <label class="form-label txt-label">วันที่เริ่มต้นประกาศ</label>
+                                <AntDesign.DatePicker @bind-Value="@StartDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                            </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+                                    <label class="form-label txt-label">วันที่สิ้นสุดประกาศ</label>
+                                <AntDesign.DatePicker @bind-Value="@EndDate" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" DisabledDate="@(EndDate => EndDate <= StartDate)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                    </div>
+                </div>
+            }
+            <div class="row pt-4">
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                    <div class="row">
+                        <div class="txt-label ">สิทธิการเผยเเพร่<div class="" style="color:#FF0000">*</div></div>
+                        <div class="col-sm-12 col-md-12 col-lg-3 col-xl-2">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="forall" checked="@CBtypeAllowAll"
+                                @oninput="CheckBoxTypeAllowAll">
+                                <label class="form-check-label txt-label" for="forall">
+                                    ทั้งหมด
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-9 col-xl-10">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="foruser" checked="@CBtypeHospitalMember" @onchange="CheckCBtypeHospitalMember">
+                                <label class="form-check-label txt-label" for="foruser">
+                                    ระบบสถานพยาบาล (สมาชิก)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="forpublic" checked="@CBtypePublic" @onchange="CheckCBtypePublic">
+                                <label class="form-check-label txt-label" for="forpublic">
+                                    ระบบสถานพยาบาล (สาธารณะ,สมาชิก)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="forsso" checked="@CBtypeOfficer" @onchange="CheckCBtypeOfficer">
+                                <label class="form-check-label txt-label" for="forsso">
+                                    ระบบเจ้าหน้าที่ประกันสังคม
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                    <p class="txt-label">ปักหมุด</p>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="forpin" @onchange="@TogglePin" checked="@(Pin == 0 ? false : true)" />
+                        <label class="form-check-label txt-label" for="forpin">
+                            ต้องการปักหมุด
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            @if (getNewsMid != null)
+            {
+                if (getNewsMid == "2")
+                {
+                    if (responseNews.Content != null)
+                    {
+                        <EditForm Model="@editorOptions">
+                            <CKEditorBlazor Id="MyEditor1" @bind-Value="@editorOptions.InitialText" UrlToPostImage="@Uploadurl">
+                            </CKEditorBlazor>
+                        </EditForm>
+
+                    }
+                    else
+                    {
+                        <EditForm Model="@editorOptions">
+                            <CKEditorBlazor Id="MyEditor1" @bind-Value="@editorOptions.InitialText" UrlToPostImage="@Uploadurl">
+                            </CKEditorBlazor>
+                        </EditForm>
+                    }
+
+                }
+                else if (getNewsMid == "1")
+                {
+
+                    <div class="d-flex justify-content-center align-item-center ">
+                        <div class="div-file-upload">
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                                <div class="m-2" align="center">
+                                    
+                                    @if(FileName != null){
+                                        <p class="txt-label">
+                                            @FileName
+                                        </p>
+                                    }else{
+                                        <i class="fa-solid fa-arrow-up-from-bracket" style="font-size:50px;color:#334396;"></i>
+                                         <p class="txt-upload m-1">วางไฟล์ที่นี่เพื่ออัปโหลด</p>
+                                    }
+                                   
+                                </div>
+                                <div class="m-2">
+                                    <button class="btn btn-primary btn-edit m-1">
+                                        <i class="fa-regular fa-floppy-disk"></i> อัปโหลด
+                                    </button>
+                                </div>
+                                <InputFile class="custom-input-file" style="cursor:pointer;" OnChange="@LoadFiles" multiple accept=".pdf" />
+                                <div>
+                                   
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                if (getNewsMid == "2")
+                {
+                    <EditForm Model="@editorOptions">
+                        <CKEditorBlazor Id="MyEditor1" @bind-Value="@editorOptions.InitialText" UrlToPostImage="@Uploadurl">
+                        </CKEditorBlazor>
+                    </EditForm>
+                }
+                else if (getNewsMid == "1")
+                {
+                    <p>upload</p>
+                }
+            }
+            <br />
+            <div class="d-flex justify-content-end align-content-center pt-4">
+                <button class="btn btn-secondary btn-outline-edit m-1"  @onclick=@OnGoBack>
+                    <i class="fa-regular fa-circle-xmark"></i> ยกเลิก
+                </button>
+                <button class="btn btn-primary btn-edit m-1" @onclick=@onSave>
+                    <i class="fa-regular fa-floppy-disk"></i> บันทึก
+                </button>
+            </div>
+        </div>
+    </div>
+    @* @if (!string.IsNullOrWhiteSpace(selectedCustomerName))
+    {
+    <p class="mt-3">
+    Selected customer is @selectedCustomerName with ID <strong>@selectedTagById</strong>
+    </p>
+    }*@
+
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+<br />
+<sso.mms.helper.Components.Footer.Footer></sso.mms.helper.Components.Footer.Footer>
+
+
+@code {
+    public string? env = ConfigureCore.ConfigENV;
+
+    public string? prefix;
+    public string? Tag;
+    private string title;
+    private string text;
+    DateTime StartDate = DateTime.Now;
+    DateTime EndDate = DateTime.Now;
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "newsmid")]
+    public string getNewsMid { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    private sso.mms.login.ViewModels.ResponseShortToken responseShortToken { get; set; } = null!;
+
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "newstid")]
+    public string getNewsTid { get; set; } = "";
+
+    private NewsT? responseNews = new NewsT();
+    private ResponseModel response = new ResponseModel();
+
+
+    private EditorOptions editorOptions = new EditorOptions { InitialText = " " };
+    private string Uploadurl = "/your-upload-url";
+    List<string> FileNamelist = new List<string>();
+    //List<IFormFile> FileUploadList = new List<IFormFile>();
+
+    private bool? CBtypeAllowAll { get; set; } = false;
+    private bool? CBtypeHospitalMember { get; set; } = false;
+    private bool? CBtypePublic { get; set; } = false;
+    private bool? CBtypeOfficer { get; set; } = false;
+    private int? Pin = 0;
+
+    // Tag
+    private Guid Id => Guid.NewGuid();
+    protected string tagValue { get; set; }
+    protected bool MenuVisibility { get; set; }
+    protected bool IsContainSpecialCharacter { get; set; }
+    protected List<string>? Tags { get; set; } = new List<string>();
+    public string? codeName = "";
+
+    bool isloading;
+    protected override async Task OnInitializedAsync()
+    {
+        if (getNewsMid == "1")
+        {
+            codeName = "DSP0203";
+        }
+        else if(getNewsTid != null)
+        {
+            codeName = "DSP0304";
+        }
+        else
+        {
+            codeName = "DSP0303";
+        }
+        editorOptions = new EditorOptions();
+        //Uploadurl = $"{ConfigureCore.baseAddressNews}api/News/UploadFile";
+        Uploadurl = $"{ConfigureCore.redirectsNews}api/News/UploadFile";
+        if (env == "Development")
+        {
+            prefix = "";
+        }
+        else
+        {
+            prefix = "/admin";
+        }
+        // editorOptions.InitialText = "";
+        responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+
+        if (getNewsTid != null && responseShortToken != null)
+        {
+            responseNews = await newsService.GetNews(Int32.Parse(getNewsTid));
+            editorOptions.InitialText = responseNews.Content;
+            title = responseNews.Title;
+            Pin = responseNews.PinStatus;
+            FileName = responseNews.UploadFile;
+            CBtypeHospitalMember = responseNews.PrivilegePrivate;
+            CBtypeOfficer = responseNews.PrivilegeSso;
+            CBtypePublic = responseNews.PrivilegePublic;
+
+            if (CBtypeHospitalMember == true && CBtypeOfficer == true && CBtypePublic == true)
+            {
+                CBtypeAllowAll = true;
+            }
+            else
+            {
+                CBtypeAllowAll = false;
+            }
+
+            if (responseNews.NewsTagLists.Any())
+            {
+                foreach (var tagItem in responseNews.NewsTagLists)
+                {
+                    if (tagItem.TagName != null)
+                    {
+                        Tags = tagItem.TagName.Split(',').ToList();
+                    }
+
+                }
+            }
+            // Console.WriteLine(Tags);
+            StateHasChanged();
+        }
+    }
+    //CBtype = Type checkbox
+    private void TogglePin()
+    {
+        if (Pin == 0)
+        {
+            Pin = 1;
+        }
+        else
+        {
+            Pin = 0;
+        }
+    }
+
+    //generate check disable date if before startdate cannot select 
+
+    private async void onSave()
+    {
+        isloading = true;
+        var tagsToString = string.Join(",", Tags);
+        if (String.IsNullOrEmpty(tagsToString) || String.IsNullOrEmpty(title))
+        {
+
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                 "กรุณาใส่แท็กหรือหัวข้อ",
+                 null,
+                 SweetAlertIcon.Warning
+                 );
+        }
+        else if (CBtypeHospitalMember == false && CBtypeOfficer == false && CBtypePublic == false)
+        {
+            
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                 "กรุณาเลือกสิทธิการเผยเเพร่",
+                 null,
+                 SweetAlertIcon.Warning
+                 );
+        }
+        else if (getNewsMid != "1" && editorOptions.InitialText == null || editorOptions.InitialText == "")
+        {
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                 "กรุณากรอกเนื้อหาของข่าว",
+                 null,
+                 SweetAlertIcon.Warning
+                 );
+        }
+        else if (getNewsMid != "2" && FileName == null)
+        {
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                 "กรุณาอัปโหลดเอกสาร",
+                 null,
+                 SweetAlertIcon.Warning
+                 );
+        }
+        else
+        {
+            if (getNewsTid != null)
+            {
+
+                var data = new NewTransectionRequest()
+                    {
+                        Id = responseNews!.Id,
+                        Title = title,
+                        Content = editorOptions.InitialText,
+                        PinStatus = Pin,
+                        File = browserFile,
+                        TagList = tagsToString,
+                        PrivilegePrivate = CBtypeHospitalMember,
+                        PrivilegePublic = CBtypePublic,
+                        PrivilegeSso = CBtypeOfficer,
+                        CreateBy = responseShortToken.UserName,
+                        UpdateBy = responseShortToken.UserName
+                    };
+                response = await newsService.EditNewsService(data);
+
+
+                if (response.issucessStatus != true)
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    var result = await Swal.FireAsync(
+                         "บันทึกไม่สำเร็จ",
+                         null,
+                         SweetAlertIcon.Error
+                         );
+                    //await JsRuntime.InvokeVoidAsync("alert", response.statusMessage);
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    var result = await Swal.FireAsync(
+                         "บันทึกสำเร็จ",
+                         null,
+                         SweetAlertIcon.Success
+                         );
+                    if (result.IsConfirmed == true)
+                    {
+                    
+                        navigaTion.NavigateTo(prefix + "/editnews" + $"?newsmid={responseNews.NewsMId}&token={shortToken}");
+                    }
+                }
+            }
+            else
+            {
+
+                var data = new NewTransectionRequest()
+                    {
+                        Title = title,
+                        Content = editorOptions.InitialText,
+                        NewsMId = int.Parse(getNewsMid),
+                        NotiMId = getNewsMid == "2" ? 5 : null,
+                        PinStatus = Pin,
+                        File = browserFile,
+                        TagList = tagsToString,
+                        StartDate = StartDate,
+                        EndDate = EndDate,
+                        PrivilegePrivate = CBtypeHospitalMember,
+                        PrivilegePublic = CBtypePublic,
+                        PrivilegeSso = CBtypeOfficer,
+                        CreateBy = responseShortToken.UserName,
+                        UpdateBy = responseShortToken.UserName
+                    };
+
+                response = await newsService.AddNewsService(data);
+
+                if (response.issucessStatus != true)
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    var result = await Swal.FireAsync(
+                         "บันทึกไม่สำเร็จ",
+                         null,
+                         SweetAlertIcon.Error
+                         );
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    var result = await Swal.FireAsync(
+                        "บันทึกสำเร็จ",
+                        null,
+                        SweetAlertIcon.Success
+                        );
+                    if (result.IsConfirmed == true)
+                    {
+                      
+                        navigaTion.NavigateTo(prefix + "/editnews" + $"?newsmid={getNewsMid}&token={shortToken}");
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    public void OnGoBack()
+    {
+
+        if (getNewsMid == "1")
+        {
+            navigaTion.NavigateTo(prefix + "/editnews" + $"?newsmid=1&token={shortToken}");
+        }
+        else
+        {
+            navigaTion.NavigateTo(prefix + "/editnews" + $"?newsmid=2&token={shortToken}");
+
+        }
+    }
+
+
+    public string FileName;
+
+    public IBrowserFile browserFile;
+
+    public async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        FileName = e.File.Name;
+        browserFile = e.File;
+    }
+
+    public void CheckBoxTypeAllowAll(ChangeEventArgs e)
+    {
+        var value = e.Value;
+
+
+        if (value.ToString() == "True")
+        {
+            CBtypeAllowAll = true;
+            CBtypeHospitalMember = true;
+            CBtypePublic = true;
+            CBtypeOfficer = true;
+            StateHasChanged();
+        }
+        else
+        {
+            CBtypeAllowAll = false;
+            CBtypeHospitalMember = false;
+            CBtypePublic = false;
+            CBtypeOfficer = false;
+            StateHasChanged();
+        }
+    }
+
+    public void CheckCBtypeHospitalMember(ChangeEventArgs e)
+    {
+        var value = e.Value;
+
+        if (value.ToString() == "True")
+        {
+            CBtypeHospitalMember = true;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+        else
+        {
+            CBtypeHospitalMember = false;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+
+        if (CBtypeHospitalMember == true && CBtypeOfficer == true && CBtypePublic == true)
+        {
+            CBtypeAllowAll = true;
+            StateHasChanged();
+        }
+    }
+    public void CheckCBtypePublic(ChangeEventArgs e)
+    {
+        var value = e.Value;
+
+        if (value.ToString() == "True")
+        {
+            CBtypePublic = true;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+        else
+        {
+            CBtypePublic = false;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+        
+        if (CBtypeHospitalMember == true && CBtypeOfficer == true && CBtypePublic == true)
+        {
+            CBtypeAllowAll = true;
+            StateHasChanged();
+        }
+    }
+    public void CheckCBtypeOfficer(ChangeEventArgs e)
+    {
+        var value = e.Value;
+
+        if (value.ToString() == "True")
+        {
+            CBtypeOfficer = true;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+        else
+        {
+            CBtypeOfficer = false;
+            CBtypeAllowAll = false;
+            StateHasChanged();
+        }
+
+        if (CBtypeHospitalMember == true && CBtypeOfficer == true && CBtypePublic == true)
+        {
+            CBtypeAllowAll = true;
+            StateHasChanged();
+        }
+    }
+
+    protected void AddTagsWithKeyEnter(KeyboardEventArgs eventArgs)
+    {
+
+        IsContainSpecialCharacter = false;
+
+        if (!String.IsNullOrEmpty(tagValue))
+        {
+            if (eventArgs.Key.Equals("Enter"))
+            {
+                if (!Tags.Exists(t => t.Equals(tagValue, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    Tags.Add(tagValue);
+                    tagValue = string.Empty;
+                }
+                else
+                {
+                    IsContainSpecialCharacter = true;
+                }
+                uniqueList = null;
+            }
+        }
+    }
+
+    protected void AddTags()
+    {
+        IsContainSpecialCharacter = false;
+
+        if (!String.IsNullOrEmpty(tagValue))
+        {
+            if (!Tags.Exists(t => t.Equals(tagValue, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                Tags.Add(tagValue);
+                tagValue = string.Empty;
+            }
+            else
+            {
+                IsContainSpecialCharacter = true;
+            }
+        }
+    }
+
+    protected void DeleteTag(string value)
+    {
+        if (String.IsNullOrEmpty(value)) return;
+
+        var tag = Tags.FirstOrDefault(t => t == value);
+        if (tag == null) return;
+
+        Tags.Remove(tag);
+
+    }
+
+    List<NewsTagListModel>? TagList;
+
+    public class ListTags
+    {
+        public int Id { get; set; }
+        public string TagName { get; set; }
+    }
+    List<ListTags> theList = new List<ListTags>();
+    List<ListTags> uniqueList = new List<ListTags>();
+
+    string? selectedTagById;
+    string? selectedTagName;
+    string? filter;
+
+    void SelectTagList(string id, string tagName)
+    {
+        selectedTagById = id;
+        tagValue = uniqueList!.First(c => c.Id == int.Parse(selectedTagById)).TagName;
+        AddTags();
+        uniqueList = null;
+    }
+
+    async Task HandleInput(ChangeEventArgs e)
+    {
+        filter = e.Value.ToString();
+        string deleteString = filter!.Replace("#", "");
+
+        if (filter?.Length > 2)
+        {
+            TagList = await newsService.GetNewsTagList(deleteString);
+            //TagList
+            foreach (var list in TagList)
+            {
+                foreach (var tags in list.TagName)
+                {
+                    theList.Add(new ListTags
+                        {
+                            Id = list.Id,
+                            TagName = tags //  # + string
+                        });
+                }
+            }
+
+            uniqueList = theList.GroupBy(x => x.TagName)
+                                  .Select(group => group.First())
+                                  .ToList();
+        }
+        else
+        {
+            uniqueList = null;
+            selectedTagName = selectedTagById = null;
+        }
+
+    }
+}

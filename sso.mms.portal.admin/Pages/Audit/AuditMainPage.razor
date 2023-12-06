@@ -1,0 +1,443 @@
+﻿@page "/auditmainpage"
+@using Blazored.LocalStorage;
+@using sso.mms.helper.Components.Footer
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.Data;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.helper.Utility
+@using sso.mms.login.Services;
+@using sso.mms.portal.admin.Pages.Navbar
+@using sso.mms.portal.admin.ViewModels
+@using sso.mms.portal.admin.Services;
+@using System;
+@using System.Text.Json;
+@using AntDesign;
+
+
+@inject AuditSevices auditSevices
+@inject UserService userService
+@inject NavigationManager Navigation
+@inject ILocalStorageService localStorage
+@inject UserRoleService userRoleService
+@inject SweetAlertService Swal
+
+<style>
+    .swal2-container.swal2-center > .swal2-popup {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        border-radius: 16px;
+    }
+
+    .swal2-title {
+        position: relative;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.8em 1em 0;
+        color: inherit;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        text-transform: none;
+        word-wrap: break-word;
+        color: #334396;
+        font-family: Noto Sans Thai;
+    }
+
+    .swal2-styled.swal2-confirm {
+        border: 0;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        background: #334396;
+        width: 150px;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    @@media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 800px;
+            margin: 1.75rem auto;
+        }
+    }
+
+    .mdc-table th {
+        font-size: 1.143rem;
+        color: #334396;
+        border: 2px solid rgb(255 255 255);
+        padding: 12px 12px 12px 24px;
+        background: #FFCC41;
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 27px;
+        letter-spacing: 0.2px;
+        color: #334396;
+    }
+
+    .mdc-table, .mdc-table--striped {
+        width: 100%;
+        max-width: 100%;
+        background-color: transparent;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: inline-block;
+        overflow-x: auto;
+        margin: 8px 0 32px;
+        border: 0px solid rgba(0,0,0,.1);
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        align-items: center;
+        color: #1A141F;
+        border-radius: 10px;
+    }
+
+        .mdc-table td {
+            border: 2px solid white;
+            padding: 12px 12px 12px 24px;
+        }
+
+    tr.mdc-table-footer-row, tr.mdc-table-row {
+        height: 48px;
+        background: #a8a2ad17;
+    }
+
+    .mdc-table--striped tr:nth-of-type(odd) {
+        background: #00000012;
+    }
+
+    .mdc-select__dropdown-icon {
+        margin-left: 1px;
+        margin-right: 1px;
+        display: inline-flex;
+        position: relative;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+
+    .mdc-select .mdc-select__anchor {
+        height: 56px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+
+    .mat-paginator .mat-paginator-container .mat-paginator-page-size {
+        display: flex;
+        margin-right: 8px;
+        align-items: center
+    }
+
+    .mat-paginator .mat-paginator-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+    }
+
+    .mdc-paginator-container {
+        display: flex;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 0 8px;
+        flex-wrap: wrap-reverse;
+        width: 100%;
+        align-items: center;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+        background-color: #ffffff;
+        width: 80px;
+        height: 30px;
+        border-radius: 10px;
+        border: 0px solid #D4D2D5;
+    }
+
+    .mdc-paginator-page-size {
+        line-height: 0px;
+        display: flex;
+        margin-right: 8px;
+        align-items: center;
+    }
+
+    .mat-elevation-z5 {
+        box-shadow: 0px 3px 0px -1px rgb(0 0 0 / 0%), 0px 5px 0px 0px rgb(0 0 0 / 0%), 0px 1px 0px 0px rgb(0 0 0 / 0%);
+    }
+
+</style>
+
+
+    <NavbarLoginAdmin ShortToken=@shortToken PageCode="DSR0301"></NavbarLoginAdmin>
+
+<MediaStyle></MediaStyle>
+
+
+
+<div class="container mt-5 mb-4">
+    <div class="bordcase-body">
+        <div class="p-5 m-1">
+            <div class="d-flex justify-content-between py-4">
+                <div>
+                    <button @onclick=Gobackindex class="btn btn-secondary btn-bo-main px-4 p-2">
+                        <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ
+                    </button>
+                    &nbsp;
+                    @if (permit.isRoleCreate == true)
+                    {
+                        <button @onclick=GoAddaudit class="btn btn-primary btn-sa-main m-1 px-4 p-2">
+                            <i class="fa-solid fa-user-plus"></i>&nbsp; เพิ่มผู้ใช้งาน
+                        </button>
+                    }
+
+                </div>
+                <div class="input-group w-50">
+                    <input type="search" class="form-control" style="height: 48px;" placeholder="ข้อมูลที่ต้องการค้นหา" aria-label="Search" aria-describedby="search-addon" @bind=@text />
+                    <button type="button" class="btn btn-outline-primary serch-bg" style="height: 48px;width:48px;" @onclick=@searchitem><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+            @if (AuditorResponse != null)
+            {
+
+
+                <MatTable 
+                    ShowPaging="false" 
+                    Items="@AuditForSeach" 
+                    LoadInitialData="true" 
+                    Striped="true" 
+                    RequestApiOnlyOnce="true" 
+                    AllowSelection="true" 
+                    RowClass="tester"
+                          PageSize="@pageSize"
+                          CurrentPage="@currentPage"
+                    DebounceMilliseconds="150" 
+                    class="mat-elevation-z5">
+                    <MatTableHeader>
+
+                        <th class="text-center" style="border-radius:10px 0 0 0;width:130px"></th>
+                        <th class="text-center" style="width:70px">ลำดับ</th>
+                        <th class="text-center" style="width:250px">สถานะ</th>
+                        <th class="text-center" style="width:400px">ชื่อ - นามสกุล</th>
+                        <th class="text-center" style="width:240px">วันที่เริ่มต้นสัญญา</th>
+                        <th class="text-center" style="border-radius:0 10px 0 0 ; width:240px;">วันที่สิ้นสุดสัญญา</th>
+                    </MatTableHeader>
+                    <MatTableRow>
+
+                        <td class="text-center " style="max-width:130px">
+                            @if (permit.isRoleUpdate == true)
+                            {
+                                <img src="helper_shared/PortalAdminImage/edit.png" data-bs-placement="bottom" title="แก้ไข" style="width: 32px;height: 32px;margin-right:10px;" @onclick="@(()=>Goedit(context.Id))" />
+                            }
+                            @if (permit.isRoleDelete == true)
+                            {
+                                <img src="helper_shared/icon_sso/delete.png" data-bs-toggle="modal" data-bs-target="#deleteaudit"  data-bs-placement="bottom" title="ลบ" style="width: 32px;height: 32px;" @onclick="@(()=>Deleterole(context.Id))" />
+                            }
+                        </td>
+
+                        <td class="text-center" style="width:70px">@(AuditorResponse.IndexOf(context) + 1)</td>
+                        <td style="width:200px">
+                            @if (context.ExpireDate != null)
+                            {
+                                var expiriesInDays = (int)(context.ExpireDate - DateTime.Now).Value.TotalDays;
+                                if (expiriesInDays <= 0)
+                                {
+                                    <div style="color:red"> สิ้นสุดสัญญา</div>
+                                }
+                                else if (expiriesInDays >= 30)
+                                {
+                                    <div style="color:green"> อยู่ในสัญญา</div>
+                                }
+                                else if (expiriesInDays < 30)
+                                {
+                                    <div style="color:orange"> ใกล้สิ้นสุดสัญญา</div>
+                                }
+
+                                else
+                                {
+                                    <div> </div>
+                                }
+                            }
+                        </td>
+                        <td style="width:400px">@getPrefixName(context.PrefixMCode)@context.FirstName @context.MiddleName @context.LastName</td>
+                        <td style="width:240px">@ThaiDateFormat.FormattedDate(context.StartDate)</td>
+                        <td style="width:240px">@ThaiDateFormat.FormattedDate(context.ExpireDate)</td>
+
+                    </MatTableRow>
+                </MatTable>
+                <AntDesign.Pagination ShowSizeChanger
+                                       OnShowSizeChange="OnShowSizeChange"
+                                       OnChange="OnPage"
+                                       DefaultCurrent="3"
+                                       PageSize=@pageSize
+                                       Total="@AuditForSeach.Count()" />
+            }
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <sso.mms.helper.Components.Footer.Footer></sso.mms.helper.Components.Footer.Footer>
+</div>
+
+
+@if (DialogIsOpen)
+{
+    <ModalDelete OnClose="@OnDialogClose" title="ต้องการลบ" description="ต้องการลบ ข้อมูล Auditor หรือไม่">
+    </ModalDelete>
+}
+@if (isloading == true)
+{
+    <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage>
+}
+
+@code {
+    public int currentPage = 1;
+    public bool isloading = false;
+    public string? env = ConfigureCore.ConfigENV;
+    private string url;
+    private string? text;
+    private PrefixM PrefixName;
+    private bool DialogIsOpen = false;
+    public int iddelete { get; set; }
+    public UserRole userRole;
+    public MenuPerMit permit = new MenuPerMit();
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    private List<AuditorUserM> AuditorResponse;
+    private List<AuditorUserM> AuditForSeach;
+    private List<PrefixM> prefixMs;
+
+    int pageSize = 5;
+
+    void OnPage(PaginationEventArgs e)
+    {
+
+        Console.WriteLine(e);
+        pageSize = e.PageSize;
+        currentPage = e.Page;
+    }
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            isloading = true;
+            await auditSevices.DeleteAudit(iddelete);
+            AuditorResponse = await auditSevices.GetAudit();
+            AuditForSeach = AuditorResponse;
+            StateHasChanged();
+            isloading = false;
+            StateHasChanged();
+            await Swal.FireAsync(
+                "ลบบทบาทสำเร็จ",
+                null,
+                SweetAlertIcon.Success
+                );
+        }
+        DialogIsOpen = false;
+        StateHasChanged();
+    }
+    public async void Deleterole(int id)
+    {
+        iddelete = id;
+        DialogIsOpen = true;
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        if (env == "Development")
+        {
+            url = "";
+        }
+        else
+        {
+            url = "/admin";
+        }
+
+        prefixMs = await userService.getPrefix();
+        AuditorResponse = await auditSevices.GetAudit();
+        AuditForSeach = AuditorResponse;
+        userRole = await localStorage.GetItemAsync<UserRole>("userRole");
+        if (userRole != null && userRole.role != null)
+        {
+            try
+            {
+                permit = await userRoleService.GetUserAuth(userRole, "PSMSS001", "PORTAL-SSO");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+        StateHasChanged();
+        isloading = false;
+    }
+
+
+    public void GoAddaudit()
+    {
+        Navigation.NavigateTo(url + "/addaudit" + "?token=" + shortToken);
+    }
+    public void Gobackindex()
+    {
+        Navigation.NavigateTo(url + "/mainmenu" + "?token=" + shortToken);
+    }
+    public void Goedit(int id)
+    {
+        Navigation.NavigateTo(url + "/addaudit" + "?token=" + shortToken + "&id=" + id);
+    }
+    public void searchitem()
+    {
+        AuditForSeach = AuditorResponse.Where(x => x.FirstName.ToLower().Contains(text.ToLower()) || x.LastName.ToLower().Contains(text.ToLower())).ToList();
+        currentPage = 1;
+        StateHasChanged();
+    }
+    public string getPrefixName(string code)
+    {
+        if (prefixMs != null)
+        {
+            PrefixName = prefixMs.FirstOrDefault(w => w.Code == code);
+            if (PrefixName != null)
+            {
+                return PrefixName.Name;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
+    }
+}

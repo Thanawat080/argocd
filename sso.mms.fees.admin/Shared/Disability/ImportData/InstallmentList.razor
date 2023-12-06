@@ -1,0 +1,134 @@
+﻿@using sso.mms.fees.admin.Shared.Disability.ImportData.Modals
+
+
+<style>
+    .align-bar {
+        width: 50%;
+        display: flex;
+        justify-content: end;
+    }
+</style>
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์กรณีทุพพลภาพ >> ค้นหาข้อมูล >> รายการบริการตามงวด</div>
+    </div>
+    <div class="container py-4">
+        <div class="col-xl-3 mms-media-start">
+            <div class="mms-txt-headdetail w-50">งวดที่</div>&nbsp;
+            <Input Placeholder="Basic usage" @bind-Value="@installmentData" />
+        </div>
+        <div class="row" style="padding: 24px;">
+            <div class="d-flex">
+                <div class="align-bar">
+
+                    <Button Class="me-2" Type="@ButtonType.Primary"><i class="fa-solid fa fa-plus"></i> ประมวลผลรายการเบิก</Button>
+                </div>
+                <div class="align-bar">
+                    <Space Direction="@DirectionVHType.Horizontal">
+                        <SpaceItem>
+                            <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                         </SpaceItem>
+                     </Space>
+                 </div>
+             </div>
+         </div>
+         <Table DataSource="data" OnChange="OnChange" TItem="Data" Bordered HidePagination>
+            <Column Title="ลำดับ" DataIndex="ID" TData="int" Align="ColumnAlign.Center" />
+            <Column Title="งวด" DataIndex="Installment" TData="int"  Align="ColumnAlign.Center"/>
+            <Column Title="เลขที่ประจำตัวประชาชน" DataIndex="IDCard" TData="int"  Align="ColumnAlign.Center"/>
+            <Column Title="ชื่อนามสกุล" DataIndex="Name" TData="string"  Align="ColumnAlign.Center"/>
+            <Column Title="วันที่เข้ารักษา" DataIndex="DateOfTreatment" TData="string"  Align="ColumnAlign.Center"/>
+            <Column Title="วันที่สิ้นสุดการรักษา" DataIndex="EndDateOfTreatMent" TData="string" Align="ColumnAlign.Center" />
+            <Column Title="ชื่อ รพ" DataIndex="HospitalName" TData="string" Align="ColumnAlign.Center" />
+            <Column Title="ค่า RW" DataIndex="ValueRW" TData="int" Align="ColumnAlign.Center" />
+            <Column Title="เงินค่ารักษา" DataIndex="MoneyOfTreament" TData="double"  Align="ColumnAlign.Center"/>
+            <Column Title="เงินที่คำนวณได้" DataIndex="MoneyCalculate" TData="double" Align="ColumnAlign.Center" />
+            <Column Title="" DataIndex="Show" TData="string" Width="100px" Align="ColumnAlign.Center">
+                <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                     style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>{ InsuredInformation(true); }) />
+            </Column>
+        </Table>
+
+        <Pagination Class="py-3"
+                            ShowSizeChanger
+                     OnShowSizeChange="OnShowSizeChange"
+                     DefaultCurrent="3"
+                     Total="500" />
+     </div>
+ </div>
+ <InsuredInformation _visible=@openInsuredInformation OnClose="@InsuredInformation" />
+
+
+ @inject IMessageService message;
+
+ @code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    [Parameter]
+    public int installmentData { get; set; }
+
+    public bool openInsuredInformation { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var data = installmentData;
+        base.OnParametersSet();
+    }
+
+    public void InsuredInformation(bool value)
+    {
+        openInsuredInformation = value;
+    }
+
+    public record Data(
+        int ID,
+    int Installment,
+    int IDCard,
+    string Name,
+    string DateOfTreatment,
+    string EndDateOfTreatMent,
+    string HospitalName,
+    int ValueRW,
+    double MoneyOfTreament,
+    double MoneyCalculate,
+    string Show
+    );
+
+    public Data[] data =
+        {
+        new(1,6701,12467890,"ดวงดี วิชัยวรศ์", "23 มิย 67","23 มิย 67","พญาไท",12,55000,45000,"" )
+
+    };
+
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+    private string? txtValue { get; set; }
+    private bool loading;
+
+    private void Handle(string value)
+    {
+        Console.WriteLine(value);
+    }
+
+    public async Task goEdit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+
+
+}
+
+

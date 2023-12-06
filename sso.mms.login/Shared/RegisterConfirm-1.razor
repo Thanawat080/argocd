@@ -1,0 +1,290 @@
+﻿@using sso.mms.helper.Data;
+@using sso.mms.helper.ViewModels;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels.Email;
+@using sso.mms.login.ViewModels.Master;
+@using sso.mms.login.ViewModels;
+@using sso.mms.login.ViewModels.KeyCloak;
+@using sso.mms.helper.Configs
+@inject UserService userService;
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+
+<div class="bg-reg-color">
+    <MediaStyle></MediaStyle>
+    <div class="container" style="padding-top:45px;padding-bottom:45px;">
+        <div class="card" style="border-radius: 24px;box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);">
+            <div class="text-title p-4 pb-4">ยืนยันตัวตนกรมปกครอง</div>
+            <div class="p-4"></div>
+            <div class="container" align="center">
+                <div class="position-relative " style="width:75%">
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar" role="progress" style="width: 15%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="container position-relative " style="width:50%">
+                    <img class="position-absolute top-0 start-0 translate-middle rounded-pill" src="css/Data/Assets/Images/check.png" style="width: 77px; height:77px;" />
+                    <img class="position-absolute top-0 start-50 translate-middle rounded-pill" src="css/Data/Assets/Images/check2.png" style="width: 77px; height:77px;" />
+                    <img class="position-absolute top-0 start-100 translate-middle rounded-pill" src="css/Data/Assets/Images/check3.png" style="width: 77px; height:77px;" />
+                </div>
+                <div class="container position-relative" style="width:50%">
+                    <div class="row">
+                        <p class="position-absolute top-0 start-0 translate-middle rounded-pill" style="padding-top:100px;">ยืนยันตัวตนกรมปกครอง </p>
+                        <p class="position-absolute top-0 start-50 translate-middle rounded-pill" style="padding-top:100px;">ยืนยันตัวตนดิจิทัล </p>
+                        <p class="position-absolute top-0 start-100 translate-middle rounded-pill" style="padding-top:100px;">ยืนยันเรียบร้อย </p>
+                    </div>
+                </div>
+            </div>
+            <div style="padding-bottom:7rem;"></div>
+            <div class="container" align="center">
+                <form class="input-contrain" style="max-width:50%" @onsubmit=@NextButton>
+                    <div class="p-2">
+                        <div class="mb-3">
+                            <label for="name" class="label-c">ชื่อ-นามสกุล</label>
+                            <input type="text" id="name" name="fav_language" @bind="@Fullname" class="input-c form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <div class="mb-3">
+                            <label for="name" class="label-c">วัน/เดือน/ปี เกิด</label>
+                            <AntDesign.DatePicker @bind-Value="@date" Format="dd/MM/yyyy" Style="width: 100%; height: 3rem;" />
+                           @* <MatDatePicker value="@date" Outlined=true AllowInput="false" Format="dd/MM/yyyy" Maximum="@DateTime.Now.ToLocalTime()"
+                                           ValueChanged=@(async (DateTime value) => await OnDateSelected(value)) Style="width: 100%;height: 3rem;" Required></MatDatePicker>*@
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <div class="mb-3">
+                            <label for="uid" class="label-c">เลขประจำตัวประชาชน</label>
+                            <input type="text" id="uid" name="fav_language" @bind="@UID" class="input-c form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <div class="mb-3 ">
+                            <label for="Laser" class="label-c">เลขหลังบัตรประชาชน (Laser code)</label>
+                            <div class="d-flex justify-content-center">
+                                <input type="@((showPassword ? "text" : "password"))" id="Laser" name="fav_language" class="input-c0  form-control " placeholder="***" maxlength="12"
+                            pattern="{12,12}" required @bind="@lazercode">
+                      
+                            <div class="input-c1 input-txt-eye " @onclick="TogglePasswordVisibility">
+                                <i class="@((showPassword ? "fa-solid fa-eye" : "fa-sharp fa-solid fa-eye-slash"))" style="padding-top:10px;color:#334396;"></i>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-4">
+                        <div class="end-bt">
+                            <button class="btn btn-secondary bt-back-c" @onclick=BackButton type="button">
+                                <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; 
+                                ย้อนกลับ
+                            </button>
+                            &nbsp;
+                            <button class="btn btn-primary bt-con-c" type="submit">
+                                <img class="end-icon" src="css/Data/Assets/Images/check.png" />
+                                ยืนยันตัวตน
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <Footer />
+</div>
+@if (isloading == true)
+{
+    <style>body { overflow: hidden; }</style><LoadingPage></LoadingPage>
+}
+
+@code {
+    private bool isloading = false;
+
+    private string? UID
+    {
+        get
+        {
+            return string.Format("{0}-{1}-{2}-{3}-{4}",
+              RegisData.IdenficationNumber.Substring(0, 1),
+              RegisData.IdenficationNumber.Substring(1, 4),
+              RegisData.IdenficationNumber.Substring(5, 5),
+              RegisData.IdenficationNumber.Substring(10, 2),
+              RegisData.IdenficationNumber.Substring(12, 1));
+        }
+        set
+        {
+            var parts = value.Split('-');
+            RegisData.IdenficationNumber = parts.ToString();
+        }
+    }
+    private DateTime date = DateTime.Today;
+    private string? lazercode;
+    private string? Fullname;
+    private string? Lastname;
+    private PrefixM PrefixMCodeName;
+    private bool showPassword = false;
+
+    [Parameter]
+    public HospitalUserM RegisData { get; set; }
+
+    private ResponseModel response;
+    private List<PrefixM> prefixm;
+
+    [Parameter]
+    public EventCallback<(HospitalUserM, int)> OnRegis { get; set; }
+
+    [Parameter]
+    public int page { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnNextButton { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        isloading = true;
+
+        prefixm = await userService.getPrefix();
+        if (prefixm != null)
+        {
+            PrefixMCodeName = prefixm.FirstOrDefault(w => w.Code == RegisData.PrefixMCode);
+            Fullname = PrefixMCodeName.Name + RegisData.FirstName + " " + RegisData.LastName;
+            isloading = false;
+            StateHasChanged();
+        }
+
+
+    }
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+        StateHasChanged();
+    }
+    public async Task NextButton()
+    {
+        if(date > DateTime.Now.Date)
+        {
+            await Swal.FireAsync(
+                 "ไม่สามารถเลือกวันเกิดได้มากกว่าวันปัจจุบัน",
+                 null,
+                 SweetAlertIcon.Warning
+                 );
+        }
+        else
+        {
+            isloading = true;
+
+            this.page = this.page + 1;
+            if (this.page == 2)
+            {
+                int year = date.Year + 543;
+                int month = date.Month;
+                int day = date.Day;
+                var dopaData = new CheckDopaModel
+                    {
+                        UID13 = RegisData.IdenficationNumber,
+                        BOD = year.ToString("0000") + month.ToString("00") + day.ToString("00"),
+                        LAZER_CODE = lazercode,
+                        Fname = RegisData.FirstName,
+                        Lname = RegisData.LastName
+                    };
+                if (ConfigureCore.ConfigENV == "Development")
+                {
+                    Console.WriteLine(dopaData);
+                    response = await userService.CheckDopa(dopaData);     //for local
+                }
+                else
+                {
+                    Console.WriteLine(dopaData.UID13);
+                    Console.WriteLine(dopaData.BOD);
+                    Console.WriteLine(dopaData.LAZER_CODE);
+                    Console.WriteLine(dopaData.Lname);
+                    if (ConfigureCore.SiteName == "SSO")
+                    {
+                        response = await userService.CheckDopaProd(dopaData);   //for sso
+                    }
+                    else
+                    {
+                        response = await userService.CheckDopa(dopaData); //for bt
+                    }
+                }
+
+                if (response.issucessStatus != true)
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                        response.statusMessage,
+                        null,
+                        SweetAlertIcon.Warning
+                        );
+
+                    this.page = this.page - 1;
+                }
+                else if (response.issucessStatus == true)
+                {
+                    if (response.statusMessage != null)
+                    {
+                        if (response.statusMessage == "true")
+                        {
+                            var otpdata = new RequestOtpEmail
+                                {
+                                    ToEmail = RegisData.Email,
+                                    SubjectEmail = "OTP",
+                                    UserName = RegisData.UserName
+                                };
+                            response = await userService.SendOtpToMail(otpdata);
+                            if (response.issucessStatus != true)
+                            {
+                                isloading = false;
+                                StateHasChanged();
+                                await Swal.FireAsync(
+                               response.statusMessage,
+                               null,
+                               SweetAlertIcon.Warning
+                               );
+                                // await JSRuntime.InvokeVoidAsync("alert", response.statusMessage);
+                                this.page = this.page - 1;
+                            }
+                            else
+                            {
+                                RegisData.IsCheckDopa = true;
+                                await OnRegis.InvokeAsync((RegisData, this.page));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    isloading = false;
+                    StateHasChanged();
+                    await Swal.FireAsync(
+                       "check dopa error!",
+                       null,
+                       SweetAlertIcon.Warning
+                       );
+                    // await JSRuntime.InvokeVoidAsync("alert", "check dopa error!");
+                    this.page = this.page - 1;
+                }
+            }
+        }
+        
+    }
+
+    [Parameter]
+    public EventCallback<int> OnBackButton { get; set; }
+
+    public async Task BackButton()
+    {
+        this.page = this.page - 1;
+        await this.OnBackButton.InvokeAsync(this.page);
+    }
+
+    private async Task OnDateSelected(DateTime e)
+    {
+        date = e.ToLocalTime();
+
+    }
+
+}

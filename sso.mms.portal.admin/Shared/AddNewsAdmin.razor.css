@@ -1,0 +1,99 @@
+﻿.card-title-m {
+    background: #FFCC41;
+    border: 1px solid #FFCC41;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px 10px 0px 0px;
+}
+
+.card-body {
+    background: #FFFFFF;
+    border-radius: 0 0 10px 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    min-height: 500px;
+}
+
+.txt-title {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+}
+
+.txt-label {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    color: #334396;
+}
+
+.btn-edit {
+    background: #334396;
+    border-radius: 4px;
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #FFFFFF;
+    Width: 182.5px;
+    Height: 52.63px;
+}
+
+.btn-outline-edit {
+    background: #FFFFFF;
+    border: 2px solid #334396;
+    border-radius: 4px;
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #334396;
+    Width: 182.5px;
+    Height: 52.63px;
+}
+
+.txt-upload {
+    color: #334396;
+    font-size: 20px;
+    font-family: Noto Sans Thai;
+    font-weight: 500;
+    line-height: 150%;
+}
+.txt-upload-detail {
+    color: #909090;
+    font-size: 18px;
+    font-family: Noto Sans Thai;
+    font-weight: 500;
+    line-height: 150%;
+}
+.div-file-upload {
+    background: #ffffff;
+    width: 450px;
+    height: 200px;
+    position: relative;
+}
+.form-check-input:checked {
+    background-color: #334396;
+    border-color: #334396;
+}
+
+.form-check-input:focus {
+    border-color: #334396;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+.form-check-input[type=checkbox] {
+    border-radius: 0.25em;
+    width: 20px;
+    height: 20px;
+    padding-right:10px;
+}
+

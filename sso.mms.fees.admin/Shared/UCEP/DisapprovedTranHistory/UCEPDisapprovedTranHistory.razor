@@ -1,0 +1,462 @@
+﻿
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ทันตกรรม   / รายการรับเเจ้ง  /<span style="color:#125DFD"> ประมวลผลรายการรับเเจ้ง </span>      </div>
+    </div>
+    <div class="container py-4">
+        
+
+        <br />
+        <div class="row">
+            <div class="d-flex  mms-media-center">
+                <div class="col-8 ">
+                    <div class="mms-media-start mms-txt-headdetail">รายการเบิกที่ผ่านการประมวลผล  </div>
+                    @*<div class="row">
+                    <div class="col-4 mms-media-center">
+                    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+
+                    </div>
+                    <p class="mms-txt-headdetail mms-media-center col-1" style="width:60px; text-align:center;">ถึง : </p>
+                    <div class="col-4 mms-media-center">
+
+                    <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" Format="dd/MM/yyyy" Placeholder="Placeholder" />
+                    </div>
+                    </div>*@
+                </div>
+                <div class="col-4 ">
+                    <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch  col-12" Style="font-size:16px;">
+                        <SpaceItem>
+                            <Search Style="font-size:16px;" Placeholder="ชื่อสถานพยาบาล" EnterButton="true" />
+                        </SpaceItem>
+                    </Space>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <Table DefaultExpandAllRows DataSource="data" TreeChildren="item=>item.Children" Bordered>
+
+            <ColumnDefinitions>
+                <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus)" Width="8%" Style="@GetColColor(context.HosStatus)">
+
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.CardId" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="15%" Style="@GetColColor(context.HosStatus )" />
+                @if (context.HosStatus == true)
+                {
+                    <PropertyColumn Property="c=>c.Name" Align="ColumnAlign.Left" ColSpan="@GetColSpan(context.HosStatus , "name",context.Key)" Width="12%" Style="@GetColColor(context.HosStatus, "name")">
+                        <div class="d-flex justify-content-between mx-2">
+                            <div>@context.Name</div>
+                            <div style="text-align: end">
+                                <img title="แจ้งเตือน" src="helper_shared/FeesAdminImage/AlertNoBg.png"
+                                     style="width:24px;height:24px; margin-right: 30px; cursor:pointer;" 
+                                     @onclick=@(()=>OpenAIalertModal(true))/>
+                            </div>
+                        </div>
+                    </PropertyColumn>
+                }
+                else if (context.HosStatus == false)
+                {
+                    <PropertyColumn Property="c=>c.Name" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus , "name",context.Key)" Width="12%" Style="@GetColColor(context.HosStatus, "name")" />
+                }
+                <PropertyColumn Property="c=>c.NotiId" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="12%" Style="@GetColColor(context.HosStatus)" />
+                <PropertyColumn Property="c=>c.Date" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="13%" Style="@GetColColor(context.HosStatus)" />
+                @if (context.Key == "total")
+                {
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Age" ColSpan="4" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                }
+                else
+                {
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.Age" ColSpan="@GetColSpan(context.HosStatus )" Width="10%" Style="@GetColColor(context.HosStatus)" />
+                }
+                <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)">
+                    <Checkbox @bind-Value="@context.promis" OnChange="()=>SwapCheckPromis(context)" ></Checkbox>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)">
+                    <Checkbox @bind-Value="@context.unpromis" OnChange="()=>SwapCheckUnPromis(context)" ></Checkbox>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Id" Align="ColumnAlign.Center" ColSpan="@GetColSpan(context.HosStatus ,context.Key)" Width="10%" Style="@GetColColor(context.HosStatus)">
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => OpenConfirmModal(true))  />  
+                    <img class="mx-2" title="ดู" src="helper_shared/PortalAdminImage/eye.png"
+                        style="width:24px;height:24px; cursor:pointer;" @onclick=@(() => OpenViewModal(true))  />
+                </PropertyColumn>
+            </ColumnDefinitions>
+            <HeaderTemplate>
+                <TableRow>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2">ลำดับ</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2">เลขประจำตัวประชาชน</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2">ชื่อ-นามสกุล</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2">เลขที่รับเเจ้ง</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2">วันที่ใช้สิทธิ</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2"> จำนวนเงิน </TableHeader>
+                    <TableHeader @bind-Field="context.Age" ColSpan="2">วินิจฉัย</TableHeader>
+                    <TableHeader @bind-Field="context.Age" RowSpan="2"></TableHeader>
+                </TableRow>
+                <TableRow>
+                    <SimpleTableHeader>
+                        <Checkbox OnChange="(e) => ChangeCheck(e)" ></Checkbox>
+                        อนุมัติ
+                    </SimpleTableHeader>
+                    <SimpleTableHeader>ไม่อนุมัติ</SimpleTableHeader>
+                </TableRow>
+            </HeaderTemplate>
+        </Table>
+        <br />
+    </div>
+</div>
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+<UcepAlertModal _visible="openAIalertModal" OnClose="OpenAIalertModal" />
+<ConfirmModal _visible="openConfirmModal" OnClose="OpenConfirmModal"/>
+<ViewModal _visible="openViewModal" OnClose="OpenViewModal"></ViewModal>
+@using sso.mms.fees.admin.Shared.UCEP.Notificationlist.Modals;
+@using sso.mms.fees.admin.Shared.UCEP.DisapprovedTranHistory.Modal
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
+@using System.ComponentModel;
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    int page;
+
+    bool openAIalertModal { get; set; }
+    bool openConfirmModal { get; set; }
+    bool openViewModal { get; set; }
+
+    bool isloading { get; set; }
+    string Placeholder = "วว/ดด/ปปปป";
+    bool _visible = false;
+
+    public bool YourCheckBoxProperty { get; set; }
+    public class Data
+    {
+        public bool HosStatus { get; set; }
+        public bool promis { get; set; }
+        public bool unpromis { get; set; }
+        public bool status { get; set; }
+
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+        public string CardId { get; set; }
+
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+        public string NotiId { get; set; }
+        public string Date { get; set; }
+
+        public string Address { get; set; }
+
+        public List<Data> Children { get; set; }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+        isloading = true;
+
+        data = new List<Data>
+    {
+    new Data {
+        HosStatus  = true,
+        Id = "1",
+        Key = "1",
+        Name = "โรงพยาบาลลานนา1",
+        Age = 60,
+        Address = "New York No. 1 Lake Park",
+        Children = new List<Data> {
+            new Data {
+                Id = "1",
+                Key = "sum",
+                CardId="123467890xxx",
+                NotiId="11145678",
+                Date="23 มิ.ย 67",
+                Name = "นายดวงดี  วิชัยวงศ์",
+                Age = 900,
+                Address = "London No. 1 Lake Park",
+                HosStatus  = false,
+            },
+            new Data {
+                Id = "2",
+                Key= "sum",
+                 CardId="123467890xxx",
+                 NotiId="11145678",
+                  Date="23 มิ.ย 67",
+                Name= "นางวันเพ็ญ  เด่นใจ",
+                Age=900,
+                Address= "New York No. 3 Lake Park",
+                HosStatus  = false,
+
+            },
+             new Data
+                 {
+                     Id = "3",
+                     Key = "sum",
+                     CardId = "123467890xxx",
+                     NotiId = "11145678",
+                     Date = "23 มิ.ย 67",
+                     Name = "นางวันเพ็ญ  เด่นใจ",
+                     Age = 900,
+                     Address = "New York No. 3 Lake Park",
+                     HosStatus = false,
+
+                 },
+             new Data
+                 {
+                     Id = "4",
+                     Key = "sum",
+                     CardId = "123467890xxx",
+                     NotiId = "11145678",
+                     Date = "23 มิ.ย 67",
+                     Name = "นางวันเพ็ญ  เด่นใจ",
+                     Age = 900,
+                     Address = "New York No. 3 Lake Park",
+                     HosStatus = false,
+
+                 },
+        }
+    },
+    new Data
+        {
+            HosStatus = true,
+            Id = "1",
+            Key = "2",
+            Name = "โรงพยาบาลลานนา2",
+            Age = 32,
+            Address = "Sidney No. 1 Lake Park",
+            Children = new List<Data>  {
+                 new Data {
+                    Id = "1",
+                    Key = "sum",
+                    CardId="123467890xxx",
+                    NotiId="11145678",
+                    Date="23 มิ.ย 67",
+                    Name = "นายดวงดี  วิชัยวงศ์",
+                    Age = 900,
+                    Address = "London No. 1 Lake Park",
+                    HosStatus  = false,
+                },
+                new Data {
+                    Id = "2",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    HosStatus  = false,
+
+                },
+                 new Data {
+                    Id = "3",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    HosStatus  = false,
+
+                },
+                 new Data {
+                    Id = "4",
+                    Key= "sum",
+                     CardId="123467890xxx",
+                     NotiId="11145678",
+                      Date="23 มิ.ย 67",
+                    Name= "นางวันเพ็ญ  เด่นใจ",
+                    Age=900,
+                    Address= "New York No. 3 Lake Park",
+                    HosStatus  = false,
+
+                },
+
+            }
+        },
+    };
+        isloading = false;
+        StateHasChanged();
+    }
+
+    private async Task ChangeCheck(bool e)
+    {
+        if (e)
+        {
+            foreach (var item in data)
+            {
+                foreach (var subitem in item.Children)
+                {
+                    subitem.promis = true;
+                    subitem.unpromis = false;
+                }
+            }
+        }
+        else
+        {
+            foreach (var item in data)
+            {
+                foreach (var subitem in item.Children)
+                {
+                    subitem.promis = false;
+                }
+            }
+        }
+    }
+    private async Task SwapCheckPromis(Data item)
+    {
+        if (item.promis)
+        {
+            item.unpromis = false;
+        }
+    }
+    private async Task SwapCheckUnPromis(Data item)
+    {
+        if (item.unpromis)
+        {
+            item.promis = false;
+        }
+    }
+    List<Data> data = new List<Data>();
+    public class Todo
+    {
+        public int UserId { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public bool Completed { get; set; }
+
+        public Todo()
+        {
+        }
+    }
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    Todo[] todos;
+    List<Data>
+        _data;
+    string _selectedValue;
+    private int GetColSpan(bool HosStatus, string columnTitle = "", string key = "")
+    {
+
+        if (HosStatus == true)
+        {
+            if (columnTitle == "name")
+            {
+                return 10;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            if (key == "total")
+            {
+                return 4;
+            }
+            else
+            {
+                if (columnTitle == "total")
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+    }
+    private int CalculateTotalChildrenAge(List<Data>children)
+    {
+        int totalAge = 0;
+        foreach (var child in children)
+        {
+            totalAge += child.Age;
+        }
+        return totalAge;
+    }
+
+    private string GetColColor(bool HosStatus, string columnTitle = "")
+    {
+        if (HosStatus == true)
+            if (columnTitle == "name")
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    private string GetRowColor(int index)
+    {
+        if (index == 1)
+            if (index == 1)
+                return "background-color:#D8D6D6;";
+            else
+                return "";
+        else
+            return "";
+    }
+    protected override void OnInitialized()
+    {
+        _data = data;
+
+        foreach (var item in data)
+        {
+
+            int totalAge = CalculateTotalChildrenAge(item.Children.ToList());
+
+            Data total = new Data()
+                {
+                    Id = "",
+                    Key = "total",
+                    Name = "รวม Total",
+                    Age = totalAge,
+                    Address = "",
+                };
+            item.Children.Add(total);
+        }
+        //_data = data;
+        StateHasChanged();
+    }
+
+
+
+
+    public void OpenAIalertModal(bool value)
+    {
+        openAIalertModal = value;
+    } 
+    public void OpenConfirmModal(bool value)
+    {
+        openConfirmModal = value;
+    }
+    public void OpenViewModal(bool value)
+    {
+        openViewModal = value;
+    }
+
+    public async Task Indexpage(int usepage)
+    {
+        //this.page = usepage;
+        //if (this.page == 2)
+        //{
+        //    IndexPage.InvokeAsync(2);
+        //}
+    }
+}

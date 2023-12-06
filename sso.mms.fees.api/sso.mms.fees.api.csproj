@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\PromoteHealth\Hospital\**" />
+    <Compile Remove="Services\PromoteHealth\Hospital\**" />
+    <Content Remove="Controllers\PromoteHealth\Hospital\**" />
+    <Content Remove="Services\PromoteHealth\Hospital\**" />
+    <EmbeddedResource Remove="Controllers\PromoteHealth\Hospital\**" />
+    <EmbeddedResource Remove="Services\PromoteHealth\Hospital\**" />
+    <None Remove="Controllers\PromoteHealth\Hospital\**" />
+    <None Remove="Services\PromoteHealth\Hospital\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AntDesign" Version="0.15.5" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.21">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\Example\" />
+    <Folder Include="wwwroot\Files\Module8\Edoc\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\sso.mms.helper\sso.mms.helper.csproj" />
+  </ItemGroup>
+
+</Project>

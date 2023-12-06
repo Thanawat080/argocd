@@ -1,0 +1,101 @@
+﻿
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ตามภาระเสี่ยง</div>
+    </div>
+    <div class="container py-4">
+        <div class="mms-txt-header py-2">ประวัติการเบิกจ่าย</div>
+        <hr />
+
+        <div class="mms-media-end pb-2">
+            <Space Direction="@DirectionVHType.Vertical" Class="d-flex justify-content-end">
+                <SpaceItem>
+                    <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" AllowClear />
+                </SpaceItem>
+            </Space>
+        </div>
+
+        <Table Bordered DataSource="@data" OnChange="OnChange" TItem="MockUpData" @ref="Table" @bind-PageSize="pageSize" Class="pb-5">
+            <ChildContent>
+                <Selection Align="ColumnAlign.Center" Key="@(context.Id.ToString())" />
+                 <PropertyColumn Title="ลำดับ" Property="c=>c!.Id" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="งวดที่" Property="c=>c!.InstallmentPay" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="เลขคำสั่งจ่าย" Property="c=>c!.NoPay" Width="200px" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="จำนวนสถานพยาบาล" Property="c=>c!.AmountHospital" Width="200px" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="วันที่อนุมัติ" Property="c=>c!.AcceptDate" Width="200px" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="ยอดการเบิกรวม (บาท)" Property="c=>c!.DisBurseMentTotal" Width="200px" Align="ColumnAlign.Center" Style="background: #EAE8EC" />
+                 <PropertyColumn Title="สถานะ" Property="c=>c!.Status" Width="200px" Align="ColumnAlign.Center" Style="background: #EAE8EC">
+
+                    @if (@context.Status != "รอดำเนินการ")
+                    {
+                        <div class="text-status" style="color:#F56C6C">@context.Status</div>
+                    }
+                    else
+                    {
+                        <div class="text-status" style="color:#009934">@context.Status</div>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Title="" Width="100px" Property="c=>c!.ShowDetail">
+                    <img class="mx-2" src="helper_shared/PortalAdminImage/eye.png"
+                         style="width:24px;height:24px; cursor:pointer;" @onclick=@(()=>{ }) />
+                </PropertyColumn>
+            </ChildContent>
+            <PaginationTemplate>
+                <Pagination Class="pt-2" Total="context.Total"
+                            PageSize="context.PageSize"
+                            Current="context.PageIndex"
+                                        ShowSizeChanger
+                            OnChange="context.HandlePageChange" />
+            </PaginationTemplate>
+        </Table>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+    public async Task Edit(int item)
+    {
+        await IndexPage.InvokeAsync(item);
+    }
+
+    Table<MockUpData> Table;
+
+    int pageSize = 5;
+
+    void OnChange(QueryModel<MockUpData> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+    class MockUpData
+    {
+        public MockUpData(int id, string installmentPay, string noPay,string amountHospital, string acceptDate,string disBurseMentTotal, string status, string showDetail)
+        {
+            Id = id;
+            InstallmentPay = installmentPay;
+            NoPay = noPay;
+            AmountHospital = amountHospital;
+            AcceptDate = acceptDate;
+            DisBurseMentTotal = disBurseMentTotal;
+            Status = status;
+            ShowDetail = showDetail;
+        }
+        public int Id { get; set; }
+        public string InstallmentPay { get; set; }
+        public string NoPay { get; set; }
+        public string AmountHospital { get; set; }
+        public string AcceptDate { get; set; }
+        public string DisBurseMentTotal { get; set; }
+        public string Status { get; set; }
+        public string ShowDetail { get; set; }
+    }
+
+    MockUpData[] data =
+    {
+            new(1, "2566/2","00012","25","20 มิ.ย. 65","3,600","รอดำเนินการ",""),
+            new(2, "2566/3","00012","25","20 มิ.ย. 65","3,600","จ่ายเเล้ว",""),
+    };
+}

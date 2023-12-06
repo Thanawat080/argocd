@@ -1,0 +1,46 @@
+﻿<Table DataSource="data" Bordered HidePagination ScrollX="500">
+    <Selection />
+    <PropertyColumn Title="ลำดับ" Property="c=>c.No" Width="100px" />
+    <PropertyColumn Title="เลขประจำตัวประชาชน" Property="c=>c.IDCard" Width="100px" />
+    <PropertyColumn Title="ชื่อ-นามสกุล" Property="c=>c.Name" Width="100px" />
+    <PropertyColumn Title="ประเภท" Property="c=>c.Type" Width="100px" />
+    <PropertyColumn Title="" Property="c=>c.AmountMoney" Align="ColumnAlign.Center" Width="70px" />
+</Table>
+<Pagination Class="py-3"
+            ShowSizeChanger
+            OnShowSizeChange="OnShowSizeChange"
+            DefaultCurrent="3"
+            Total="500" />
+
+@code {
+
+    record Data(
+        string No,
+        string IDCard,
+        string Name,
+        string Type,
+        string AmountMoney
+    );
+
+    Data[] data = new Data[]
+    {
+        new("1","1101201267891","นายเมธี ส่องแสง","รุนแรงมาก","360,000.00"),
+        new("2","1102345678925","นายนรง มีศักดิ์","รุนแรงปานกลาง","201,288.00"),
+        new("3","1108954632579","นายยิ้มแย้ม แจ่มใส","รุนแรงน้อย","16,550.00"),
+    };
+
+    void OnChange(QueryModel<Data> query)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(query));
+    }
+
+    private void OnShowSizeChange(PaginationEventArgs args)
+    {
+        var (current, pageSize) = args;
+        Console.WriteLine($"{current}, {pageSize}");
+    }
+
+    private void ViewDetail(int open)
+    {
+    }
+}

@@ -1,0 +1,107 @@
+﻿.bg-color {
+    background: #F5F3F7;
+    width: 100%;
+    height: 100%;
+}
+
+.card-title {
+    background: #FFCC41;
+    border: 1px solid #FFCC41;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px 10px 0px 0px;
+    padding-left: 33px;
+    padding-top: 14px;
+}
+
+.card-main {
+    width: 100%;
+    height: 100%;
+    background: #FFFFFF;
+    border-radius: 10px;
+}
+
+.f-title {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #334396;
+}
+
+.edit-img-user {
+    width: 263px;
+    height: 298.78px;
+}
+.txth-from-reg {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 19px;
+    color: #334396;
+}
+.btn-l-s {
+    background: #334396;
+    border-radius: 4px;
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #FFFFFF;
+    height:51px;
+}
+.btn-r-s {
+    background: #FFFFFF;
+    border: 2px solid #334396;
+    border-radius: 4px;
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 144%;
+    color: #334396;
+    height: 51px;
+}
+.modal-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1rem 1rem;
+    border-bottom: 0px solid #dee2e6;
+    border-top-left-radius: calc(0.3rem - 1px);
+    border-top-right-radius: calc(0.3rem - 1px);
+}
+.modal-txt {
+    font-family: 'Noto Sans Thai';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 150%;
+    letter-spacing: -0.019em;
+    color: #1A141F;
+}
+.text-login-title {
+    color: #334396;
+    text-align: center;
+    font-size: 48px;
+    font-family: 'Noto Sans Thai';
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+.btn-login {
+    color: #FFF;
+    font-size: 18px;
+    font-family: 'Noto Sans Thai';
+    font-weight: 600;
+    background: #334396;
+    line-height: 144%;
+}
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 500px;
+        margin: 1.75rem auto;
+    }
+}

@@ -1,0 +1,130 @@
+﻿@using MatBlazor
+@inject HttpClient httpClient
+@using sso.mms.fees.admin.Providers.PromoteHealth.AssignHealthChecklist;
+@inject AssignHealthChecklistServices AssignHealthChecklistServices;
+
+<div class="site-layout-background" style="padding: 24px;">
+    <div class="mms-nav-title">
+        <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ HIV</div>
+    </div>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item " style="cursor: pointer;" aria-current="page">
+                <span class="breadcum-sucress py-2">กำหนดอัตราการจ่าย</span>
+                </li>
+       @*         <li class="breadcrumb-item" aria-current="page">
+                    <span class="breadcum-process py-2">ปี @Year</span>
+                </li>*@
+            </ol>
+        </nav>
+        <hr />
+        <div class="row py-4 align-items-center">
+            <div class="col-sm-12 col-md-9 mms-media-start">
+
+                <div class="mms-media-end">
+                    <Button Type="@ButtonType.Primary" @onclick=@(() => goEdit())><i class="fa-solid fa-circle-plus"></i> &nbsp; เพิ่ม</Button>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+                <Space Direction="@DirectionVHType.Vertical" Class="mms-btn-serch w-100">
+                    <SpaceItem>
+                        <Search Placeholder="ข้อมูลที่ต้องการค้นหา.." EnterButton="true" />
+                    </SpaceItem>
+                </Space>
+            </div>
+        </div>
+        <Table DataSource="todos" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered ScrollX="1000">
+            <ChildContent Context="data">
+                <Column TData="string" Title="ลำดับ" Width="7%" Style="text-align:center;">
+                    @String.Format("{0:d}", todos.IndexOf(data) + 1)
+                </Column>
+                <Column TData="string" Title="วิธีการตรวจ" Width="35%" Style="text-align:start;">
+                    @data.title
+                </Column>
+                <Column TData="string" Title="อัตราจ่าย" Width="17%" Style="text-align:center;">
+                    @data.price
+                </Column>
+
+                <Column TData="string" Title="แก้ไข" Width="6%" Style="text-align:center;">
+
+                    <img title="แก้ไข" src="helper_shared/PortalAdminImage/edit.png" style="width:24px;height:24px; cursor:pointer;" />
+                </Column>
+            </ChildContent>
+        </Table>
+        <div class="mms-media-end">
+            <div>
+                <Button Class="ant-btn-distable" @onclick=@(() => goBack())><i class="fa-solid fa-circle-chevron-left"></i> &nbsp; ย้อนกลับ</Button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+@if (isloading == true)
+{
+    <style>
+        body {
+            overflow: hidden;
+        }</style>
+
+    <LoadingPage></LoadingPage>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<int> IndexPage { get; set; }
+
+
+    public bool isloading = false;
+    List<ItemData> todos = new List<ItemData>();
+    public async Task goEdit()
+    {
+        await IndexPage.InvokeAsync(1);
+    }
+
+    RenderFragment _audioIcon =@<Icon Type="audio" Theme="outline" Style="color: #1890ff" />;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isloading = true;
+        StateHasChanged();
+
+        todos = Enumerable.Range(0, 10).Select(i => new ItemData
+            {
+                Id = $"{i}",
+                title = $"test{i}",
+                price = $"52{i}",
+                Status = true,
+            }).ToList();
+
+        isloading = false;
+        StateHasChanged();
+
+
+    }
+
+    public class ItemData
+    {
+        public string Id { get; set; }
+
+        public string? title { get; set; }
+
+        public string price { get; set; }
+
+        public bool Status { get; set; }
+
+    };
+
+    public async Task goBack()
+    {
+        await IndexPage.InvokeAsync(1);
+    }
+
+
+
+}

@@ -1,0 +1,272 @@
+﻿@page "/detail"
+@inject NavigationManager NavigationManager
+@inject NewsService newsService
+@inject ReadTokenService readTokenService
+@using System.Web
+@using Blazored.LocalStorage;
+@using sso.mms.helper.Configs;
+@using sso.mms.helper.PortalModel
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.news.Services;
+@using System.Globalization
+@inject ILocalStorageService _localstorage;
+
+
+<style>
+    body {
+        background: #F5F3F7;
+    }
+
+    .dowload-button {
+        background-color: #334396;
+        color: white;
+        border: none;
+        width: 170px;
+        height: 51px;
+    }
+
+    .title {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 28px;
+        line-height: 144%;
+        color: #334396;
+    }
+
+    .txt-title-bold {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 600;
+        font-family: 'Noto Sans Thai';
+        font-size: 22px;
+        text-align: start;
+        padding-left: 8%;
+    }
+
+    .text-subtitle {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-size: 20px;
+        text-align: start;
+        padding-left: 8%;
+    }
+
+    .text-edit {
+        color: #AAAAAA;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .text-dload {
+        color: #fff;
+        font-family: 'Noto Sans Thai';
+    }
+
+    .card-radius {
+        border-radius: 16px;
+        min-height: 800px;
+        border: 0px solid;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    img {
+        align-content: center;
+        width: 100%;
+    }
+
+    .margin-tb {
+        margin-bottom: 2%;
+        margin-top: 2%;
+    }
+
+    .txt-news-detail {
+        font-family: 'Noto Sans Thai';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 144%;
+        color: #4a4a4a;
+    }
+
+    @@media only screen and (min-width: 1000px) {
+        .pm-xl {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        .position-class {
+            position: relative
+        }
+    }
+
+    .btn-bo-main {
+        border-radius: 4px;
+        border: 2px solid #334396;
+        background: #FFF;
+        color: #334396;
+        font-size: 18px;
+        font-family: Noto Sans Thai;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+</style>
+
+@if (shortToken != null)
+{
+
+    <NavbarLoginSSO PageCode="@codeName" Fname="@getUser?.FirstName" Lname="@getUser?.LastName"></NavbarLoginSSO>
+
+    <div style="display:none">
+        <div>short token @shortToken</div>
+        <div>access token @responseShortToken?.accessToken</div>
+        <div>refresh token @responseShortToken?.refreshToken</div>
+    </div>
+    <MediaStyle></MediaStyle>
+}
+else
+{
+
+    <BeforeNavMenu PageCode="HOP0202"></BeforeNavMenu>
+
+    <MediaStyle></MediaStyle>
+}
+<div class="margin-tb">
+    <div class="d-flex flex-column container p-2">
+        <div class="card card-radius" style="min-height:800px;">
+            <div class="d-flex justify-content-between">
+                @* <button class="btn btn-primary dowload-button m-5">
+                <div class="mr-2" style="padding-left:8%;">
+                <img src="icon_dowload.png" style="width:22px; height:16px;margin-right:1rem;"><h8 class="text-dload">ดาวน์โหลด</h8>
+                </div>
+                </button>*@
+                <div class="mr-2" style="padding-left:8%;">
+                </div>
+                <button @onclick="GoToMainmenu" class="btn btn-secondary btn-bo-main px-4 p-2 m-5">
+                    <i class="fa-solid fa-circle-chevron-left"></i>&nbsp; ย้อนกลับ
+                </button>
+            </div>
+
+            <div class="d-flex justify-content-between mx-5">
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="text-edit">
+                        <i class="fa-solid fa-screwdriver-wrench"></i> วันที่แก้ไขล่าสุด &nbsp; @updatedDate | <i class="fa-solid fa-clock"></i> วันที่สร้าง &nbsp; @createdDate
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-5">
+                <h4 class="card-title title py-2">
+                    @responseNews.Title
+                </h4>
+                <div class="m-2 txt-news-detail">
+                    @(new MarkupString(responseNews.Content))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Footer></Footer>
+
+@code {
+    private string formattedDate;
+    private string? createdDate;
+    private string? updatedDate;
+    private NewsT? responseNews = new NewsT();
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+    private ResponseLogin getUser { get; set; } = null!;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "param")]
+    public string? paramValue { get; set; } = "";
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? shortToken { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "mid")]
+    public string? mid { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "newsmid")]
+    public string? newsmid { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "type")]
+    public string? type { get; set; }
+
+    public string? env = ConfigureCore.ConfigENV;
+    public string? urlAdmin;
+    public string? urlPortalExt;
+    public string? urlNews;
+    public string? url;
+    public string? prefix = "";
+    public string? usertype;
+    public string? codeName = "";
+    protected override async Task OnInitializedAsync()
+    {
+        prefix = ConfigureCore.redirectsPortalAdmin;
+        url = ConfigureCore.redirectsNews;
+        usertype = await _localstorage.GetItemAsync<String>("userType");
+        if (usertype == "sso-mms-admin")
+        {
+            codeName = "DSP0302";
+        }
+        else
+        {
+            codeName = "HOP0202";
+        }
+    }
+    public void GoToMainmenu()
+    {
+        if (newsmid != null && shortToken != null)
+        {
+            NavigationManager.NavigateTo($"{url}news?token={shortToken}&newsmid={newsmid}");
+        }
+        else if (newsmid != null && shortToken == null)
+        {
+            NavigationManager.NavigateTo($"{url}news?newsmid=" + newsmid.ToString());
+        }
+
+        else if (mid != null && shortToken != null && type == "1")
+        {
+            NavigationManager.NavigateTo($"{prefix}editnews?token={shortToken}&newsmid={mid}");
+        }
+
+        else
+        {
+            NavigationManager.NavigateTo($"{url}editnews?token={shortToken}&newsmid={mid}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        if (firstrender)
+        {
+            responseNews = await newsService.GetNews(Int32.Parse(paramValue));
+
+            createdDate = ThaiDateFormat.FormattedDate(responseNews.CreateDate);
+            updatedDate = ThaiDateFormat.FormattedDate(responseNews.UpdateDate);
+
+
+            if (shortToken != null)
+            {
+                responseShortToken = await readTokenService.ReadToken(shortToken!);
+
+                if (responseShortToken != null)
+                {
+                    Console.WriteLine("ResponseShortToken", responseShortToken);
+
+                }
+            }
+
+            getUser = await _localstorage.GetItemAsync<ResponseLogin>("userdata");
+            StateHasChanged();
+        }
+    }
+}

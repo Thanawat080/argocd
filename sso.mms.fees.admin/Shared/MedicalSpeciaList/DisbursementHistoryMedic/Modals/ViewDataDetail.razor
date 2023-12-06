@@ -1,0 +1,254 @@
+﻿@using System.ComponentModel.DataAnnotations;
+<style>
+    .tablestyle .ant-table-thead > tr > th {
+        position: relative;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        background: #3B6C43 !important;
+        border-bottom: 1px solid #ffffff !important;
+        transition: background 0.3s ease;
+    }
+</style>
+@*@{
+    RenderFragment okbutton =@<div style="color:#fff;">
+        <Icon Type="save" Theme="outline" />
+        บันทึก
+    </div>;
+    RenderFragment canclebutton =@<div>
+        <Icon Type="close-circle" Theme="outline" />
+        ยกเลิก
+    </div>;
+}*@
+<style>
+    .tablestyle .ant-table-thead > tr > th {
+        position: relative;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        background: #3B6C43 !important;
+        border-bottom: 1px solid #ffffff !important;
+        transition: background 0.3s ease;
+    }
+</style>
+<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Maximizable="@true"
+       DefaultMaximized="@true" Style="z-index:10200;" Class="overflow-auto"
+       Footer=null>
+    <Card Bordered="true" Title=@("รายละเอียดการขอรับสิทธิ์") Style="width: 100%;border-radius: 6px 6px 6px 6px;" Size="small" Class="mms-txt-default">
+        <Body>
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 ">
+
+                    <div class="row pt-4">
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                ชื่อกองทุน :
+                            </div>
+                            <div class="col-6">
+                                การทำหมัน
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                ชื่อ-สกุล :
+                            </div>
+                            <div class="col-6">
+                                นางสาวจิรารัตน์ เมืองงาม
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                รหัสสถานพยาบาลตามบัตร 5 หลัก :
+                            </div>
+                            <div class="col-6">
+                                10703
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                เลขประจำตัวประชาชน :
+                            </div>
+                            <div class="col-6">
+                                1234567890000
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-4">
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                รหัสสถานพยาบาลตามบัตร 7 หลัก :
+                            </div>
+                            <div class="col-6">
+                                0237001
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                เลขงวด :
+                            </div>
+                            <div class="col-6">
+                                SSS230301
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row py-4">
+                        <div class="col-6 d-flex">
+                            <div class="col-6" style="color:#6A6A6A;">
+                                สถานพยาบาลตามบัตร :
+                            </div>
+                            <div class="col-6">
+                                โรงพยาบาลอำนาจเจริญ
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </Body>
+    </Card>
+    <br />
+    <Card Bordered="true" Title=@("รายละเอียดการวินิจฉัย") Style="width: 100%;border-radius: 6px 6px 6px 6px;" Size="small" Class="mms-txt-default">
+        <Body>
+
+
+
+            <div class="row ">
+                <div class="col-lg-12 col-md-12 ">
+
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            ชื่อรายการ :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            หมัน
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            ประเภทหมัน :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            หมันหญิง
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            สถานะการส่งต่อ :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            จำนวนวันนอน :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            0 วัน
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            เงื่อนไขในการใช้สิทธิ :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            ใช้สิทธิ์ UC
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            รหัสการวินิจฉัยโรค :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            0342
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            ชื่อการวินิจฉัยโรค :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            Matemal care due to uterine scar from previous surgery
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            รหัสแพทย์ผู้วินิจฉัยโรค :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            ว49500
+                        </div>
+                    </div>
+                    <div class="row py-4">
+                        <div class="col-2" style="color:#6A6A6A;">
+                            จำนวนเงิน :
+                        </div>
+                        <div class="col-10" style="padding-left: 8.5%">
+                            1,000.00 บาท
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </Body>
+    </Card>
+    
+    
+</Modal>
+
+@code {
+    string title = "รายละเอียดข้อมูล";
+    private Model model = new Model();
+    bool loading = false;
+    List<ItemData> listOfData = new List<ItemData>();
+    ColumnAlign columnAlign = ColumnAlign.Left;
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int count { get; set; }
+        public string Address { get; set; }
+    };
+    protected override void OnInitialized()
+    {
+        listOfData = Enumerable.Range(0, 3).Select(i => new ItemData { Id = i, Name = $"Edrward {i}", Age = 102, count = i, Address = $"London Park no. {i}" }).ToList();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        OnClose.InvokeAsync(false);
+    }
+    private void HandleOk(MouseEventArgs e)
+    {
+        OnClose.InvokeAsync(false);
+    }
+
+
+
+    public class Model
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberMe { get; set; } = true;
+    }
+}

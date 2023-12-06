@@ -1,0 +1,72 @@
+﻿@page "/disability/reportPay"
+@using System.IdentityModel.Tokens.Jwt;
+@using Blazored.LocalStorage;
+@using sso.mms.helper.PortalModel;
+@using sso.mms.login.Services;
+@using sso.mms.login.ViewModels;
+@using sso.mms.portal.admin.Pages.Navbar
+
+
+@inject NavigationManager NavigationManager
+@inject ReadTokenService readTokenService
+@inject UserRoleService userRoleService
+@inject ILocalStorageService _localstorage;
+@inject IconService iconService
+
+
+<LayoutIndex ShortToken="@ShortToken" Page="disability">
+
+    @if (usepageReportPay == 1)
+    {
+        <ReportPayIndex IndexPage="@Indexpage"/>
+    }
+    else if (usepageReportPay == 2)
+    {
+        <ReportPayIndex />
+    }
+    else if (usepageReportPay == 3)
+    {
+        <ReportPayIndex />
+    }
+</LayoutIndex>
+
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? ShortToken { get; set; } = "";
+
+
+    public int usepageReportPay = 1;
+
+    public async Task Indexpage(int usepage)
+    {
+        this.usepageReportPay = usepage;
+    }
+    private ResponseShortToken responseShortToken { get; set; } = null!;
+
+    public UserRole userRole;
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     responseShortToken = await readTokenService.ReadToken(ShortToken!);
+
+    //     Console.WriteLine("responseShortToken", responseShortToken);
+
+    //     if (responseShortToken != null)
+    //     {
+    //         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+    //         JwtSecurityToken jwt = tokenHandler.ReadJwtToken(responseShortToken.accessToken);
+    //         var t = jwt.Payload.ToList();
+    //         KeyValuePair<string, object> result = t.FirstOrDefault(pair => pair.Key == "preferred_username");
+    //         var username = result.Value.ToString();
+
+    //         userRole = await userRoleService.GetRoleByUserName(username);
+    //         await _localstorage.SetItemAsync("userRole", userRole);
+
+    //     }
+    // }
+
+}

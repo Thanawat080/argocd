@@ -1,0 +1,282 @@
+﻿<Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel"
+       Footer="@footer"
+       Width="1500">
+    <div class="site-layout-background" style="padding: 24px;">
+        <div class="mms-nav-title">
+            <div class="mms-text-title px-4 py-3">ค่าบริการทางการแพทย์ AdjRW</div>
+        </div>
+        <div class="container py-4">
+            <div class="mms-txt-header py-2">รายการขอเบิก</div>
+            <hr />
+            <div class="row">
+                <div class="col-md-12 col-xl-3">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">งวดที่</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                    </div>
+                </div>
+                <div class="col-md-12 col-xl-4">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">วันที่ประมวลผล</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                    </div>
+                </div>
+                <div class="col-md-12 col-xl-5">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">ประมวลผลโดย</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" Disabled />
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row row-cols-1 row-cols-lg-2">
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">เลขประจำตัวประชาชน</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">ชื่อ-นามสกุล</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">วัน/เดือน/ปี เกิด</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">อายุ</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">เพศ</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-12">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-25">โรงพยาบาลหลัก</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-12">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-25">โรงพยาบาลที่รักษา</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-12">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-25">โรงพยาบาลที่บันทึก</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-lg-2">
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">วันเข้ารับการรักษา</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">วันจำหน่ายการรักษา</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">จำนวนวันที่รับการรักษา</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">AN</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">AN</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">น้ำหนักก่อนรับการรักษา</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">RW</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">AdjRW</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">Discharge Status</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6">
+                        <div class="mms-media-start">
+                            <div class="mms-txt-headdetail w-50">DRG</div>
+                            <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                        </div>
+                    </div>
+                    <div class="col col-lg-6">
+                    </div>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="mms-media-start">
+                        <div class="mms-txt-headdetail w-50">Discharge Type</div>
+                        <Input Placeholder="Basic usage" @bind-Value="@txtValue" readonly />
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="mms-media-start">
+                ข้อมูลการวินิจฉัย
+            </div>
+            <Table DataSource="listOfData" Bordered ScrollX="1000">
+                <ColumnDefinitions>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.IcdType" Title="Dx/OP"></PropertyColumn>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.AdjRW" Title="ICD in Com"></PropertyColumn>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.DxOpType" Title="AdjRW"></PropertyColumn>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.DocterId" Title="รหัสแพทย์"></PropertyColumn>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.StartDate" Title="วันที่เริ่ม"></PropertyColumn>
+                    <PropertyColumn Align="ColumnAlign.Center" Property="c=>c.EndDate" Title="วันที่สิ้นสุด"></PropertyColumn>
+                </ColumnDefinitions>
+@*                 <PaginationTemplate>
+                <Pagination Class="pt-2"
+                                Total="context.Total"
+                                PageSize="context.PageSize"
+                                Current="context.PageIndex"
+                                        ShowSizeChanger
+                                OnChange="context.HandlePageChange" />
+                </PaginationTemplate>*@
+                    </Table>
+
+                    <div class="mms-media-end pt-4">
+                        <Button Type="@ButtonType.Dashed" Class="ant-btn-distable"><i class="fa-solid fa-angle-left"></i>&nbsp; ย้อนกลับ</Button>
+                    </div>
+                </div>
+            </div>
+            </Modal>
+
+            @code {
+    /*------------RenDer Modal*/
+    RenderFragment footer =
+    @<div></div>;
+
+    string title = "จัดการคำขอใช้รถทันตกรรม";
+    string Placeholder = "วว/ดด/ปปปป";
+    string txtValue;
+
+    [Parameter]
+    public bool _visible { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    List<ItemData> listOfData = new List<ItemData>
+            {
+        new ItemData
+        {
+            Id = 1,
+            IcdType = "ssss",
+            AdjRW =  221.27,
+            DxOpType = "PDx",
+            DocterId = 10,
+            StartDate = DateTime.Now.AddDays(-10),
+            EndDate = DateTime.Now,
+        },
+         new ItemData
+        {
+            Id = 1,
+            IcdType = "ssss",
+            AdjRW = 221.27,
+            DxOpType = "SDx1",
+            DocterId = 18,
+            StartDate = DateTime.Now.AddDays(-11),
+            EndDate = DateTime.Now,
+        },
+         new ItemData
+        {
+            Id = 1,
+            IcdType = "ssss",
+            AdjRW = 221.27,
+            DxOpType = "SDx 2",
+            DocterId = 10,
+            StartDate = DateTime.Now.AddDays(-12),
+            EndDate = DateTime.Now,
+        },
+         new ItemData
+        {
+            Id = 1,
+            IcdType = "ssss",
+            AdjRW = 221.27,
+            DxOpType = "SDx 3",
+            DocterId = 11,
+            StartDate = DateTime.Now.AddDays(-2),
+            EndDate = DateTime.Now,
+        },
+         new ItemData
+        {
+            Id = 1,
+            IcdType = "ssss",
+            AdjRW = 221.27,
+            DxOpType = "SDx 4",
+            DocterId = 12,
+            StartDate = DateTime.Now.AddDays(-1),
+            EndDate = DateTime.Now,
+        }
+            };
+    public class ItemData
+    {
+        public int Id { get; set; }
+        public string IcdType { get; set; }
+        public string DxOpType { get; set; }
+        public double AdjRW { get; set; }
+        public int DocterId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    };
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+        _visible = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+}
